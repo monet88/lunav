@@ -55,6 +55,38 @@ write commands append operation records such as `story.update`, `trace.add`,
 and `decision.add`. Normal CLI use without `HARNESS_RUN_ID` writes no
 changeset.
 
+### Shared Workspace Bootstrap
+
+`harness.db` is local state and must remain ignored. A clone or new worktree
+restores the shared durable baseline from committed semantic changesets:
+
+```powershell
+.\scripts\bin\harness-cli.exe db rebuild --from .harness\changesets
+.\scripts\verify-harness-sync.ps1
+```
+
+The repository baseline starts at
+`.harness/changesets/phase0-baseline.changeset.jsonl`. Future Harness mutations
+should use a unique `HARNESS_RUN_ID` and commit the resulting JSONL file.
+
+`db rebuild` applies files in lexical filename order. Use sortable run ids for
+dependent work and keep shared changesets append-only. A correction to an
+existing durable record belongs in a later changeset rather than a rewrite of
+the earlier file.
+
+The filename stem must match `changeset.header.run_id`. Regenerate
+`.harness/changesets/SHA256SUMS` after adding a changeset; existing entries must
+not change. Run both synchronization checks before sharing the mutation:
+
+```powershell
+.\scripts\test-verify-harness-sync.ps1
+.\scripts\verify-harness-sync.ps1
+```
+
+The regression cases reject removed intake/trace provenance, proof tuple drift,
+and a later no-op verifier override. The main verifier checks checksums, final
+required invariants, semantic idempotency, and local/fresh database parity.
+
 Requires: the prebuilt Rust CLI at `scripts/bin/harness-cli` on macOS/Linux or
 `scripts/bin/harness-cli.exe` on Windows.
 
