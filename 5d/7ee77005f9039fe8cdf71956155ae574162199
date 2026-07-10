@@ -1,0 +1,41 @@
+.harness/changesets/SHA256SUMS
+  s_df02cb575328c2::t_39f46dfcde46d0 1-4
+.harness/changesets/phase0-harness-sync.changeset.jsonl
+  s_5bc992d3e37c52::t_c7f0df7c00eb28 1-6
+.harness/changesets/phase0-z-harness-sync-review.changeset.jsonl
+  s_5bc992d3e37c52::t_fbb1cb80f445ca 1-3
+.harness/changesets/phase0-zz-harness-sync-validation.changeset.jsonl
+  s_5bc992d3e37c52::t_bf97921c69d473 1-3
+docs/stories/US-002-harness-changeset-sync.md
+  s_5bc992d3e37c52::t_20e6317b138185 1-81
+scripts/README.md
+  s_5bc992d3e37c52::t_e0bb5bb16db0c1 58-89
+scripts/test-verify-harness-sync.ps1
+  s_5bc992d3e37c52::t_9ffe1517283199 1-158
+scripts/verify-harness-sync.ps1
+  s_df02cb575328c2::t_809ee2c85a727c 1-229
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "5d7ee77005f9039fe8cdf71956155ae574162199",
+  "prompts": {},
+  "sessions": {
+    "s_5bc992d3e37c52": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "e896688c-cd05-4c00-94b9-fe9234865144",
+        "model": "unknown"
+      },
+      "human_author": "monet88 <minhthang421992@gmail.com>"
+    },
+    "s_df02cb575328c2": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "a67e6509-0299-4377-a33b-f2d0a43fe424",
+        "model": "unknown"
+      },
+      "human_author": "monet88 <minhthang421992@gmail.com>"
+    }
+  }
+}
