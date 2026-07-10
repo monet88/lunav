@@ -4,9 +4,15 @@ import tseslint from 'typescript-eslint'
 export default tseslint.config(
   {
     ignores: [
+      '**/.expo/**',
       '**/dist/**',
       '**/.next/**',
+      '**/.turbo/**',
+      '**/android/**',
+      '**/build/**',
       '**/node_modules/**',
+      '**/ios/**',
+      '**/out/**',
       '**/coverage/**',
     ],
   },

@@ -18,7 +18,16 @@ const TEXT_FILE_EXTENSIONS = new Set([
   '.yml',
   '.yaml',
 ])
-const IGNORED_DIRECTORIES = new Set(['.expo', 'dist', 'node_modules'])
+const IGNORED_DIRECTORIES = new Set([
+  '.expo',
+  '.next',
+  '.turbo',
+  'build',
+  'coverage',
+  'dist',
+  'node_modules',
+  'out',
+])
 const TEST_FILE_PATTERN = /\.(?:test|spec)\.[cm]?[jt]sx?$/
 const FORBIDDEN_CLIENT_SECRETS = [
   ['serviceRoleKey', /\bserviceRoleKey\s*(?:=|:)/i],

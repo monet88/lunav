@@ -5,9 +5,11 @@ intent into bounded, validated work.
 
 ## Current Repository State
 
-Phase 0 is approved. This repository contains the roadmap input, product
-contracts, Harness policy, a local CLI database, and schema migrations. It does
-not yet contain the application monorepo described in `SPEC.md`.
+Phase 0 is approved and the Phase 1 foundation workspace is implemented. This
+repository contains the roadmap input, product contracts, Harness policy, a
+local CLI database, schema migrations, and the pnpm/Turborepo monorepo with web
+and mobile application shells. Product features remain deferred to their
+approved roadmap phases.
 
 Do not describe planned architecture as implemented behavior.
 

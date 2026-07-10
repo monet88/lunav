@@ -4,6 +4,13 @@ import { expect, test } from 'vitest'
 
 const root = resolve(import.meta.dirname, '../..')
 
+function activeIgnoreRules(contents: string) {
+  return contents
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0 && !line.startsWith('#'))
+}
+
 test('ignores local dotenv files while preserving public examples', () => {
   const rootIgnore = readFileSync(resolve(root, '.gitignore'), 'utf8')
   const webIgnore = readFileSync(resolve(root, 'apps/web/.gitignore'), 'utf8')
@@ -12,10 +19,11 @@ test('ignores local dotenv files while preserving public examples', () => {
     'utf8'
   )
 
-  expect(rootIgnore).toContain('.env*')
-  expect(rootIgnore).toContain('!.env.example')
-  expect(webIgnore).toContain('!.env.example')
-  expect(mobileIgnore).toContain('!.env.example')
+  expect(activeIgnoreRules(rootIgnore)).toEqual(
+    expect.arrayContaining(['.env*', '!.env.example'])
+  )
+  expect(activeIgnoreRules(webIgnore)).toContain('!.env.example')
+  expect(activeIgnoreRules(mobileIgnore)).toContain('!.env.example')
   expect(existsSync(resolve(root, 'apps/web/.env.example'))).toBe(true)
   expect(existsSync(resolve(root, 'apps/mobile/.env.example'))).toBe(true)
 })

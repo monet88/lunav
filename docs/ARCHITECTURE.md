@@ -2,8 +2,10 @@
 
 ## Status
 
-This document records the accepted target architecture. Phase 0 is approved;
-Phase 1 has not yet implemented the application foundation.
+This document records the accepted target architecture. Phase 0 is approved and
+Phase 1 has implemented the foundation workspace, application shells, shared
+packages, Supabase configuration, and baseline validation. Product workflows
+remain deferred to their approved roadmap phases.
 
 ## Target System
 

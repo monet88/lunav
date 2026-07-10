@@ -84,6 +84,19 @@ describe('findForbiddenClientSecrets', () => {
     expect(scanClientFiles(rootDirectory)).toEqual([])
   })
 
+  test('ignores generated Next.js build artifacts', () => {
+    const rootDirectory = mkdtempSync(join(tmpdir(), 'lunav-client-secret-'))
+    const buildDirectory = join(rootDirectory, 'apps', 'web', '.next')
+
+    mkdirSync(buildDirectory, { recursive: true })
+    writeFileSync(
+      join(buildDirectory, 'server.js'),
+      'const serviceRoleKey = "generated"'
+    )
+
+    expect(scanClientFiles(rootDirectory)).toEqual([])
+  })
+
   test('reports a forbidden credential in a committed environment example', () => {
     const rootDirectory = mkdtempSync(join(tmpdir(), 'lunav-client-secret-'))
 
