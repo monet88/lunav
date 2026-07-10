@@ -1,0 +1,25 @@
+docs/stories/US-001-phase-0-reference-audit/execplan.md
+  s_df02cb575328c2::t_56ab9145d2846b 1-98
+docs/stories/US-001-phase-0-reference-audit/overview.md
+  s_df02cb575328c2::t_5140d15958374d 1-46
+docs/stories/US-001-phase-0-reference-audit/validation.md
+  s_df02cb575328c2::t_2f71e72e4dc471 1-47
+scripts/verify-phase0.ps1
+  s_df02cb575328c2::t_24289c60206229 1-82
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "939bcb71e069fae619c059c818718af8fa40f7dc",
+  "prompts": {},
+  "sessions": {
+    "s_df02cb575328c2": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "a67e6509-0299-4377-a33b-f2d0a43fe424",
+        "model": "unknown"
+      },
+      "human_author": "monet88 <minhthang421992@gmail.com>"
+    }
+  }
+}
