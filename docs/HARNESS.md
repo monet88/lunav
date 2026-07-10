@@ -5,9 +5,9 @@ intent into bounded, validated work.
 
 ## Current Repository State
 
-This repository is in Phase 0. It contains the roadmap input, product contracts,
-Harness policy, a durable CLI, and schema migrations. It does not yet contain
-the application monorepo described in `SPEC.md`.
+Phase 0 is approved. This repository contains the roadmap input, product
+contracts, Harness policy, a local CLI database, and schema migrations. It does
+not yet contain the application monorepo described in `SPEC.md`.
 
 Do not describe planned architecture as implemented behavior.
 
@@ -59,59 +59,23 @@ Operational state lives in local `harness.db`, managed by:
 .\scripts\bin\harness-cli.exe trace --help
 ```
 
-Use the CLI for normal Harness operations. The database is local and ignored;
-versioned truth remains in docs, schema migrations, and application code.
+Use the CLI for normal Harness operations. `harness.db` is local-only and
+ignored; versioned truth remains in docs, schema migrations, and application
+code.
 
-### Bootstrap a Clone or New Workspace
+### Local Workspace State
 
-Do not commit or copy `harness.db`. Rebuild local state from committed semantic
-changesets:
+Do not commit, copy, or synchronize `harness.db`, `harness.db-wal`, or
+`harness.db-shm`. When a local database is absent, initialize a new empty one:
 
 ```powershell
-.\scripts\bin\harness-cli.exe db rebuild --from .harness\changesets
+.\scripts\bin\harness-cli.exe init
 .\scripts\bin\harness-cli.exe query matrix
 ```
 
-Use `init` only when no committed changesets exist yet. Once changesets exist,
-`db rebuild` creates the schema and applies them in one operation.
-
-### Record Shareable Durable Changes
-
-Set a unique run id before commands that mutate Harness state:
-
-```powershell
-$env:HARNESS_RUN_ID = "<story-or-run-id>"
-.\scripts\bin\harness-cli.exe intake ...
-.\scripts\bin\harness-cli.exe story update ...
-.\scripts\bin\harness-cli.exe trace ...
-Remove-Item Env:HARNESS_RUN_ID
-```
-
-Commit the generated `.harness/changesets/<run-id>.changeset.jsonl`. Never
-commit `harness.db`, `harness.db-wal`, or `harness.db-shm`.
-
-Changesets are applied in lexical filename order. Choose sortable run ids when
-one changeset depends on records created by another, for example a baseline,
-then a story changeset, then a later follow-up. Do not edit an already shared
-changeset; record corrections as a later semantic changeset.
-
-The filename stem must equal the `changeset.header.run_id`. After adding a
-changeset, update `.harness/changesets/SHA256SUMS` with the lowercase SHA-256
-of every JSONL file in lexical filename order. The verifier rejects missing,
-renamed, or modified changesets before rebuilding the database.
-
-Verify the repository can recreate its durable state with:
-
-```powershell
-.\scripts\test-verify-harness-sync.ps1
-.\scripts\verify-harness-sync.ps1
-```
-
-The regression script proves that missing provenance records, proof drift, and
-later no-op verification commands are rejected while additional valid
-changesets remain supported. The verifier also compares semantic state before
-and after reapply, restores any caller-provided `HARNESS_DB_PATH`, and compares
-the local database with a fresh rebuild when `harness.db` exists.
+Local intake, story, decision, intervention, and trace records are useful only
+within the current workspace. A clone or worktree does not inherit those
+records; use the Markdown contracts and story packets as its starting point.
 
 ## Symphony Boundary
 

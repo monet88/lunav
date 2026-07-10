@@ -20,8 +20,6 @@ scripts/bin/harness-cli trace ...     # Record and auto-score an agent execution
 scripts/bin/harness-cli score-trace   # Score a trace against TRACE_SPEC.md tiers
 scripts/bin/harness-cli query ...     # Query harness data, including backlog --open/--closed
 scripts/bin/harness-cli query matrix --numeric  # Show proof flags as 1/0
-scripts/bin/harness-cli db changeset apply .harness/changesets/run_123.changeset.jsonl
-scripts/bin/harness-cli db rebuild --from .harness/changesets
 scripts/bin/harness-cli migrate       # Apply pending schema migrations
 scripts/bin/harness-cli --version     # Print the installed CLI version
 ```
@@ -48,50 +46,15 @@ to operate on an isolated copied database. `HARNESS_DB_PATH` takes precedence
 over the legacy `HARNESS_DB` override; if neither is set, the CLI uses
 `harness.db` in the repository root.
 
-Set `HARNESS_RUN_ID=<run-id>` during an isolated run to append semantic
-operation records to `.harness/changesets/<run-id>.changeset.jsonl` under the
-resolved repository root. The first write records a `changeset.header`; durable
-write commands append operation records such as `story.update`, `trace.add`,
-and `decision.add`. Normal CLI use without `HARNESS_RUN_ID` writes no
-changeset.
-
-### Shared Workspace Bootstrap
-
-`harness.db` is local state and must remain ignored. A clone or new worktree
-restores the shared durable baseline from committed semantic changesets:
+`harness.db` is local-only and must remain ignored. Initialize it in a new
+workspace with:
 
 ```powershell
-.\scripts\bin\harness-cli.exe db rebuild --from .harness\changesets
-.\scripts\verify-harness-sync.ps1
+.\scripts\bin\harness-cli.exe init
 ```
 
-The repository baseline starts at
-`.harness/changesets/phase0-baseline.changeset.jsonl`. Future Harness mutations
-should use a unique `HARNESS_RUN_ID` and commit the resulting JSONL file.
-
-`db rebuild` applies files in lexical filename order. Use sortable run ids for
-dependent work and keep shared changesets append-only. A correction to an
-existing durable record belongs in a later changeset rather than a rewrite of
-the earlier file.
-
-The filename stem must match `changeset.header.run_id`. Regenerate
-`.harness/changesets/SHA256SUMS` after adding a changeset; existing entries must
-not change. Run both synchronization checks before sharing the mutation:
-
-```powershell
-.\scripts\test-verify-harness-sync.ps1
-.\scripts\verify-harness-sync.ps1
-```
-
-The regression cases reject removed intake/trace provenance, proof tuple drift,
-and a later no-op verifier override. The main verifier checks checksums, final
-required invariants, semantic idempotency, and local/fresh database parity.
-
-Requires: the prebuilt Rust CLI at `scripts/bin/harness-cli` on macOS/Linux or
-`scripts/bin/harness-cli.exe` on Windows.
-
-Direct database inspection may still use SQLite tools, but normal Harness use
-should go through the Rust CLI.
+Local Harness mutations update only the current database and are not
+synchronized to clones or worktrees.
 
 ### Rust CLI Commands
 
@@ -119,15 +82,11 @@ scripts/bin/harness-cli query traces
 scripts/bin/harness-cli query friction
 scripts/bin/harness-cli query stats
 scripts/bin/harness-cli query sql ...
-scripts/bin/harness-cli db changeset apply ...
-scripts/bin/harness-cli db rebuild --from ...
 ```
 
-`scripts/bin/harness-cli import brownfield` seeds or refreshes the durable database
-from existing Harness v0 markdown in `docs/TEST_MATRIX.md`,
-`docs/decisions/`, and `docs/HARNESS_BACKLOG.md`. This keeps already-installed
-Harness repos on the Rust CLI path without losing their populated operating
-docs.
+`scripts/bin/harness-cli import brownfield` is retained for older Harness
+repositories that still use the legacy Markdown imports. This local-only
+repository manages its operational state directly through the CLI.
 
 ## Installer
 

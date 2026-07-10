@@ -16,8 +16,8 @@ Xây dựng lại ZIWEI AI từ đầu với:
 Monorepo:  pnpm + Turborepo
 Web:       Next.js App Router
 Mobile:    Expo Router
-Backend:   Convex
-Auth:      Clerk
+Backend:   Supabase Postgres + Realtime + Edge Functions
+Auth:      Supabase Auth
 Validation: Zod
 Language:  TypeScript strict
 Web UI:    Tailwind + shadcn/ui
@@ -32,17 +32,9 @@ apps/
   web/
   mobile/
 
-convex/
-  schema.ts
-  users.ts
-  charts.ts
-  explanations.ts
-  conversations.ts
-  vision.ts
-  billing.ts
-  quotas.ts
-  workflows/
-  internal/
+supabase/
+  migrations/
+  functions/
 
 packages/
   contracts/
@@ -107,8 +99,9 @@ Tạo monorepo và toàn bộ nền kỹ thuật.
 
 * Next.js web scaffold.
 * Expo mobile scaffold.
-* Convex backend scaffold.
-* Clerk auth skeleton.
+* Supabase project structure and local development configuration.
+* Supabase Auth skeleton and environment contract.
+* Database migration and Row Level Security conventions.
 * Shared packages.
 * TypeScript strict.
 * ESLint, formatting, tests và CI cơ bản.
@@ -136,9 +129,9 @@ Một user có thể đăng ký, đăng nhập và sử dụng cùng một tài 
 
 ### Scope
 
-* Clerk web integration.
-* Clerk Expo integration.
-* Convex identity integration.
+* Supabase Auth web integration.
+* Supabase Auth Expo integration.
+* Supabase identity integration.
 * User profile sync.
 * Protected routes.
 * Sign-in, sign-up, sign-out.
@@ -148,7 +141,7 @@ Một user có thể đăng ký, đăng nhập và sử dụng cùng một tài 
 
 * Web login/logout hoạt động.
 * Mobile login/logout hoạt động.
-* Convex xác định đúng current user.
+* Supabase Auth xác định đúng current user.
 * Không có secret trong client.
 
 ---
@@ -349,7 +342,7 @@ Mỗi module phải có riêng:
 Contract
 Domain logic
 Prompt
-Convex backend
+Supabase Edge Functions backend
 Web UI
 Mobile UI
 History integration
@@ -474,10 +467,10 @@ Không để business rules nằm rải rác trong:
 
 * React components.
 * Routes.
-* Convex query handlers.
+* Supabase Edge Functions.
 * UI event handlers.
 
-Convex functions nên điều phối, validate, authorize và persist. Domain package xử lý logic thuần khi phù hợp.
+Supabase Edge Functions nên điều phối, validate, authorize và persist. Domain package xử lý logic thuần khi phù hợp.
 
 ---
 
@@ -491,7 +484,7 @@ packages/prompts
 
 Không hardcode prompt dài trong:
 
-* Convex actions.
+* Supabase Edge Functions.
 * React components.
 * Route files.
 * Utility functions không liên quan.

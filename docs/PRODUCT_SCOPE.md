@@ -42,6 +42,14 @@ The core product covers the roadmap through stabilization:
 6. Persisted assistant conversations grounded in chart context.
 7. Complete loading, empty, failure, navigation, responsive, and mobile states.
 
+## Foundation Platform Decision
+
+Supabase is the unified backend for the MVP: Supabase Auth supplies the
+canonical user identity, Postgres persists product state, Row Level Security
+enforces private-data ownership, Realtime supports later live updates, and Edge
+Functions host privileged workflows. Clerk and Convex are not part of the
+implementation stack.
+
 ## Phase 0 Audit Depth
 
 Phase 0 audits these areas deeply because they shape the MVP architecture:

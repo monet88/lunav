@@ -1,0 +1,39 @@
+{
+  "name": "@lunav/mobile",
+  "main": "expo-router/entry",
+  "version": "1.0.0",
+  "dependencies": {
+    "expo": "~57.0.4",
+    "expo-linking": "~57.0.2",
+    "expo-router": "~57.0.4",
+    "expo-splash-screen": "~57.0.2",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "react-native": "0.86.0",
+    "react-native-gesture-handler": "~2.32.0",
+    "react-native-safe-area-context": "~5.7.0",
+    "react-native-screens": "4.25.2",
+    "react-native-web": "~0.21.0"
+  },
+  "devDependencies": {
+    "@testing-library/react-native": "^14.0.1",
+    "@types/jest": "29.5.14",
+    "@types/react": "~19.2.2",
+    "jest-expo": "~57.0.1",
+    "typescript": "~6.0.3"
+  },
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "build": "expo export --platform android",
+    "ios": "expo start --ios",
+    "lint": "expo lint",
+    "test": "jest --runInBand",
+    "typecheck": "tsc --noEmit",
+    "web": "expo start --web"
+  },
+  "jest": {
+    "preset": "jest-expo"
+  },
+  "private": true
+}
