@@ -42,6 +42,31 @@ capability is a clean skip.
 Do not commit or synchronize `harness.db`. Record normal local Harness
 operations with the CLI; a new clone or worktree starts with an empty database.
 
+## Story Dependency and Agent Ownership
+
+Before creating, scheduling, or delegating a multi-story epic, write an
+explicit dependency graph in the epic README or story index. For every story,
+state its story ID, prerequisite story IDs (or `none`), owned files or
+architectural boundary, expected outcome, and the proof needed before dependent
+stories can start.
+
+- Order stories by dependency, not by convenience. A dependent story is not
+	runnable until every prerequisite has fresh passing proof for its declared
+	outcome.
+- Assign exactly one implementation owner to each story. Subagents may inspect
+	adjacent work read-only, but only the owner may edit the story's declared
+	files or boundary.
+- Run stories in parallel only when their dependency sets are satisfied and
+	their owned files and architectural boundaries do not overlap. Shared
+	contracts, migrations, generated artifacts, and central configuration are
+	exclusive ownership boundaries.
+- When a new dependency or overlap is discovered, stop the affected parallel
+	work, update the dependency graph and ownership, then reschedule it. Do not
+	resolve collisions by letting multiple agents edit the same surface.
+- Every story handoff must name the upstream evidence it consumes and the
+	downstream stories it unblocks, so agents can distinguish completed evidence
+	from merely planned work.
+
 ## PowerShell Command Hygiene
 
 This workspace runs on Windows PowerShell. Keep command arguments distinct

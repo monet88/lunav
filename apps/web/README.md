@@ -28,4 +28,5 @@ pnpm lint
 pnpm test
 pnpm typecheck
 pnpm build
+pnpm security:client
 ```

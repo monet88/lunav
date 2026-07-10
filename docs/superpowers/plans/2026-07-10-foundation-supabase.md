@@ -439,7 +439,18 @@ ownership policy using `auth.uid()`.
 
 - [ ] **Step 5: Run the scanner and Supabase configuration checks**
 
-Run: `pnpm exec vitest run scripts/check-client-secrets.test.ts && pnpm security:client && pnpm dlx supabase --workdir . status`
+Run the required checks:
+
+```bash
+pnpm exec vitest run scripts/check-client-secrets.test.ts
+pnpm security:client
+```
+
+Then run the informational Supabase status probe separately:
+
+```bash
+pnpm dlx supabase --workdir . status
+```
 
 Expected: unit test and security scan pass. Run the Supabase status command as
 an informational configuration check only: it is expected to report no running
