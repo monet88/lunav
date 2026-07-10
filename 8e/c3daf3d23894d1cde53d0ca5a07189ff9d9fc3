@@ -1,0 +1,21 @@
+apps/web/README.md
+  s_ff01a98a953a15::t_0db0057310d114 1,3-5,7,10,13,15,17-22,24,26-31
+apps/web/package.json
+  s_ff01a98a953a15::t_4ef50468001fa2 31-32
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "8ec3daf3d23894d1cde53d0ca5a07189ff9d9fc3",
+  "prompts": {},
+  "sessions": {
+    "s_ff01a98a953a15": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "84a14aa8-5dae-4b32-b3a3-f17be1e28306",
+        "model": "zai/glm-5.2"
+      },
+      "human_author": "monet88 <minhthang421992@gmail.com>"
+    }
+  }
+}
