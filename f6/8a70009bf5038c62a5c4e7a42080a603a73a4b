@@ -1,0 +1,19 @@
+apps/web/README.md
+  s_ff01a98a953a15::t_f68cdcb8649f2a 31
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "f68a70009bf5038c62a5c4e7a42080a603a73a4b",
+  "prompts": {},
+  "sessions": {
+    "s_ff01a98a953a15": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "84a14aa8-5dae-4b32-b3a3-f17be1e28306",
+        "model": "zai/glm-5.2"
+      },
+      "human_author": "monet88 <minhthang421992@gmail.com>"
+    }
+  }
+}
