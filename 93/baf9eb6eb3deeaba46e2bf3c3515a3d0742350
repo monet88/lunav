@@ -1,0 +1,19 @@
+docs/HARNESS.md
+  s_5bc992d3e37c52::t_c376be3a77d23a 1-131
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "93baf9eb6eb3deeaba46e2bf3c3515a3d0742350",
+  "prompts": {},
+  "sessions": {
+    "s_5bc992d3e37c52": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "e896688c-cd05-4c00-94b9-fe9234865144",
+        "model": "unknown"
+      },
+      "human_author": "monet88 <minhthang421992@gmail.com>"
+    }
+  }
+}
