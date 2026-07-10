@@ -1,0 +1,22 @@
+{
+  "name": "@lunav/config",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/public-supabase.ts"
+  },
+  "scripts": {
+    "lint": "eslint src --max-warnings=0",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit --project tsconfig.json"
+  },
+  "dependencies": {
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "eslint": "^10.6.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.10"
+  }
+}

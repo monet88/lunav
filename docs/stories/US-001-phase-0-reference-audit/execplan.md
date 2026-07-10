@@ -62,7 +62,8 @@ Hard gates:
   durable Harness layer.
 - [x] (2026-07-10) Passed the Phase 0 verifier, reference evidence verifier,
   and Harness story verification.
-- [ ] Obtain user review of the written Phase 0 contract.
+- [x] (2026-07-10) Product owner approved the written Phase 0 contract and
+  authorized Foundation planning.
 
 ## Surprises and Discoveries
 
@@ -86,11 +87,10 @@ Hard gates:
 
 ## Outcomes and Retrospective
 
-The target repository now has an evidence-backed draft product contract based
+The target repository now has an evidence-backed accepted product contract based
 on confirmed intent, explicit clean-room and locale decisions, restored Harness
-entrypoint docs, and runnable Phase 0 proof commands. Application work remains
-intentionally unstarted. Product-owner review of the written artifacts is the
-remaining gate before the contract is accepted and Phase 1 planning begins.
+entrypoint docs, and runnable Phase 0 proof commands. Foundation planning may
+begin; application implementation remains intentionally unstarted.
 
 ## Stop Conditions
 

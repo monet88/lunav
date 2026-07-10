@@ -2,7 +2,7 @@
 
 ## Status
 
-in_progress
+implemented
 
 ## Lane
 
@@ -17,11 +17,10 @@ Harness documents and `harness.db` was not initialized.
 
 ## Target Behavior
 
-The repository has an evidence-backed Phase 0 product contract based on
-confirmed intent. After the product owner reviews the written artifacts, it can
-allow Foundation planning without copying the reference architecture. Agents
-can follow the Harness entrypoint, identify the review gate, and mechanically
-verify the Phase 0 artifact set.
+The repository has an evidence-backed, product-owner-approved Phase 0 product
+contract. Foundation planning may proceed without copying the reference
+architecture. Agents can follow the Harness entrypoint and mechanically verify
+the Phase 0 artifact set.
 
 ## Affected Users
 

@@ -37,20 +37,23 @@ Web and mobile must never:
 
 - import the astrology engine or its transitive engine dependencies
 - call an AI provider directly
-- contain provider, database, auth, or billing secrets
+- contain provider, database, auth, billing, or Supabase service-role secrets
 - decide entitlement, quota, credit, or ownership truth
 
 Astrology calculation, AI providers, billing, credits, and privileged
-operations run server-side. Engine output is normalized before persistence or
-client delivery.
+operations run in server-only code or Supabase Edge Functions. Engine output is
+normalized before persistence or client delivery.
 
 Expected proof: restricted-import rules, client bundle inspection, and server
 integration tests.
 
 ## 4. Authentication, Ownership, and Privacy
 
-- MVP private flows require authenticated identity on web and mobile.
-- Every private read and write checks ownership on the server.
+- MVP private flows require Supabase Auth identity on web and mobile.
+- `auth.users.id` is the canonical user identifier for private product data.
+- Every private product table enables Row Level Security and scopes access to
+  `auth.uid()`; privileged server operations verify identity before bypassing
+  client access controls.
 - A client-provided user id is never authorization evidence.
 - Signing out clears user-scoped client caches.
 - Secrets never appear in client code, logs, docs, fixtures, or committed env
@@ -114,9 +117,9 @@ static user-facing copy scan.
 
 - Pure business rules belong in `packages/domain` when they are shared or need
   framework-independent tests.
-- UI components, route handlers, and Convex functions must not become the only
+- UI components, route handlers, and Supabase Edge Functions must not become the only
   home of core business rules.
-- Convex functions validate, authorize, coordinate, and persist; they delegate
+- Supabase Edge Functions validate, authorize, coordinate, and persist; they delegate
   pure calculations when a domain boundary exists.
 
 Expected proof: dependency checks and unit tests against pure modules.

@@ -177,9 +177,9 @@ validation and harness maintenance expectations.
 ## Try Harness Symphony
 
 Harness Symphony is the local runner for Harness stories. It prepares an
-isolated run workspace, passes an explicit contract to an agent, collects
-`SUMMARY.md` and `RESULT.json`, and keeps durable Harness updates reviewable
-through semantic changesets.
+isolated run workspace, passes an explicit contract to an agent, and collects
+`SUMMARY.md` and `RESULT.json`. Harness operational state is local to this
+workspace and is not synchronized through Git.
 
 Start here:
 

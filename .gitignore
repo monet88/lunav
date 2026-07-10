@@ -19,13 +19,16 @@ desktop-dist/
 test-results/
 tsconfig.tsbuildinfo
 
+# Local environment files. Commit only intentionally public examples.
+.env*
+!.env.example
+
 # Downloaded Harness CLI binary for installed project instances.
 scripts/bin/harness-cli
 scripts/bin/harness-cli.exe
 
 # Local Symphony runtime state.
 .symphony/
-.harness/*
-!.harness/changesets/
-!.harness/changesets/*.changeset.jsonl
+.harness/
 .impeccable
+.turbo/

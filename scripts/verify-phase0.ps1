@@ -18,15 +18,8 @@ $requiredFiles = @(
     'docs/stories/US-001-phase-0-reference-audit/design.md',
     'docs/stories/US-001-phase-0-reference-audit/validation.md',
     'docs/stories/US-001-phase-0-reference-audit/execplan.md',
-    'docs/stories/US-002-harness-changeset-sync.md',
     'scripts/verify-reference-audit.ps1',
-    'scripts/test-verify-harness-sync.ps1',
-    'scripts/verify-harness-sync.ps1',
-    '.harness/changesets/SHA256SUMS',
-    '.harness/changesets/phase0-baseline.changeset.jsonl',
-    '.harness/changesets/phase0-harness-sync.changeset.jsonl',
-    '.harness/changesets/phase0-z-harness-sync-review.changeset.jsonl',
-    '.harness/changesets/phase0-zz-harness-sync-validation.changeset.jsonl'
+    'scripts/verify-phase0.ps1'
 )
 
 $missingFiles = $requiredFiles | Where-Object {
@@ -51,7 +44,7 @@ $requiredPhrases = @{
     'docs/PRODUCT_SCOPE.md' = @('interested in understanding', 'Vietnamese-first', 'locale', 'semantic')
     'docs/REFERENCE_AUDIT.md' = @('clean-room', 'server-only', 'fixture', 'Architecture Mistakes Not to Repeat')
     'docs/INVARIANTS.md' = @('Contracts First', 'Server-Only Privileged Logic', 'Vietnamese-First, Locale-Ready', 'Idempotency and Retry')
-    'docs/ARCHITECTURE.md' = @('target architecture', 'Next.js App Router', 'Expo Router', 'Convex', 'Clerk')
+    'docs/ARCHITECTURE.md' = @('target architecture', 'Next.js App Router', 'Expo Router', 'Supabase Auth', 'Row Level Security')
 }
 
 foreach ($entry in $requiredPhrases.GetEnumerator()) {
@@ -67,16 +60,6 @@ foreach ($deliverable in @('docs/REFERENCE_AUDIT.md', 'docs/PRODUCT_SCOPE.md', '
     if (-not $spec.Contains($deliverable)) {
         throw "SPEC.md does not declare Phase 0 deliverable $deliverable"
     }
-}
-
-& (Join-Path $repoRoot 'scripts/verify-harness-sync.ps1')
-if ($LASTEXITCODE -ne 0) {
-    throw 'Harness synchronization verification failed.'
-}
-
-& (Join-Path $repoRoot 'scripts/test-verify-harness-sync.ps1')
-if ($LASTEXITCODE -ne 0) {
-    throw 'Harness synchronization regression verification failed.'
 }
 
 Write-Output 'Phase 0 verification passed.'

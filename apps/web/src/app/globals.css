@@ -1,0 +1,30 @@
+@import 'tailwindcss';
+
+:root {
+  --color-background: oklch(98% 0.005 260);
+  --color-foreground: oklch(20% 0.02 260);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: system-ui, sans-serif;
+}
+
+.foundation-shell {
+  display: grid;
+  min-block-size: 100dvh;
+  place-items: center;
+  padding: 2rem;
+}
+
+.foundation-shell h1 {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 700;
+}

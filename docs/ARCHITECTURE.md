@@ -2,26 +2,28 @@
 
 ## Status
 
-This document records the accepted target architecture. Phase 0 has not yet
-implemented it.
+This document records the accepted target architecture. Phase 0 is approved and
+Phase 1 has implemented the foundation workspace, application shells, shared
+packages, Supabase configuration, and baseline validation. Product workflows
+remain deferred to their approved roadmap phases.
 
 ## Target System
 
 ```text
 apps/web (Next.js App Router) ----+
-                                  |
+              |
 apps/mobile (Expo Router) --------+--> packages/contracts
-                                  |        |
-                                  |        v
-                                  +--> Convex functions
-                                           |
-                         +-----------------+------------------+
-                         |                 |                  |
-                  packages/domain  packages/prompts  server-only engine
-                         |                 |                  |
-                         +-----------------+------------------+
-                                           |
-                                      persistence / AI
+              |        |
+              |        v
+              +--> Supabase Auth, Postgres, and Realtime
+             |
+          +-----------------+------------------+
+          |                 |                  |
+        packages/domain  packages/prompts  Edge Functions
+          |                 |                  |
+          +-----------------+------------------+
+             |
+              server-only engine and AI
 ```
 
 Planned stack:
@@ -29,23 +31,22 @@ Planned stack:
 - pnpm workspaces and Turborepo
 - Next.js App Router for web and public growth surfaces
 - Expo Router for native iOS and Android
-- Convex for realtime backend workflows and persistence
-- Clerk for shared authentication
+- Supabase Auth, Postgres, Row Level Security, Realtime, and Edge Functions
 - Zod and strict TypeScript for boundary contracts
 - Tailwind plus shadcn/ui on web
-- NativeWind or Tamagui on mobile, chosen during Foundation
+- NativeWind on mobile when mobile UI work begins
 - Vitest and Playwright, with mobile smoke tests added when a mobile flow exists
 
 ## Dependency Direction
 
 - UI apps depend on contracts, locale-neutral constants, approved domain logic,
   and design tokens.
-- Convex functions depend on contracts, domain logic, prompts, and server-only
-  integrations.
+- Supabase Edge Functions depend on contracts, domain logic, prompts, and
+  server-only integrations.
 - `packages/contracts` depends only on validation/runtime primitives required to
   express schemas.
 - `packages/domain` contains pure business rules and does not depend on UI or
-  Convex handlers.
+  Supabase Edge Functions.
 - `packages/prompts` owns versioned prompt definitions.
 - The astrology engine is server-only and cannot be reached from a client
   import graph.
@@ -55,8 +56,8 @@ Planned stack:
 ```text
 untrusted input
   -> contract parse
-  -> identity and ownership check
-  -> workflow coordination
+  -> Supabase Auth identity and Row Level Security ownership check
+  -> Edge Function workflow coordination when privileged work is required
   -> pure domain or server-only engine work
   -> normalized persisted result
   -> contract parse
@@ -79,17 +80,20 @@ in Phase 1 or Phase 3 and must be decided before persistence schemas land.
 
 ## Security Boundaries
 
-- Clerk identity is verified server-side before private operations.
-- Every private record query is scoped to the current user.
-- AI providers, engine packages, billing logic, and secrets are server-only.
+- Supabase Auth identity is the canonical user identity on web, mobile, and
+  server-side operations.
+- Every private table enables Row Level Security and scopes policies to
+  `auth.uid()`.
+- AI providers, engine packages, billing logic, service-role credentials, and
+  secrets are server-only.
 - Client bundles expose no secret and make no privileged decision.
 - External and AI data is parsed before use.
 
 ## Workflow Boundaries
 
-Charts, explanations, conversations, vision analyses, and cost-bearing tasks use
-durable workflow state. Retry and idempotency are part of each feature contract,
-not UI conventions.
+Charts, explanations, conversations, vision analyses, and cost-bearing tasks
+use durable Postgres workflow state. Retry and idempotency are part of each
+feature contract, not UI conventions.
 
 ## Platform Boundaries
 
@@ -99,3 +103,4 @@ forms, modals, or layout primitives before duplication stabilizes.
 ## Architecture Decisions
 
 - `docs/decisions/0001-clean-room-vietnamese-first-foundation.md`
+- `docs/decisions/0002-supabase-unified-backend.md`
