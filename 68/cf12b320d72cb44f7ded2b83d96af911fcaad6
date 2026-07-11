@@ -1,0 +1,27 @@
+packages/contracts/src/profile.test.ts
+  s_4e743010a7bf28::t_1953a0021a992f 43,90-95
+packages/contracts/src/profile.ts
+  s_4e743010a7bf28::t_d25942177b27ba 31-34,38,46-48
+scripts/test-profile-rls-integration.mjs
+  s_4e743010a7bf28::t_19f9e570dfb753 17-24,324,460-462,474,584-618,623
+scripts/verify-profile-rls.ps1
+  s_4e743010a7bf28::t_820a1c968df4d8 13-32,58-81
+scripts/verify-profile-rls.sh
+  s_4e743010a7bf28::t_58c704af401477 10,17-21,24-25,35-52
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "68cf12b320d72cb44f7ded2b83d96af911fcaad6",
+  "prompts": {},
+  "sessions": {
+    "s_4e743010a7bf28": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "a4aa11d7-d1bc-4d39-a27b-53c340888af8",
+        "model": "unknown"
+      },
+      "human_author": "monet88 <minhthang421992@gmail.com>"
+    }
+  }
+}
