@@ -27,19 +27,26 @@ function redirectToPublicRoot(
   cookieResponse: NextResponse
 ): NextResponse {
   const redirectResponse = NextResponse.redirect(new URL('/', request.url))
+  const forwardedHeaderNames = new Set([
+    'cache-control',
+    'expires',
+    'pragma',
+  ])
 
   cookieResponse.cookies.getAll().forEach((cookie) => {
     redirectResponse.cookies.set(cookie)
   })
   cookieResponse.headers.forEach((value, name) => {
-    redirectResponse.headers.set(name, value)
+    if (forwardedHeaderNames.has(name.toLowerCase())) {
+      redirectResponse.headers.set(name, value)
+    }
   })
 
   return redirectResponse
 }
 
 export async function proxy(request: NextRequest): Promise<NextResponse> {
-  const response = NextResponse.next()
+  let response = NextResponse.next()
 
   try {
     const config = getWebSupabaseConfig()
@@ -51,6 +58,14 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
         setAll(cookiesToSet, headers) {
           cookiesToSet.forEach(({ name, options, value }) => {
             request.cookies.set(name, value)
+            response.cookies.set(name, value, options)
+          })
+          response = NextResponse.next({
+            request: {
+              headers: new Headers(request.headers),
+            },
+          })
+          cookiesToSet.forEach(({ name, options, value }) => {
             response.cookies.set(name, value, options)
           })
           Object.entries(headers).forEach(([name, value]) => {

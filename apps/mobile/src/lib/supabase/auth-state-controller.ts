@@ -11,7 +11,13 @@ interface AppStateSubscription {
 }
 
 interface AuthUserResult {
-  data: { user: unknown | null }
+  data: {
+    user: {
+      email?: string
+      email_confirmed_at?: string | null
+      id?: string
+    } | null
+  }
   error: unknown | null
 }
 
@@ -63,6 +69,16 @@ function getUserId(state: AuthState): string | null {
   return null
 }
 
+function normalizeSupabaseUser(
+  user: NonNullable<AuthUserResult['data']['user']>
+): AuthState {
+  return normalizeAuthState({
+    email: user.email,
+    email_confirmed_at: user.email_confirmed_at ?? null,
+    id: user.id,
+  })
+}
+
 async function runCleanup(operation: () => Promise<void>): Promise<void> {
   try {
     await operation()
@@ -79,6 +95,7 @@ export function createMobileAuthStateController({
   let isStarted = false
   let isSigningOut = false
   let authGeneration = 0
+  let autoRefreshQueue = Promise.resolve()
   let authSubscription: AuthSubscription | null = null
   let appStateSubscription: AppStateSubscription | null = null
   const listeners = new Set<AuthStateListener>()
@@ -102,16 +119,18 @@ export function createMobileAuthStateController({
         return
       }
 
-      if (result.error !== null || result.data.user === null) {
+      if (result.error !== null) {
+        return
+      }
+
+      if (result.data.user === null) {
         publish({ status: 'anonymous' })
         return
       }
 
-      publish(normalizeAuthState(result.data.user))
+      publish(normalizeSupabaseUser(result.data.user))
     } catch {
-      if (isStarted && !isSigningOut && generation === authGeneration) {
-        publish({ status: 'anonymous' })
-      }
+      return
     }
   }
 
@@ -124,6 +143,16 @@ export function createMobileAuthStateController({
     }
 
     await client.auth.stopAutoRefresh()
+  }
+
+  const queueAutoRefresh = (nextAppState: AppStateStatus): Promise<void> => {
+    const operation = autoRefreshQueue
+      .catch(() => undefined)
+      .then(() => synchronizeAutoRefresh(nextAppState))
+
+    autoRefreshQueue = operation.catch(() => undefined)
+
+    return operation
   }
 
   const removeSubscriptions = (): void => {
@@ -139,21 +168,22 @@ export function createMobileAuthStateController({
     }
 
     isStarted = true
-    authSubscription = client.auth.onAuthStateChange((event) => {
-      if (event === 'SIGNED_OUT') {
-        authGeneration += 1
-        publish({ status: 'anonymous' })
-        return
-      }
-
-      void refreshStateFromUser()
-    }).data.subscription
-    appStateSubscription = appState.addEventListener('change', (nextState) => {
-      void synchronizeAutoRefresh(nextState).catch(() => undefined)
-    })
-
     try {
-      await synchronizeAutoRefresh(appState.currentState)
+      authSubscription = client.auth.onAuthStateChange((event) => {
+        authGeneration += 1
+
+        if (event === 'SIGNED_OUT') {
+          publish({ status: 'anonymous' })
+          return
+        }
+
+        void refreshStateFromUser()
+      }).data.subscription
+      appStateSubscription = appState.addEventListener('change', (nextState) => {
+        void queueAutoRefresh(nextState).catch(() => undefined)
+      })
+
+      await queueAutoRefresh(appState.currentState)
       await refreshStateFromUser()
     } catch (error: unknown) {
       isStarted = false
@@ -200,6 +230,7 @@ export function createMobileAuthStateController({
     }
 
     if (signOutError !== null) {
+      await refreshStateFromUser()
       throw signOutError
     }
   }

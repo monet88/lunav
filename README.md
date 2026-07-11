@@ -22,8 +22,8 @@ The authoritative roadmap and product contracts are:
 
 - Phase 0 reference audit and product contract: implemented.
 - Foundation monorepo and Supabase platform: implemented as US-003.
-- Auth and User: planned as epic US-004 with child stories US-005 through
-  US-008.
+- Auth and User: US-005 auth session identity seam implemented; US-006 through
+  US-008 remain planned.
 - Chart, AI explanation, assistant conversation, and stabilization phases:
   not implemented.
 

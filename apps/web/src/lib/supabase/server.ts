@@ -1,4 +1,5 @@
 import { normalizeAuthState, type AuthState } from '@lunav/contracts'
+import type { CookieOptions } from '@supabase/ssr'
 import { createServerClient } from '@supabase/ssr'
 import type { SupabaseClient, User } from '@supabase/supabase-js'
 import { cookies } from 'next/headers'
@@ -14,6 +15,11 @@ interface VerifiedUserClient {
       error: unknown
     }>
   }
+}
+
+interface ServerCookieStore {
+  getAll(): Array<{ name: string; value: string }>
+  set?(name: string, value: string, options: CookieOptions): void
 }
 
 function toAuthState(user: User | null): AuthState {
@@ -36,12 +42,21 @@ export async function createServerSupabaseClient(
   environment?: WebSupabaseEnvironment
 ): Promise<SupabaseClient> {
   const config = getWebSupabaseConfig(environment)
-  const cookieStore = await cookies()
+  const cookieStore = (await cookies()) as ServerCookieStore
 
   return createServerClient(config.url, config.publishableKey, {
     cookies: {
       getAll() {
         return cookieStore.getAll()
+      },
+      setAll(cookiesToSet) {
+        try {
+          cookiesToSet.forEach(({ name, options, value }) => {
+            cookieStore.set?.(name, value, options)
+          })
+        } catch {
+          return
+        }
       },
     },
   })

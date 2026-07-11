@@ -1,6 +1,6 @@
 import type { User } from '@supabase/supabase-js'
 import { NextRequest } from 'next/server'
-import { beforeEach, describe, expect, test, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 
 const { createServerClientMock } = vi.hoisted(() => ({
   createServerClientMock: vi.fn(),
@@ -52,21 +52,56 @@ describe('proxy', () => {
     vi.stubEnv('NEXT_PUBLIC_SUPABASE_URL', 'https://project.supabase.co')
   })
 
+  afterEach(() => {
+    vi.unstubAllEnvs()
+  })
+
   test('matches only account paths', () => {
     expect(config).toEqual({ matcher: '/account/:path*' })
   })
 
   test('reads request cookies and writes refreshed cookies to pass-through response', async () => {
-    const getUser = mockGetUserResult({
-      data: {
-        user: createAuthUser({
-          email: 'confirmed@example.com',
-          email_confirmed_at: '2026-07-11T00:00:00.000Z',
-          id: 'user-confirmed',
-        }),
-      },
-      error: null,
-    })
+    const getUser = vi.fn()
+    createServerClientMock.mockImplementation(
+      (
+        _url: string,
+        _publishableKey: string,
+        options: {
+          cookies: {
+            setAll: (
+              cookies: ProxyCookieBatch,
+              headers: Record<string, string>
+            ) => void
+          }
+        }
+      ) => ({
+        auth: {
+          getUser: getUser.mockImplementation(async () => {
+            options.cookies.setAll(
+              [
+                {
+                  name: 'sb-session',
+                  options: { httpOnly: true, path: '/' },
+                  value: 'refreshed-cookie',
+                },
+              ],
+              cacheControlHeaders
+            )
+
+            return {
+              data: {
+                user: createAuthUser({
+                  email: 'confirmed@example.com',
+                  email_confirmed_at: '2026-07-11T00:00:00.000Z',
+                  id: 'user-confirmed',
+                }),
+              },
+              error: null,
+            }
+          }),
+        },
+      })
+    )
     const request = new NextRequest('https://app.lunav.vn/account', {
       headers: { cookie: 'sb-session=existing-cookie' },
     })
@@ -84,24 +119,17 @@ describe('proxy', () => {
       }
     }
     expect(options.cookies.getAll()).toEqual([
-      { name: 'sb-session', value: 'existing-cookie' },
+      { name: 'sb-session', value: 'refreshed-cookie' },
     ])
-
-    options.cookies.setAll(
-      [
-        {
-          name: 'sb-session',
-          options: { httpOnly: true, path: '/' },
-          value: 'refreshed-cookie',
-        },
-      ],
-      cacheControlHeaders
-    )
 
     expect(response.cookies.get('sb-session')?.value).toBe('refreshed-cookie')
     expect(request.cookies.get('sb-session')?.value).toBe('refreshed-cookie')
     expect(response.headers.get('cache-control')).toBe(
       cacheControlHeaders['Cache-Control']
+    )
+    expect(response.headers.get('x-middleware-override-headers')).toBe('cookie')
+    expect(response.headers.get('x-middleware-request-cookie')).toBe(
+      'sb-session=refreshed-cookie'
     )
     expect(response.headers.get('location')).toBeNull()
   })
@@ -185,6 +213,7 @@ describe('proxy', () => {
     expect(response.headers.get('cache-control')).toBe(
       cacheControlHeaders['Cache-Control']
     )
+    expect(response.headers.get('x-middleware-next')).toBeNull()
   })
 
   test('redirects safely when verified-user lookup rejects', async () => {

@@ -42,6 +42,7 @@ describe('createServerSupabaseClient', () => {
       getAll: vi.fn().mockReturnValue([
         { name: 'sb-session', value: 'existing-cookie' },
       ]),
+      set: vi.fn(),
     }
     const client = { auth: { getUser: vi.fn() } }
     cookiesMock.mockResolvedValue(cookieStore)
@@ -57,15 +58,21 @@ describe('createServerSupabaseClient', () => {
       'https://project.supabase.co',
       'publishable-key',
       expect.objectContaining({
-        cookies: {
+        cookies: expect.objectContaining({
           getAll: expect.any(Function),
-        },
+          setAll: expect.any(Function),
+        }),
       })
     )
 
     const options = createServerClientMock.mock.calls[0]?.[2] as {
       cookies: {
         getAll: () => Array<{ name: string; value: string }>
+        setAll?: (cookies: Array<{
+          name: string
+          options: { httpOnly?: boolean; path?: string }
+          value: string
+        }>) => void
       }
     }
 
@@ -73,7 +80,55 @@ describe('createServerSupabaseClient', () => {
       { name: 'sb-session', value: 'existing-cookie' },
     ])
 
-    expect(options.cookies).not.toHaveProperty('setAll')
+    options.cookies.setAll?.([
+      {
+        name: 'sb-session',
+        options: { httpOnly: true, path: '/' },
+        value: 'refreshed-cookie',
+      },
+    ])
+
+    expect(cookieStore.set).toHaveBeenCalledWith(
+      'sb-session',
+      'refreshed-cookie',
+      { httpOnly: true, path: '/' }
+    )
+  })
+
+  test('ignores cookie write failures in read-only server contexts', async () => {
+    const cookieStore = {
+      getAll: vi.fn().mockReturnValue([]),
+      set: vi.fn(() => {
+        throw new Error('Cookies can only be modified in mutable contexts')
+      }),
+    }
+    cookiesMock.mockResolvedValue(cookieStore)
+    createServerClientMock.mockReturnValue({ auth: { getUser: vi.fn() } })
+
+    await createServerSupabaseClient({
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: 'publishable-key',
+      NEXT_PUBLIC_SUPABASE_URL: 'https://project.supabase.co',
+    })
+
+    const options = createServerClientMock.mock.calls[0]?.[2] as {
+      cookies: {
+        setAll?: (cookies: Array<{
+          name: string
+          options: { httpOnly?: boolean; path?: string }
+          value: string
+        }>) => void
+      }
+    }
+
+    expect(() =>
+      options.cookies.setAll?.([
+        {
+          name: 'sb-session',
+          options: { httpOnly: true, path: '/' },
+          value: 'refreshed-cookie',
+        },
+      ])
+    ).not.toThrow()
   })
 })
 

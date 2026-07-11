@@ -42,7 +42,7 @@ A return destination is parsed against an internal base URL and accepted only
 when its canonical pathname is in the internal route allowlist. Reject another
 origin, `//`, backslashes, encoded slash or backslash after decoding, control
 characters, protocol-looking values, malformed percent encoding, and
-unapproved query keys. Return canonical `pathname + approved search` or `/`.
+any query string. Return canonical pathname or `/`.
 
 ## Sign-Out Order
 

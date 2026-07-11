@@ -1,4 +1,5 @@
 import type { AuthState } from '@lunav/contracts'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as SecureStore from 'expo-secure-store'
 import { createMobileAuthStateController } from './auth-state-controller'
 import type {
@@ -13,6 +14,12 @@ jest.mock('expo-secure-store', () => ({
   deleteItemAsync: jest.fn(),
   getItemAsync: jest.fn(),
   setItemAsync: jest.fn(),
+}))
+
+jest.mock('@react-native-async-storage/async-storage', () => ({
+  removeItem: jest.fn(),
+  getItem: jest.fn(),
+  setItem: jest.fn(),
 }))
 
 interface AuthHarness {
@@ -110,8 +117,9 @@ function createAppStateHarness(
 }
 
 async function flushAsyncWork(): Promise<void> {
-  await Promise.resolve()
-  await Promise.resolve()
+  for (let index = 0; index < 5; index += 1) {
+    await Promise.resolve()
+  }
 }
 
 function createDeferred<T>(): {
@@ -169,14 +177,42 @@ describe('createMobileSupabaseClient', () => {
         auth: {
           autoRefreshToken: true,
           detectSessionInUrl: false,
+          lock: expect.any(Function),
           persistSession: true,
           storage: {
-            getItem: SecureStore.getItemAsync,
-            removeItem: SecureStore.deleteItemAsync,
-            setItem: SecureStore.setItemAsync,
+            getItem: expect.any(Function),
+            removeItem: expect.any(Function),
+            setItem: expect.any(Function),
           },
         },
       }
+    )
+  })
+
+  test('keeps large session payloads out of SecureStore values', async () => {
+    const createClient = jest.fn()
+
+    createMobileSupabaseClient(
+      {
+        url: 'https://project.supabase.co',
+        publishableKey: 'sb_publishable_public',
+      },
+      { createClient }
+    )
+
+    const options = createClient.mock.calls[0]?.[2] as {
+      auth: { storage: { setItem: (key: string, value: string) => Promise<void> } }
+    }
+
+    await options.auth.storage.setItem('supabase-session', 'x'.repeat(4096))
+
+    expect(SecureStore.setItemAsync).toHaveBeenCalledWith(
+      'supabase-session',
+      expect.not.stringContaining('x'.repeat(2048))
+    )
+    expect(AsyncStorage.setItem).toHaveBeenCalledWith(
+      'supabase-session',
+      expect.any(String)
     )
   })
 })
@@ -239,6 +275,49 @@ describe('mobile auth-state controller', () => {
     expect(Object.keys(controller.getState())).not.toContain('session')
   })
 
+  test('normalizes an unconfirmed user with missing confirmation timestamp', async () => {
+    const auth = createAuthHarness()
+    const appState = createAppStateHarness()
+    auth.getUser.mockResolvedValueOnce({
+      data: {
+        user: {
+          id: 'user-unconfirmed',
+          email: 'pending@example.com',
+        },
+      },
+      error: null,
+    })
+    const controller = createMobileAuthStateController({
+      client: auth.client,
+      appState: appState.appState,
+    })
+
+    await controller.start()
+
+    expect(controller.getState()).toEqual({
+      status: 'unconfirmed',
+      identity: {
+        userId: 'user-unconfirmed',
+        email: 'pending@example.com',
+        isEmailConfirmed: false,
+      },
+    })
+  })
+
+  test('keeps the current state when user refresh fails during startup', async () => {
+    const auth = createAuthHarness()
+    const appState = createAppStateHarness()
+    auth.getUser.mockRejectedValueOnce(new Error('network unavailable'))
+    const controller = createMobileAuthStateController({
+      client: auth.client,
+      appState: appState.appState,
+    })
+
+    await controller.start()
+
+    expect(controller.getState()).toEqual({ status: 'loading' })
+  })
+
   test('starts refresh only in foreground and tears down both listeners', async () => {
     const auth = createAuthHarness()
     const appState = createAppStateHarness('active')
@@ -263,6 +342,37 @@ describe('mobile auth-state controller', () => {
     expect(auth.unsubscribeAuth).toHaveBeenCalledTimes(1)
     expect(appState.removeAppStateListener).toHaveBeenCalledTimes(1)
     expect(auth.stopAutoRefresh).toHaveBeenCalledTimes(2)
+  })
+
+  test('only the latest AppState transition controls auto-refresh mode', async () => {
+    const auth = createAuthHarness()
+    const appState = createAppStateHarness('active')
+    const controller = createMobileAuthStateController({
+      client: auth.client,
+      appState: appState.appState,
+    })
+    const delayedStop = createDeferred<void>()
+    const callOrder: string[] = []
+    auth.stopAutoRefresh.mockImplementationOnce(async () => {
+      callOrder.push('stop-start')
+      await delayedStop.promise
+      callOrder.push('stop-done')
+    })
+    auth.startAutoRefresh.mockImplementation(async () => {
+      callOrder.push('start')
+    })
+
+    await controller.start()
+    auth.startAutoRefresh.mockClear()
+    callOrder.length = 0
+
+    appState.emitAppState('background')
+    await flushAsyncWork()
+    appState.emitAppState('active')
+    delayedStop.resolve()
+    await flushAsyncWork()
+
+    expect(callOrder).toEqual(['stop-start', 'stop-done', 'start'])
   })
 
   test('signs out and emits anonymous after ordered user-scoped cleanup failure', async () => {
@@ -381,6 +491,66 @@ describe('mobile auth-state controller', () => {
     expect(controller.getState()).toEqual({ status: 'anonymous' })
   })
 
+  test('ignores a stale user lookup from a replaced auth event', async () => {
+    const auth = createAuthHarness()
+    const appState = createAppStateHarness()
+    const controller = createMobileAuthStateController({
+      client: auth.client,
+      appState: appState.appState,
+    })
+
+    await controller.start()
+    const delayedUser = createDeferred<{
+      data: { user: typeof unconfirmedUser }
+      error: null
+    }>()
+    auth.getUser.mockReturnValueOnce(delayedUser.promise)
+    auth.getUser.mockResolvedValueOnce({
+      data: { user: confirmedUser },
+      error: null,
+    })
+
+    auth.emitAuthEvent('USER_UPDATED')
+    auth.emitAuthEvent('TOKEN_REFRESHED')
+    delayedUser.resolve({ data: { user: unconfirmedUser }, error: null })
+    await flushAsyncWork()
+
+    expect(controller.getState()).toEqual({
+      status: 'authenticated',
+      identity: {
+        email: 'a@example.com',
+        isEmailConfirmed: true,
+        userId: 'user-a',
+      },
+    })
+  })
+
+  test('restores authoritative auth state when Supabase sign-out fails', async () => {
+    const auth = createAuthHarness()
+    const appState = createAppStateHarness()
+    const controller = createMobileAuthStateController({
+      client: auth.client,
+      appState: appState.appState,
+    })
+    const cleanup: SignOutCleanup = {
+      cancelUserRequests: jest.fn(async () => undefined),
+      clearUserCacheAndRealtime: jest.fn(async () => undefined),
+    }
+    auth.signOut.mockResolvedValueOnce({ error: new Error('network unavailable') })
+
+    await controller.start()
+
+    await expect(controller.signOut(cleanup)).rejects.toThrow('network unavailable')
+    expect(controller.getState()).toEqual({
+      status: 'authenticated',
+      identity: {
+        email: 'a@example.com',
+        isEmailConfirmed: true,
+        userId: 'user-a',
+      },
+    })
+  })
+
   test('ignores a stale user lookup that resolves after the controller stops', async () => {
     const auth = createAuthHarness()
     const appState = createAppStateHarness()
@@ -426,5 +596,22 @@ describe('mobile auth-state controller', () => {
     expect(auth.unsubscribeAuth).toHaveBeenCalledTimes(1)
     expect(appState.removeAppStateListener).toHaveBeenCalledTimes(1)
     expect(auth.startAutoRefresh).toHaveBeenCalledTimes(2)
+  })
+
+  test('can start again after subscription setup fails', async () => {
+    const auth = createAuthHarness()
+    const appState = createAppStateHarness()
+    const controller = createMobileAuthStateController({
+      client: auth.client,
+      appState: appState.appState,
+    })
+    const setupError = new Error('subscription unavailable')
+    const onAuthStateChange = auth.client.auth.onAuthStateChange as jest.Mock
+    onAuthStateChange.mockImplementationOnce(() => {
+      throw setupError
+    })
+
+    await expect(controller.start()).rejects.toThrow('subscription unavailable')
+    await expect(controller.start()).resolves.toBeUndefined()
   })
 })

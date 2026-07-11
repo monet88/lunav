@@ -132,7 +132,7 @@ async function run() {
       method: 'GET',
     })
 
-    if (currentUser.id !== confirmedUserId || currentUser.email_confirmed_at === null) {
+    if (currentUser.id !== confirmedUserId || currentUser.email_confirmed_at == null) {
       fail('Current user was not the expected confirmed local identity.')
     }
 
