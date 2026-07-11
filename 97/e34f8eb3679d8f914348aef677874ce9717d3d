@@ -1,0 +1,19 @@
+scripts/verify-profile-rls.ps1
+  s_4e743010a7bf28::t_f30fcb30e9c9df 63-65
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "97e34f8eb3679d8f914348aef677874ce9717d3d",
+  "prompts": {},
+  "sessions": {
+    "s_4e743010a7bf28": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "a4aa11d7-d1bc-4d39-a27b-53c340888af8",
+        "model": "unknown"
+      },
+      "human_author": "monet88 <minhthang421992@gmail.com>"
+    }
+  }
+}
