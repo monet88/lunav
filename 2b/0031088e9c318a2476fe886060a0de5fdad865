@@ -1,0 +1,87 @@
+README.md
+  s_e467bf9fe06a72::t_bf707bdb5b33f6 63,75,81,89
+docs/GLOSSARY.md
+  s_72de24d1edbb36::t_3a8267fb139260 1-144
+docs/HARNESS_AUDIT.md
+  s_72de24d1edbb36::t_729f5396c17852 1-38
+docs/HARNESS_BACKLOG.md
+  s_72de24d1edbb36::t_6e3b39b1a4c05e 1-40
+docs/HARNESS_COMPONENTS.md
+  s_72de24d1edbb36::t_d17c6b484ec639 1-167
+docs/HARNESS_MATURITY.md
+  s_72de24d1edbb36::t_2a5ca6e058c4b3 1-316
+docs/IMPROVEMENT_PROTOCOL.md
+  s_72de24d1edbb36::t_0c94da0756f09f 1-57
+docs/README.md
+  s_72de24d1edbb36::t_5c61e7527aa26d 1-35
+docs/TEST_MATRIX.md
+  s_72de24d1edbb36::t_c0433b36f74016 1-33
+docs/TRACE_SPEC.md
+  s_72de24d1edbb36::t_78dbcb1cd7b2df 1-204
+docs/decisions/0001-harness-first-development.md
+  s_72de24d1edbb36::t_a849a5758cf27b 1-49
+docs/decisions/0002-post-spec-product-lifecycle.md
+  s_72de24d1edbb36::t_1f348fccb3dd8d 1-54
+docs/decisions/0003-generic-spec-intake-harness.md
+  s_72de24d1edbb36::t_d706e53550af15 1-58
+docs/decisions/0004-sqlite-durable-layer.md
+  s_72de24d1edbb36::t_567d36849099e2 1-75
+docs/decisions/0005-prebuilt-rust-harness-cli.md
+  s_72de24d1edbb36::t_7a0e735c834ff3 1-91
+docs/decisions/0006-phase-4-benchmark-triage.md
+  s_72de24d1edbb36::t_810a3e13da3c74 1-54
+docs/decisions/0007-improvement-proposal-rules.md
+  s_72de24d1edbb36::t_e39698e88fe538 1-60
+docs/decisions/README.md
+  s_72de24d1edbb36::t_ef05e42b43c898 1-28
+docs/product/README.md
+  s_72de24d1edbb36::t_4aab7e3f8db06d 1-28
+docs/stories/README.md
+  s_72de24d1edbb36::t_7cecfdedb8bda3 1-43
+docs/stories/backlog.md
+  s_72de24d1edbb36::t_8b69a616400062 1-13
+docs/templates/decision.md
+  s_72de24d1edbb36::t_f8ad13bb63d5d9 1-34
+docs/templates/high-risk-story/design.md
+  s_72de24d1edbb36::t_3f6e21aec3ce5c 1-29
+docs/templates/high-risk-story/execplan.md
+  s_72de24d1edbb36::t_bab576909a082b 1-44
+docs/templates/spec-intake.md
+  s_72de24d1edbb36::t_ad58c335b5f605 1-65
+docs/templates/story.md
+  s_72de24d1edbb36::t_db6de7bbb33e1e 1-53
+docs/templates/validation-report.md
+  s_72de24d1edbb36::t_06bda49bb649e7 1-32
+scripts/verify-auth-session.sh
+  s_72de24d1edbb36::t_66dd1d9f926f34 1-16
+scripts/verify-auth-user-planning.sh
+  s_72de24d1edbb36::t_7167ae7b176a60 1-81
+scripts/verify-phase0.sh
+  s_72de24d1edbb36::t_77355b605d37b5 1-115
+scripts/verify-reference-audit.sh
+  s_72de24d1edbb36::t_4c78abf721bf2f 1-34
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "2b0031088e9c318a2476fe886060a0de5fdad865",
+  "prompts": {},
+  "sessions": {
+    "s_72de24d1edbb36": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "8f7cfb0b-10f3-4c2c-9946-895a0f703411",
+        "model": "unknown"
+      },
+      "human_author": "monet88 <minhthang421992@gmail.com>"
+    },
+    "s_e467bf9fe06a72": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "a1360392-95c4-43e3-ac84-706c8c4ddcbd",
+        "model": "unknown"
+      },
+      "human_author": "monet88 <minhthang421992@gmail.com>"
+    }
+  }
+}
