@@ -1,0 +1,23 @@
+docs/stories/US-006-profile-persistence-rls/validation.md
+  s_4e743010a7bf28::t_acd750009a9b06 45
+packages/contracts/src/profile.js
+  s_4e743010a7bf28::t_9c7dca0ba3951f 1
+scripts/tests/workspace-config.test.ts
+  s_4e743010a7bf28::t_dcb61731f28bb1 1,22-36
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "3c04212ea0dbee83c961bc99b435f765a50348a8",
+  "prompts": {},
+  "sessions": {
+    "s_4e743010a7bf28": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "a4aa11d7-d1bc-4d39-a27b-53c340888af8",
+        "model": "unknown"
+      },
+      "human_author": "monet88 <minhthang421992@gmail.com>"
+    }
+  }
+}
