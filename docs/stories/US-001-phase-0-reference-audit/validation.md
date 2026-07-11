@@ -30,7 +30,16 @@ Core Chart work will create independent fixtures.
 
 ## Commands
 
+```bash
+# macOS / Linux / Git Bash
+bash scripts/verify-phase0.sh
+bash scripts/verify-reference-audit.sh
+scripts/bin/harness-cli story verify US-001
+# Windows Git Bash may need: scripts/bin/harness-cli.exe story verify US-001
+```
+
 ```powershell
+# Windows PowerShell
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify-phase0.ps1
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify-reference-audit.ps1
 .\scripts\bin\harness-cli.exe story verify US-001
@@ -38,10 +47,11 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify-reference-aud
 
 ## Acceptance Evidence
 
-- `scripts/verify-phase0.ps1` passed on 2026-07-10.
-- `harness-cli.exe story verify US-001` passed on 2026-07-10.
-- `scripts/verify-reference-audit.ps1` confirmed eight high-value reference
-	evidence paths on 2026-07-10. This is audit-time proof and is intentionally
-	separate from the durable story verify command.
+- `scripts/verify-phase0.ps1` / `scripts/verify-phase0.sh` passed on 2026-07-10.
+- `harness-cli story verify US-001` passed on 2026-07-10.
+- `scripts/verify-reference-audit.ps1` / `scripts/verify-reference-audit.sh`
+	confirmed eight high-value reference evidence paths on 2026-07-10. This is
+	audit-time proof and is intentionally separate from the durable story verify
+	command.
 - E2E and platform proof are `n/a` because Phase 0 contains no application or
 	runtime surface.

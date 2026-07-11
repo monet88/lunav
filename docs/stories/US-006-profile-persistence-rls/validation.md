@@ -14,7 +14,7 @@ This planning verifier authorizes scheduling, not implementation completion.
 
 ## Planned Commands
 
-```powershell
+```bash
 pnpm --filter @lunav/contracts test
 pnpm dlx supabase db reset
 pnpm test

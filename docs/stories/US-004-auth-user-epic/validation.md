@@ -32,7 +32,16 @@ completion. Before a child story can be marked implemented, its owner replaces
 the planning verifier with the executable unit, integration, E2E, or platform
 gate declared in that story. At epic completion, use:
 
+```bash
+# macOS / Linux
+scripts/bin/harness-cli story verify US-005
+scripts/bin/harness-cli story verify US-006
+scripts/bin/harness-cli story verify US-007
+scripts/bin/harness-cli story verify US-008
+```
+
 ```powershell
+# Windows PowerShell
 .\scripts\bin\harness-cli.exe story verify US-005
 .\scripts\bin\harness-cli.exe story verify US-006
 .\scripts\bin\harness-cli.exe story verify US-007

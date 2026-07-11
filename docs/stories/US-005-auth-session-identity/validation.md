@@ -14,13 +14,24 @@ command below passes with fresh evidence.
 
 ## Planned Commands
 
-```powershell
+```bash
 pnpm --filter @lunav/contracts test
 pnpm --filter @lunav/web test
 pnpm --filter @lunav/mobile test
 pnpm test:auth-integration
 pnpm typecheck
 pnpm security:client
+```
+
+Complete US-005 executable gate (same command set as above, plus lint and Expo
+install check):
+
+```bash
+bash scripts/verify-auth-session.sh
+```
+
+```powershell
+.\scripts\verify-auth-session.ps1
 ```
 
 Before the local integration command, start the Lunav stack with `supabase

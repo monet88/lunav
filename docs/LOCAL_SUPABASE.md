@@ -27,7 +27,7 @@ not exposed unless enabled in `supabase/config.toml`.
 
 From the repository root, run:
 
-```powershell
+```bash
 supabase start
 supabase status
 ```
@@ -53,7 +53,7 @@ On Windows, Supabase may warn that Analytics needs Docker exposed on
 
 US-005 Auth integration requires the local stack to be running. Run:
 
-```powershell
+```bash
 pnpm test:auth-integration
 ```
 
@@ -63,7 +63,15 @@ fails closed when local Supabase is unavailable.
 
 Run the complete US-005 executable validation contract with:
 
+```bash
+# macOS / Linux / Git Bash
+bash scripts/verify-auth-session.sh
+scripts/bin/harness-cli story verify US-005
+# Windows Git Bash may need: scripts/bin/harness-cli.exe story verify US-005
+```
+
 ```powershell
+# Windows PowerShell
 .\scripts\verify-auth-session.ps1
 .\scripts\bin\harness-cli.exe story verify US-005
 ```

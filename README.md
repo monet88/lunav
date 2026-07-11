@@ -60,7 +60,7 @@ scripts/           Repository checks and Harness utilities
 
 ## Setup
 
-```powershell
+```bash
 pnpm install --frozen-lockfile
 ```
 
@@ -72,13 +72,13 @@ service-role key or provider secret in client configuration.
 
 Start the web application:
 
-```powershell
+```bash
 pnpm --filter @lunav/web dev
 ```
 
 Start the Expo application:
 
-```powershell
+```bash
 pnpm --filter @lunav/mobile start
 ```
 
@@ -86,7 +86,7 @@ pnpm --filter @lunav/mobile start
 
 Run the complete Foundation gate from the repository root:
 
-```powershell
+```bash
 pnpm lint
 pnpm typecheck
 pnpm test

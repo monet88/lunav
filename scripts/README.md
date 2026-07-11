@@ -49,7 +49,13 @@ over the legacy `HARNESS_DB` override; if neither is set, the CLI uses
 `harness.db` is local-only and must remain ignored. Initialize it in a new
 workspace with:
 
+```bash
+# macOS / Linux
+scripts/bin/harness-cli init
+```
+
 ```powershell
+# Windows PowerShell
 .\scripts\bin\harness-cli.exe init
 ```
 
@@ -160,6 +166,34 @@ directory, such as a local `file:///.../dist` directory created by
 Migration files live under `scripts/schema/` and are named `NNN-description.sql`
 where `NNN` is a zero-padded version number. Run `scripts/bin/harness-cli migrate` to
 apply pending migrations.
+
+## Repository Verification Scripts
+
+Story and phase gates ship dual shells. Prefer bash when available (macOS,
+Linux, Git Bash); use PowerShell on native Windows terminals.
+
+| Bash | PowerShell | Purpose |
+| --- | --- | --- |
+| `bash scripts/verify-phase0.sh` | `.\scripts\verify-phase0.ps1` | Phase 0 contract completeness |
+| `bash scripts/verify-reference-audit.sh [ref-root]` | `.\scripts\verify-reference-audit.ps1 [-ReferenceRoot path]` | Reference-repo evidence paths |
+| `bash scripts/verify-auth-user-planning.sh <story-id>` | `.\scripts\verify-auth-user-planning.ps1 -StoryId <story-id>` | Auth epic planning packet markers |
+| `bash scripts/verify-auth-session.sh` | `.\scripts\verify-auth-session.ps1` | US-005 executable auth session gate |
+
+Examples:
+
+```bash
+bash scripts/verify-phase0.sh
+bash scripts/verify-reference-audit.sh /f/CodeBase/ziweiai-web
+bash scripts/verify-auth-user-planning.sh US-004
+bash scripts/verify-auth-session.sh
+```
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify-phase0.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify-reference-audit.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify-auth-user-planning.ps1 -StoryId US-004
+.\scripts\verify-auth-session.ps1
+```
 
 ## Future Command Contract
 

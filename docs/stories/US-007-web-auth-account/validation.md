@@ -14,7 +14,7 @@ This planning verifier authorizes scheduling, not implementation completion.
 
 ## Planned Commands
 
-```powershell
+```bash
 pnpm --filter @lunav/web lint
 pnpm --filter @lunav/web typecheck
 pnpm --filter @lunav/web test
