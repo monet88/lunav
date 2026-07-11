@@ -11,6 +11,7 @@
     "security:client": "node scripts/check-client-secrets.mjs",
     "test": "turbo run test test:root",
     "test:auth-integration": "node scripts/test-auth-session-integration.mjs",
+    "test:profile-integration": "node scripts/test-profile-rls-integration.mjs",
     "test:root": "vitest run scripts/tests scripts/check-client-secrets.test.ts",
     "typecheck": "turbo run typecheck typecheck:root",
     "typecheck:root": "tsc --noEmit --project tsconfig.json"
