@@ -1,0 +1,19 @@
+packages/contracts/src/auth.js
+  s_72de24d1edbb36::t_dd779a08c0f96d 1-5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "08d4d3ce8d9a6cd4d0900ea9e80ed700a22ba0fb",
+  "prompts": {},
+  "sessions": {
+    "s_72de24d1edbb36": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "8f7cfb0b-10f3-4c2c-9946-895a0f703411",
+        "model": "unknown"
+      },
+      "human_author": "monet88 <minhthang421992@gmail.com>"
+    }
+  }
+}
