@@ -50,6 +50,7 @@ describe('proxy', () => {
     createServerClientMock.mockReset()
     vi.stubEnv('NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY', 'publishable-key')
     vi.stubEnv('NEXT_PUBLIC_SUPABASE_URL', 'https://project.supabase.co')
+    vi.stubEnv('WEB_ORIGIN', 'https://app.lunav.vn')
   })
 
   afterEach(() => {
@@ -159,7 +160,7 @@ describe('proxy', () => {
         error: new Error('invalid auth cookie'),
       },
     },
-  ])('redirects $name to the public root', async ({ result }) => {
+  ])('redirects $name to sign-in with a canonical return path', async ({ result }) => {
     const getUser = mockGetUserResult(result)
     const request = new NextRequest(
       'https://app.lunav.vn/account?returnTo=%2Faccount&token=secret'
@@ -168,7 +169,9 @@ describe('proxy', () => {
     const response = await proxy(request)
 
     expect(getUser).toHaveBeenCalledOnce()
-    expect(response.headers.get('location')).toBe('https://app.lunav.vn/')
+    expect(response.headers.get('location')).toBe(
+      'https://app.lunav.vn/sign-in?returnTo=%2Faccount'
+    )
   })
 
   test('preserves refreshed cookies when redirecting an anonymous user', async () => {
@@ -208,7 +211,9 @@ describe('proxy', () => {
       new NextRequest('https://app.lunav.vn/account')
     )
 
-    expect(response.headers.get('location')).toBe('https://app.lunav.vn/')
+    expect(response.headers.get('location')).toBe(
+      'https://app.lunav.vn/sign-in?returnTo=%2Faccount'
+    )
     expect(response.cookies.get('sb-session')?.value).toBe('refreshed-cookie')
     expect(response.headers.get('cache-control')).toBe(
       cacheControlHeaders['Cache-Control']
@@ -229,7 +234,23 @@ describe('proxy', () => {
       )
     )
 
-    expect(response.headers.get('location')).toBe('https://app.lunav.vn/')
+    expect(response.headers.get('location')).toBe(
+      'https://app.lunav.vn/sign-in?returnTo=%2Faccount'
+    )
+  })
+
+  test('redirects unauthenticated users to the validated WEB_ORIGIN, not a poisoned Host', async () => {
+    mockGetUserResult({ data: { user: null }, error: null })
+
+    const response = await proxy(
+      new NextRequest('https://evil.example/account', {
+        headers: { host: 'evil.example' },
+      })
+    )
+
+    expect(response.headers.get('location')).toBe(
+      'https://app.lunav.vn/sign-in?returnTo=%2Faccount'
+    )
   })
 
   test('passes through an authenticated confirmed user', async () => {
