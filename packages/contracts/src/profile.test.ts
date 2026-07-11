@@ -40,6 +40,7 @@ describe('parseProfile', () => {
     '\t',
     '\u0085Nguyen An',
     'Nguyen An\uFEFF',
+    'Nguyen\u0000 An',
   ]) (
     'rejects a non-canonical persisted display name %j',
     (displayName) => {
@@ -84,6 +85,12 @@ describe('parseProfileUpdate', () => {
 
   test('rejects display names longer than 100 characters', () => {
     expect(() => parseProfileUpdate({ displayName: 'a'.repeat(101) })).toThrow()
+  })
+
+  test('rejects display names containing NUL', () => {
+    expect(() =>
+      parseProfileUpdate({ displayName: 'Nguyen\u0000 An' })
+    ).toThrow()
   })
 
   test('counts display name length by Unicode code points', () => {

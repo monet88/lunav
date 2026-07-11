@@ -28,9 +28,14 @@ function hasValidDisplayNameLength(value: string): boolean {
   return Array.from(value).length <= DISPLAY_NAME_MAX_LENGTH
 }
 
+function hasNoNullCharacter(value: string): boolean {
+  return !value.includes('\u0000')
+}
+
 const profileDisplayNameSchema = z
   .string()
   .min(1)
+  .refine(hasNoNullCharacter)
   .refine(hasValidDisplayNameLength)
   .refine((value) => value === trimDisplayName(value))
   .nullable()
@@ -38,7 +43,9 @@ const profileDisplayNameSchema = z
 const profileUpdateDisplayNameSchema = z
   .string()
   .transform(trimDisplayName)
-  .pipe(z.string().refine(hasValidDisplayNameLength))
+  .pipe(
+    z.string().refine(hasNoNullCharacter).refine(hasValidDisplayNameLength)
+  )
   .transform((value) => (value.length === 0 ? null : value))
   .nullable()
 

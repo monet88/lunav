@@ -62,6 +62,33 @@ test('pins the Supabase CLI used by the profile integration gate', () => {
   expect(shellWrapper).toContain('supabase@2.109.1')
 })
 
+test('preserves database timestamp precision and cleans every profile fixture', () => {
+  const integrationScript = readFileSync(
+    resolve(root, 'scripts/test-profile-rls-integration.mjs'),
+    'utf8'
+  )
+
+  expect(integrationScript).toContain(
+    'ownerUpdate.body[0].updated_at === initialUpdatedAt'
+  )
+  expect(integrationScript).toContain(
+    "typeof ownerUpdate.body[0].updated_at !== 'string'"
+  )
+  expect(integrationScript).toContain(
+    'Number.isNaN(Date.parse(ownerUpdate.body[0].updated_at))'
+  )
+  expect(integrationScript).not.toContain(
+    'new Date(ownerUpdate.body[0].updated_at)'
+  )
+  expect(integrationScript).toMatch(
+    /Promise\.allSettled\(\s*users\.map/
+  )
+  expect(integrationScript).toContain('primaryFailure')
+  expect(integrationScript).toContain('new AggregateError')
+  expect(integrationScript).toContain('error.errors.map(formatError)')
+  expect(integrationScript).toContain('Auth fixture ${userId}')
+})
+
 test('quiesces local Realtime before the profile database reset', () => {
   const powershellWrapper = readFileSync(
     resolve(root, 'scripts/verify-profile-rls.ps1'),
@@ -127,4 +154,25 @@ test('refreshes the local gateway after the profile database reset', () => {
   expect(powershellRestartIndex).toBeLessThan(powershellIntegrationIndex)
   expect(shellResetIndex).toBeLessThan(shellRestartIndex)
   expect(shellRestartIndex).toBeLessThan(shellIntegrationIndex)
+
+  const powershellReadiness = powershellWrapper.slice(
+    powershellRestartIndex,
+    powershellIntegrationIndex
+  )
+  const shellReadiness = shellWrapper.slice(
+    shellRestartIndex,
+    shellIntegrationIndex
+  )
+
+  expect(powershellWrapper).toContain('/auth/v1/health')
+  expect(powershellWrapper).toContain('$apiSectionMatch')
+  expect(powershellWrapper).toContain(".Groups['body'].Value")
+  expect(powershellWrapper).not.toContain(
+    "'(?ms)^\\[api\\]\\s*.*?^port"
+  )
+  expect(powershellReadiness).toContain('$authHealthMaxAttempts')
+  expect(powershellReadiness).toContain('Invoke-WebRequest')
+  expect(shellWrapper).toContain('/auth/v1/health')
+  expect(shellReadiness).toContain('auth_health_max_attempts')
+  expect(shellReadiness).toContain('curl --fail')
 })

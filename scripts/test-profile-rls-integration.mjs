@@ -14,6 +14,14 @@ function fail(message) {
   throw new Error(message)
 }
 
+function formatError(error) {
+  if (error instanceof AggregateError) {
+    return [error.message, ...error.errors.map(formatError)].join('\n- ')
+  }
+
+  return error instanceof Error ? error.message : String(error)
+}
+
 function parseEnvironmentValue(value) {
   if (value.startsWith('"') && value.endsWith('"')) {
     return value.slice(1, -1)
@@ -313,6 +321,7 @@ async function run() {
   const { publishableKey, serviceRoleKey, url } = readLocalSupabaseEnvironment()
   const suffix = randomUUID()
   const users = []
+  let primaryFailure
 
   try {
     const signupEmail = `profile-signup-${suffix}@example.test`
@@ -448,7 +457,9 @@ async function run() {
       ownerUpdate.body.length !== 1 ||
       ownerUpdate.body[0].display_name !== 'Nguyen An' ||
       ownerUpdate.body[0].created_at !== initialCreatedAt ||
-      new Date(ownerUpdate.body[0].updated_at) <= new Date(initialUpdatedAt)
+      typeof ownerUpdate.body[0].updated_at !== 'string' ||
+      Number.isNaN(Date.parse(ownerUpdate.body[0].updated_at)) ||
+      ownerUpdate.body[0].updated_at === initialUpdatedAt
     ) {
       fail('Owner update did not return the profile with a new server timestamp.')
     }
@@ -460,6 +471,7 @@ async function run() {
       ['whitespace only', '\t'],
       ['NEL boundary whitespace', '\u0085Nguyen An'],
       ['BOM boundary whitespace', 'Nguyen An\uFEFF'],
+      ['NUL-containing', 'Nguyen\u0000 An'],
     ]) {
       const invalidDisplayName = await requestProfiles({
         accessToken: sessionA.access_token,
@@ -569,17 +581,45 @@ async function run() {
     ) {
       fail('Denied profile mutations changed the owner profile.')
     }
-  } finally {
-    for (const userId of users) {
-      await deleteUser(url, serviceRoleKey, userId)
-      await assertProfileDeleted(url, serviceRoleKey, userId)
-    }
+  } catch (error) {
+    primaryFailure = error
+  }
+
+  const cleanupResults = await Promise.allSettled(
+    users.map(async (userId) => {
+      try {
+        await deleteUser(url, serviceRoleKey, userId)
+        await assertProfileDeleted(url, serviceRoleKey, userId)
+      } catch (error) {
+        const detail = error instanceof Error ? error.message : String(error)
+        throw new Error(`Auth fixture ${userId}: ${detail}`, { cause: error })
+      }
+    })
+  )
+  const cleanupFailures = cleanupResults.flatMap((result) =>
+    result.status === 'rejected' ? [result.reason] : []
+  )
+
+  if (primaryFailure !== undefined && cleanupFailures.length > 0) {
+    throw new AggregateError(
+      [primaryFailure, ...cleanupFailures],
+      'Profile integration and fixture cleanup both failed.'
+    )
+  }
+
+  if (primaryFailure !== undefined) {
+    throw primaryFailure
+  }
+
+  if (cleanupFailures.length > 0) {
+    throw new AggregateError(
+      cleanupFailures,
+      `Could not clean up ${cleanupFailures.length} local Auth fixture${cleanupFailures.length === 1 ? '' : 's'}.`
+    )
   }
 }
 
 run().catch((error) => {
-  const message =
-    error instanceof Error ? error.message : 'Profile integration gate failed.'
-  console.error(message)
+  console.error(formatError(error))
   process.exitCode = 1
 })

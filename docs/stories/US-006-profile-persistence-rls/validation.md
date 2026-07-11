@@ -35,18 +35,19 @@ absence is a blocker for proof, not a reason to claim the policy works.
 On 2026-07-11, the PowerShell wrapper passed on Windows with the Lunav local
 Supabase stack after the final review and reset-lifecycle fixes:
 
-- profile and auth contracts: 44 tests passed
+- profile and auth contracts: 46 tests passed
 - local migration reset: `20260711104500_create_profiles.sql` applied cleanly
 - profile integration: signup lifecycle, owner behavior, denial matrix,
 	immutable fields, duplicate prevention, live catalog security, and cascade
 	cleanup passed
 - repository lint: 8 of 8 tasks passed
 - repository typecheck: 8 of 8 tasks passed
-- repository tests: web 20, mobile 19, contracts 44, config 2, and root 16
+- repository tests: web 20, mobile 19, contracts 46, config 2, and root 17
 	tests passed
 - local Supabase type generation and client-secret scan passed
 - project-scoped Realtime quiescing prevented concurrent Ecto migration writes,
-  and project-scoped Kong refresh prevented stale Auth upstream HTTP 502 errors
+	and bounded Kong-to-Auth health polling prevented stale-upstream readiness
+	races
 
 ## Dependency Release Gate
 
