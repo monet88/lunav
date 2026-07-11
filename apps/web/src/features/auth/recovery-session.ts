@@ -1,4 +1,5 @@
 import { cookies } from 'next/headers'
+import type { NextResponse } from 'next/server'
 
 const RECOVERY_SESSION_COOKIE = 'lunav-recovery-session'
 
@@ -8,16 +9,10 @@ export async function hasRecoverySession(userId: string): Promise<boolean> {
 }
 
 export function setRecoverySessionCookie(
-  response: Response,
+  response: NextResponse,
   userId: string
 ): void {
-  const nextResponse = response as Response & {
-    cookies?: {
-      set: (name: string, value: string, options: Record<string, boolean | number | string>) => void
-    }
-  }
-
-  nextResponse.cookies?.set(RECOVERY_SESSION_COOKIE, userId, {
+  response.cookies.set(RECOVERY_SESSION_COOKIE, userId, {
     httpOnly: true,
     maxAge: 600,
     path: '/',

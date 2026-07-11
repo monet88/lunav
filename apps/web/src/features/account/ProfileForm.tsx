@@ -1,7 +1,6 @@
 'use client'
 
 import { useActionState } from 'react'
-import styles from '../../app/auth-account.module.css'
 import { INITIAL_PROFILE_ACTION_STATE } from './action-state'
 import { updateProfileAction } from './actions'
 
@@ -16,7 +15,7 @@ export function ProfileForm({ displayName }: ProfileFormProps) {
   )
 
   return (
-    <form action={formAction} className={styles.form}>
+    <form action={formAction} className="account-form">
       <label htmlFor="displayName">Ten hien thi</label>
       <input
         autoComplete="nickname"
@@ -25,7 +24,10 @@ export function ProfileForm({ displayName }: ProfileFormProps) {
         name="displayName"
         type="text"
       />
-      <p aria-live="polite" className={state.kind === 'error' ? styles.error : styles.status}>
+      <p
+        aria-live="polite"
+        className={state.kind === 'error' ? 'form-error' : 'form-status'}
+      >
         {state.message}
       </p>
       <button disabled={pending} type="submit">

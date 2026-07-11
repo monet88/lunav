@@ -50,6 +50,7 @@ describe('proxy', () => {
     createServerClientMock.mockReset()
     vi.stubEnv('NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY', 'publishable-key')
     vi.stubEnv('NEXT_PUBLIC_SUPABASE_URL', 'https://project.supabase.co')
+    vi.stubEnv('WEB_ORIGIN', 'https://app.lunav.vn')
   })
 
   afterEach(() => {
@@ -231,6 +232,20 @@ describe('proxy', () => {
       new NextRequest(
         'https://app.lunav.vn/account?returnTo=%2Faccount&token=secret'
       )
+    )
+
+    expect(response.headers.get('location')).toBe(
+      'https://app.lunav.vn/sign-in?returnTo=%2Faccount'
+    )
+  })
+
+  test('redirects unauthenticated users to the validated WEB_ORIGIN, not a poisoned Host', async () => {
+    mockGetUserResult({ data: { user: null }, error: null })
+
+    const response = await proxy(
+      new NextRequest('https://evil.example/account', {
+        headers: { host: 'evil.example' },
+      })
     )
 
     expect(response.headers.get('location')).toBe(

@@ -29,8 +29,12 @@ function isRateLimitError(error: ProviderError | null): boolean {
   )
 }
 
-export function mapSignUpResult(result: ProviderResult): AuthActionResult {
-  void result
+export function mapConfirmationPendingResult(
+  result: ProviderResult
+): AuthActionResult {
+  if (isRateLimitError(result.error)) {
+    return { kind: 'error', message: RATE_LIMIT_MESSAGE }
+  }
 
   return {
     kind: 'confirmation-pending',
@@ -38,8 +42,14 @@ export function mapSignUpResult(result: ProviderResult): AuthActionResult {
   }
 }
 
+export function mapSignUpResult(result: ProviderResult): AuthActionResult {
+  return mapConfirmationPendingResult(result)
+}
+
 export function mapForgotPasswordResult(result: ProviderResult): AuthActionResult {
-  void result
+  if (isRateLimitError(result.error)) {
+    return { kind: 'error', message: RATE_LIMIT_MESSAGE }
+  }
 
   return {
     kind: 'recovery-pending',

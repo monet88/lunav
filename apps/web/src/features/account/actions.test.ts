@@ -108,5 +108,8 @@ describe('signOutAction', () => {
 
     expect(clearRecoverySessionMock).toHaveBeenCalledOnce()
     expect(signOut).toHaveBeenCalledOnce()
+    expect(clearRecoverySessionMock.mock.invocationCallOrder[0]).toBeLessThan(
+      signOut.mock.invocationCallOrder[0]
+    )
   })
 })

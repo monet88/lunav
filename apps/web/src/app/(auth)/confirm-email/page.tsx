@@ -1,7 +1,6 @@
 import { AuthForm } from '../../../features/auth/AuthForm'
 import { INITIAL_FORM_STATE } from '../../../features/auth/action-state'
 import { resendConfirmationAction } from '../../../features/auth/actions'
-import styles from '../../auth-account.module.css'
 
 interface ConfirmEmailPageProps {
   searchParams: Promise<{ status?: string }>
@@ -11,9 +10,9 @@ export default async function ConfirmEmailPage({ searchParams }: ConfirmEmailPag
   const { status } = await searchParams
 
   return (
-    <main className={styles.shell}>
-      <section aria-labelledby="confirm-email-heading" className={styles.panel}>
-        <p className={styles.eyebrow}>ZIWEI AI</p>
+    <main className="auth-shell">
+      <section aria-labelledby="confirm-email-heading" className="auth-panel">
+        <p className="eyebrow">ZIWEI AI</p>
         <h1 id="confirm-email-heading">Xac nhan email</h1>
         <p role="status">
           {status === 'error'

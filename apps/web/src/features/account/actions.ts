@@ -22,10 +22,16 @@ export async function updateProfileAction(
     return { kind: 'error', message: UNAUTHORIZED_MESSAGE }
   }
 
+  let input
   try {
-    const input = parseProfileUpdate({
+    input = parseProfileUpdate({
       displayName: formData.get('displayName'),
     })
+  } catch {
+    return { kind: 'error', message: INVALID_FORM_MESSAGE }
+  }
+
+  try {
     const { data, error } = await client
       .from('profiles')
       .update({ display_name: input.displayName })
@@ -40,7 +46,7 @@ export async function updateProfileAction(
     parseProfile(data)
     return { kind: 'success', message: SUCCESS_MESSAGE }
   } catch {
-    return { kind: 'error', message: INVALID_FORM_MESSAGE }
+    return { kind: 'error', message: GENERIC_FAILURE_MESSAGE }
   }
 }
 
@@ -54,13 +60,17 @@ export async function signOutAction(): Promise<void> {
 
   await clearRecoverySession()
 
+  let hasError = false
   try {
     const { error } = await client.auth.signOut()
-
     if (error) {
-      redirect('/account')
+      hasError = true
     }
   } catch {
+    hasError = true
+  }
+
+  if (hasError) {
     redirect('/account')
   }
 

@@ -10,6 +10,7 @@ import {
 import { redirect } from 'next/navigation'
 import { createServerSupabaseClient, resolveCurrentAuthState } from '../../lib/supabase/server'
 import {
+  mapConfirmationPendingResult,
   mapForgotPasswordResult,
   mapSignInError,
   mapSignUpResult,
@@ -56,13 +57,13 @@ export async function resendConfirmationAction(
   try {
     const input = parseForgotPasswordInput(fields(formData))
     const client = await createServerSupabaseClient()
-    await client.auth.resend({
+    const result = await client.auth.resend({
       type: 'signup',
       email: input.email,
       options: { emailRedirectTo: `${getWebOrigin()}/auth/confirm` },
     })
 
-    return mapSignUpResult({ error: null })
+    return mapConfirmationPendingResult(result)
   } catch {
     return invalidFormState()
   }
@@ -92,7 +93,11 @@ export async function signInAction(
   let returnDestination = '/'
 
   try {
-    const input = parseSignInInput(fields(formData))
+    // returnTo is a routing field, not part of the strict sign-in schema.
+    const input = parseSignInInput({
+      email: formData.get('email'),
+      password: formData.get('password'),
+    })
     returnDestination = parseAuthReturnDestination(
       String(formData.get('returnTo') ?? '')
     )

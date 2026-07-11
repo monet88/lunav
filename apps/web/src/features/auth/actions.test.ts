@@ -22,8 +22,9 @@ vi.mock('./recovery-session', () => ({
   hasRecoverySession: hasRecoverySessionMock,
 }))
 
+import { isRedirectError } from 'next/dist/client/components/redirect-error'
 import { INITIAL_FORM_STATE } from './action-state'
-import { resetPasswordAction, signUpAction } from './actions'
+import { resetPasswordAction, signInAction, signUpAction } from './actions'
 
 describe('signUpAction', () => {
   afterEach(() => {
@@ -56,6 +57,41 @@ describe('signUpAction', () => {
     expect(state).toEqual({
       kind: 'confirmation-pending',
       message: 'Neu dia chi email hop le, ban se nhan duoc huong dan xac nhan.',
+    })
+  })
+})
+
+describe('signInAction', () => {
+  afterEach(() => {
+    createServerSupabaseClientMock.mockReset()
+    resolveCurrentAuthStateMock.mockReset()
+    hasRecoverySessionMock.mockReset()
+    clearRecoverySessionMock.mockReset()
+  })
+
+  test('ignores returnTo when validating credentials and redirects to a safe destination', async () => {
+    const signInWithPassword = vi.fn().mockResolvedValue({
+      data: { user: { id: 'user-1' } },
+      error: null,
+    })
+    createServerSupabaseClientMock.mockResolvedValue({
+      auth: { signInWithPassword },
+    })
+    const formData = new FormData()
+    formData.set('email', 'member@example.com')
+    formData.set('password', 'password12')
+    formData.set('returnTo', '/account')
+
+    try {
+      await signInAction(INITIAL_FORM_STATE, formData)
+      throw new Error('expected redirect')
+    } catch (error) {
+      expect(isRedirectError(error)).toBe(true)
+    }
+
+    expect(signInWithPassword).toHaveBeenCalledWith({
+      email: 'member@example.com',
+      password: 'password12',
     })
   })
 })

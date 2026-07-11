@@ -1,20 +1,42 @@
+import { parseAuthReturnDestination } from '@lunav/contracts'
 import Link from 'next/link'
 import { AuthForm } from '../../../features/auth/AuthForm'
 import { INITIAL_FORM_STATE } from '../../../features/auth/action-state'
 import { forgotPasswordAction } from '../../../features/auth/actions'
-import styles from '../../auth-account.module.css'
 
-export default function ForgotPasswordPage() {
+interface ForgotPasswordPageProps {
+  searchParams: Promise<{ returnTo?: string; status?: string }>
+}
+
+function withReturnTo(path: string, returnTo: string): string {
+  if (returnTo.length === 0 || returnTo === '/') {
+    return path
+  }
+
+  const url = new URL(path, 'http://localhost')
+  url.searchParams.set('returnTo', returnTo)
+  return `${url.pathname}${url.search}`
+}
+
+export default async function ForgotPasswordPage({
+  searchParams,
+}: ForgotPasswordPageProps) {
+  const { returnTo: rawReturnTo, status } = await searchParams
+  const returnTo = parseAuthReturnDestination(rawReturnTo ?? '')
+
   return (
-    <main className={styles.shell}>
-      <section aria-labelledby="forgot-password-heading" className={styles.panel}>
-        <p className={styles.eyebrow}>ZIWEI AI</p>
+    <main className="auth-shell">
+      <section aria-labelledby="forgot-password-heading" className="auth-panel">
+        <p className="eyebrow">ZIWEI AI</p>
         <h1 id="forgot-password-heading">Dat lai mat khau</h1>
+        {status === 'error' ? (
+          <p role="status">Lien ket dat lai mat khau khong hop le hoac da het han.</p>
+        ) : null}
         <AuthForm action={forgotPasswordAction} initialState={INITIAL_FORM_STATE}>
           <label htmlFor="forgot-password-email">Email</label>
           <input autoComplete="email" id="forgot-password-email" name="email" required type="email" />
         </AuthForm>
-        <Link href="/sign-in">Quay lai dang nhap</Link>
+        <Link href={withReturnTo('/sign-in', returnTo)}>Quay lai dang nhap</Link>
       </section>
     </main>
   )

@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'vitest'
 import {
   mapCallbackFailure,
+  mapConfirmationPendingResult,
   mapForgotPasswordResult,
   mapSignInError,
   mapSignUpResult,
@@ -18,6 +19,17 @@ describe('auth provider result mapping', () => {
     })
   })
 
+  test('maps signup and resend rate limits without claiming email was sent', () => {
+    expect(
+      mapConfirmationPendingResult({
+        error: { code: 'over_email_send_rate_limit', message: 'rate limit' },
+      })
+    ).toEqual({
+      kind: 'error',
+      message: 'Ban da thu qua nhieu lan. Vui long thu lai sau it phut.',
+    })
+  })
+
   test('keeps password recovery enumeration safe for an unknown account', () => {
     expect(
       mapForgotPasswordResult({
@@ -26,6 +38,17 @@ describe('auth provider result mapping', () => {
     ).toEqual({
       kind: 'recovery-pending',
       message: 'Neu dia chi email hop le, ban se nhan duoc huong dan dat lai mat khau.',
+    })
+  })
+
+  test('maps recovery rate limits without claiming email was sent', () => {
+    expect(
+      mapForgotPasswordResult({
+        error: { code: 'over_request_rate_limit', message: 'rate limit' },
+      })
+    ).toEqual({
+      kind: 'error',
+      message: 'Ban da thu qua nhieu lan. Vui long thu lai sau it phut.',
     })
   })
 

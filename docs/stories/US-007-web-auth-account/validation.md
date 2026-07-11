@@ -16,7 +16,11 @@ no approved E2E runner or hosted credentials/origin are available.
 
 ## Available Local Verification
 
-Run the following PowerShell command from the repository root on Windows:
+Run one of the following from the repository root:
+
+```bash
+bash scripts/verify-web-auth.sh
+```
 
 ```powershell
 .\scripts\verify-web-auth.ps1

@@ -3,7 +3,6 @@ import { redirect } from 'next/navigation'
 import { ProfileForm } from '../../../features/account/ProfileForm'
 import { signOutAction } from '../../../features/account/actions'
 import { createServerSupabaseClient, resolveCurrentAuthState } from '../../../lib/supabase/server'
-import styles from '../../auth-account.module.css'
 
 export const dynamic = 'force-dynamic'
 
@@ -25,14 +24,19 @@ export default async function AccountPage() {
     redirect('/sign-in')
   }
 
-  const profile = parseProfile(data)
+  let profile
+  try {
+    profile = parseProfile(data)
+  } catch {
+    redirect('/sign-in')
+  }
 
   return (
-    <main className={styles.shell}>
-      <section aria-labelledby="account-heading" className={styles.panel}>
-        <p className={styles.eyebrow}>ZIWEI AI</p>
+    <main className="account-shell">
+      <section aria-labelledby="account-heading" className="account-panel">
+        <p className="eyebrow">ZIWEI AI</p>
         <h1 id="account-heading">Tai khoan</h1>
-        <dl className={styles.details}>
+        <dl className="account-details">
           <div>
             <dt>Email</dt>
             <dd>{authState.identity.email}</dd>
@@ -43,7 +47,7 @@ export default async function AccountPage() {
           </div>
         </dl>
         <ProfileForm displayName={profile.displayName} />
-        <form action={signOutAction} className={styles.signOut}>
+        <form action={signOutAction} className="sign-out-form">
           <button type="submit">Dang xuat</button>
         </form>
       </section>

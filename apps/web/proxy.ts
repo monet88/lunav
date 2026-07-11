@@ -2,6 +2,7 @@ import { normalizeAuthState } from '@lunav/contracts'
 import { createServerClient } from '@supabase/ssr'
 import type { User } from '@supabase/supabase-js'
 import { NextResponse, type NextRequest } from 'next/server'
+import { getWebOrigin } from './src/features/auth/web-origin'
 import { getWebSupabaseConfig } from './src/lib/supabase/config'
 
 function isConfirmedUser(user: User | null): boolean {
@@ -22,11 +23,9 @@ function isConfirmedUser(user: User | null): boolean {
   }
 }
 
-function redirectToSignIn(
-  request: NextRequest,
-  cookieResponse: NextResponse
-): NextResponse {
-  const signInUrl = new URL('/sign-in', request.url)
+function redirectToSignIn(cookieResponse: NextResponse): NextResponse {
+  // Build from validated WEB_ORIGIN so a poisoned Host cannot phishing-redirect.
+  const signInUrl = new URL('/sign-in', getWebOrigin())
   signInUrl.searchParams.set('returnTo', '/account')
   const redirectResponse = NextResponse.redirect(signInUrl)
   const forwardedHeaderNames = new Set([
@@ -79,12 +78,12 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
     const { data, error } = await supabase.auth.getUser()
 
     if (error || !isConfirmedUser(data.user)) {
-      return redirectToSignIn(request, response)
+      return redirectToSignIn(response)
     }
 
     return response
   } catch {
-    return redirectToSignIn(request, response)
+    return redirectToSignIn(response)
   }
 }
 
