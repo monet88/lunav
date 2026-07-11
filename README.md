@@ -22,9 +22,8 @@ The authoritative roadmap and product contracts are:
 
 - Phase 0 reference audit and product contract: implemented.
 - Foundation monorepo and Supabase platform: implemented as US-003.
-- Auth and User: US-005 auth session identity seam is implemented; US-006
-  private profile persistence/RLS is in progress pending fresh local-stack
-  proof; US-007 and US-008 remain planned.
+- Auth and User: US-005 auth session identity seam and US-006 private profile
+  persistence/RLS are implemented; US-007 and US-008 remain planned.
 - Chart, AI explanation, assistant conversation, and stabilization phases:
   not implemented.
 

@@ -2,7 +2,7 @@
 
 ## Status
 
-in_progress
+implemented
 
 ## Lane
 
@@ -12,7 +12,7 @@ high-risk
 
 - US-005 shared identity interface and adapters have fresh passing proof.
 
-## Implemented Behavior Pending Fresh Proof
+## Implemented Behavior
 
 `public.profiles` is the application-owned one-to-one profile lifecycle for
 Supabase Auth identities. Database triggers create and timestamp the row, and

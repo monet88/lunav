@@ -8,6 +8,7 @@ const { fetch } = globalThis
 const rootDirectory = resolve(import.meta.dirname, '..')
 const configPath = resolve(rootDirectory, 'supabase/config.toml')
 const password = `Lunav-${randomUUID()}-9aA!`
+const isWindows = process.platform === 'win32'
 
 function fail(message) {
   throw new Error(message)
@@ -26,9 +27,18 @@ if (!fetch) {
 }
 
 function readLocalSupabaseEnvironment() {
+  const executable = isWindows ? (process.env.ComSpec ?? 'cmd.exe') : 'pnpm'
+  const arguments_ = isWindows
+    ? [
+        '/d',
+        '/s',
+        '/c',
+        'pnpm dlx supabase@2.109.1 status --output env',
+      ]
+    : ['dlx', 'supabase@2.109.1', 'status', '--output', 'env']
   const result = spawnSync(
-    'pnpm',
-    ['dlx', 'supabase@2.109.1', 'status', '--output', 'env'],
+    executable,
+    arguments_,
     {
       cwd: rootDirectory,
       encoding: 'utf8',
@@ -36,8 +46,9 @@ function readLocalSupabaseEnvironment() {
   )
 
   if (result.status !== 0) {
+    const detail = result.error?.message ?? result.stderr.trim()
     fail(
-      'Supabase local is unavailable. Start the Lunav stack before running this gate.'
+      `Supabase local status failed.${detail ? ` ${detail}` : ' Start the Lunav stack before running this gate.'}`
     )
   }
 

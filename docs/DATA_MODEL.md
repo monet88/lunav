@@ -2,11 +2,8 @@
 
 ## Status
 
-US-006 contains the first product table implementation, `public.profiles`.
-Contract and transactional migration proof pass, while fresh Supabase-local
-lifecycle and authorization proof is pending because an internal service Ecto
-migration currently conflicts on `schema_migrations_pkey` before repository
-migrations run.
+US-006 implements the first product table, `public.profiles`, with fresh
+Supabase-local migration, lifecycle, authorization, and catalog proof.
 
 ## Supabase Project Boundary
 
