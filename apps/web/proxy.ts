@@ -22,11 +22,13 @@ function isConfirmedUser(user: User | null): boolean {
   }
 }
 
-function redirectToPublicRoot(
+function redirectToSignIn(
   request: NextRequest,
   cookieResponse: NextResponse
 ): NextResponse {
-  const redirectResponse = NextResponse.redirect(new URL('/', request.url))
+  const signInUrl = new URL('/sign-in', request.url)
+  signInUrl.searchParams.set('returnTo', '/account')
+  const redirectResponse = NextResponse.redirect(signInUrl)
   const forwardedHeaderNames = new Set([
     'cache-control',
     'expires',
@@ -77,12 +79,12 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
     const { data, error } = await supabase.auth.getUser()
 
     if (error || !isConfirmedUser(data.user)) {
-      return redirectToPublicRoot(request, response)
+      return redirectToSignIn(request, response)
     }
 
     return response
   } catch {
-    return redirectToPublicRoot(request, response)
+    return redirectToSignIn(request, response)
   }
 }
 

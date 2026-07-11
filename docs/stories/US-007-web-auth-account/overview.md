@@ -2,7 +2,7 @@
 
 ## Status
 
-planned
+implemented-local
 
 ## Lane
 
@@ -30,9 +30,15 @@ account settings, and sign-out.
 - `apps/web/src/app/(protected)/**`
 - `apps/web/src/app/auth/**` callback/recovery route handlers
 - web-only auth actions, forms, tests, and E2E fixtures
+- `apps/web/proxy.ts` and `apps/web/proxy.test.ts` only for preserving the
+	canonical `/account` return destination through sign-in
+- `packages/contracts/src/web-auth.ts` and its exports/tests for web form
+	boundary validation
+- `apps/web/.env.example` only for the non-secret canonical web origin contract
 
-Shared contracts, Supabase adapters, `apps/web/proxy.ts`, Auth configuration,
-and profile migrations remain owned by US-005 and US-006.
+Existing shared auth/profile contracts, Supabase adapters, Auth configuration,
+and profile migrations remain owned by US-005 and US-006. The listed handoff
+surfaces may not change upstream identity, session, profile, or RLS semantics.
 
 ## Non-Goals
 

@@ -26,7 +26,7 @@ acceptance contract, not implementation files.
 | --- | --- | --- | --- | --- |
 | US-005 Auth session and canonical identity | US-003 | Shared auth contracts, public Supabase client factories, session lifecycle test fixtures | Both apps consume one verified Supabase identity/session contract and clear user-scoped cache on sign-out. | Contract and integration tests for current user, refresh/expiry, unconfirmed-email gating, safe redirect parsing, and sign-out cleanup pass. |
 | US-006 Profile persistence and RLS | US-005 | Profile migration, trigger, RLS policies, profile contract, data-model docs, database integration tests | Every Auth user receives one owner-scoped profile; only `display_name` is editable in MVP. | Migration applies locally; trigger, owner read/update, immutable ownership, and cross-user denial tests pass. |
-| US-007 Web authentication and account flow | US-005, US-006 | `apps/web` auth/protected route groups, web actions/handlers, web auth UI and E2E | Web supports signup, confirmation, login, recovery, protected return path, settings, reload, and logout. | Web E2E and hosted callback/email smoke proof pass with no client secret findings. |
+| US-007 Web authentication and account flow | US-005, US-006 | `apps/web` auth/protected route groups, web actions/handlers, web auth UI and E2E; narrow handoff for the account proxy return path, web auth form contracts, and non-secret web origin env contract | Web supports signup, confirmation, login, recovery, protected return path, settings, reload, and logout. | Web E2E and hosted callback/email smoke proof pass with no client secret findings. |
 | US-008 Mobile authentication and account flow | US-005, US-006 | `apps/mobile` auth/protected route groups, linking configuration, mobile auth UI and runtime tests | Android supports the same auth semantics with native persistence and deep links. | Android emulator/device flow and hosted deep-link/email smoke proof pass with no client secret findings. |
 
 ## Dependency Rules
@@ -39,6 +39,10 @@ acceptance contract, not implementation files.
 - Shared contracts, migrations, generated Supabase types, root configuration,
   and central test fixtures are exclusive ownership surfaces. A newly
   discovered overlap pauses parallel work until this graph is updated.
+- US-007 may add `packages/contracts/src/web-auth.ts`, update its barrel export,
+  preserve `/account` through `apps/web/proxy.ts`, and declare the canonical
+  web origin in `apps/web/.env.example`. These handoffs do not authorize changes
+  to existing US-005 identity/session behavior or US-006 profile/RLS behavior.
 
 ## Epic Completion Gate
 
