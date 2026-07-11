@@ -2,8 +2,10 @@
 
 ## Required Proof
 
-This executable gate authorizes implementation completion only when every
-command below passes with fresh evidence.
+This executable gate authorizes implementation completion only when the
+canonical verification script passes with fresh evidence. The script is the
+single source of truth for the command set; do not treat a partial manual
+subset as story completion.
 
 | Layer | Required proof |
 | --- | --- |
@@ -12,19 +14,10 @@ command below passes with fresh evidence.
 | Security | Raw tokens are absent from shared contracts and logs; only public client configuration is bundled; direct private server access resolves a verified user with `auth.getUser`; refresh responses preserve Supabase no-cache headers. |
 | Platform | Web cookie refresh and mobile SecureStore-backed persistent-session/auto-refresh adapters typecheck; production cookies retain HTTPS `Secure`, `HttpOnly`, and SameSite protections. |
 
-## Planned Commands
+## Canonical Commands
 
-```bash
-pnpm --filter @lunav/contracts test
-pnpm --filter @lunav/web test
-pnpm --filter @lunav/mobile test
-pnpm test:auth-integration
-pnpm typecheck
-pnpm security:client
-```
-
-Complete US-005 executable gate (same command set as above, plus lint and Expo
-install check):
+Run exactly one of these wrappers. Either form is complete proof; both are not
+required.
 
 ```bash
 bash scripts/verify-auth-session.sh
@@ -33,6 +26,22 @@ bash scripts/verify-auth-session.sh
 ```powershell
 .\scripts\verify-auth-session.ps1
 ```
+
+The wrappers currently run, in order:
+
+```text
+pnpm --filter @lunav/contracts test
+pnpm --filter @lunav/web test
+pnpm --filter @lunav/mobile test
+pnpm test:auth-integration
+pnpm lint
+pnpm typecheck
+pnpm security:client
+pnpm --filter @lunav/mobile exec expo install --check
+```
+
+If the wrapper scripts change, update this list to match. Do not mark the story
+implemented from a shorter ad-hoc command list.
 
 Before the local integration command, start the Lunav stack with `supabase
 start`. Do not stop or reuse another project's Supabase containers. The story

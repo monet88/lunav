@@ -33,7 +33,8 @@ Core Chart work will create independent fixtures.
 ```bash
 # macOS / Linux / Git Bash
 bash scripts/verify-phase0.sh
-bash scripts/verify-reference-audit.sh
+bash scripts/verify-reference-audit.sh <ref-root>
+# or: REFERENCE_REPO_ROOT=<ref-root> bash scripts/verify-reference-audit.sh
 scripts/bin/harness-cli story verify US-001
 # Windows Git Bash may need: scripts/bin/harness-cli.exe story verify US-001
 ```
@@ -41,7 +42,8 @@ scripts/bin/harness-cli story verify US-001
 ```powershell
 # Windows PowerShell
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify-phase0.ps1
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify-reference-audit.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify-reference-audit.ps1 -ReferenceRoot <ref-root>
+# or: $env:REFERENCE_REPO_ROOT = '<ref-root>'; .\scripts\verify-reference-audit.ps1
 .\scripts\bin\harness-cli.exe story verify US-001
 ```
 

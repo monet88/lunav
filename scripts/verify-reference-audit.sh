@@ -1,7 +1,29 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-reference_root="${1:-/f/CodeBase/ziweiai-web}"
+usage() {
+  cat >&2 <<'EOF'
+Usage:
+  bash scripts/verify-reference-audit.sh <ref-root>
+  REFERENCE_REPO_ROOT=<ref-root> bash scripts/verify-reference-audit.sh
+
+Checks that the Phase 0 reference repository contains the required evidence
+files. The reference root must be supplied as the first argument or via the
+REFERENCE_REPO_ROOT environment variable. There is no machine-specific default.
+EOF
+}
+
+reference_root="${1:-${REFERENCE_REPO_ROOT:-}}"
+
+if [[ -z "${reference_root}" ]]; then
+  usage
+  exit 1
+fi
+
+if [[ ! -d "${reference_root}" ]]; then
+  printf 'Reference repository not found: %s\n' "${reference_root}" >&2
+  exit 1
+fi
 
 required_evidence=(
   'PRODUCT.md'
@@ -14,14 +36,10 @@ required_evidence=(
   'apps/api/src/modules/conversations/conversations.controller.ts'
 )
 
-if [[ ! -e "${reference_root}" ]]; then
-  printf 'Reference repository not found: %s\n' "${reference_root}" >&2
-  exit 1
-fi
-
 missing_evidence=()
 for relative_path in "${required_evidence[@]}"; do
-  if [[ ! -e "${reference_root}/${relative_path}" ]]; then
+  candidate="${reference_root}/${relative_path}"
+  if [[ ! -f "${candidate}" || ! -r "${candidate}" ]]; then
     missing_evidence+=("${relative_path}")
   fi
 done
