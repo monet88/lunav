@@ -172,6 +172,7 @@ test('refreshes the local gateway after the profile database reset', () => {
   )
   expect(powershellReadiness).toContain('$authHealthMaxAttempts')
   expect(powershellReadiness).toContain('Invoke-WebRequest')
+  expect(powershellReadiness).toContain('-UseBasicParsing')
   expect(shellWrapper).toContain('/auth/v1/health')
   expect(shellReadiness).toContain('auth_health_max_attempts')
   expect(shellReadiness).toContain('curl --fail')

@@ -105,5 +105,5 @@ The reset recreates Auth while leaving Kong running. On Docker Desktop, Kong
 can temporarily retain the old Auth upstream address and return HTTP 502 even
 after the new Auth container is healthy. The wrappers restart only the
 project-scoped Kong container after reset so it resolves the current Auth
-container, then poll `/auth/v1/health` through Kong with a bounded timeout
-before integration requests begin.
+container. The wrappers then poll `/auth/v1/health` through Kong with a
+bounded timeout before integration requests begin.

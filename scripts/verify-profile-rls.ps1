@@ -60,7 +60,9 @@ if ($LASTEXITCODE -eq 0) {
 
     for ($attempt = 1; $attempt -le $authHealthMaxAttempts; $attempt++) {
         try {
-            $response = Invoke-WebRequest -Uri $authHealthUrl -TimeoutSec 2
+            # -UseBasicParsing avoids IE DOM parsing, which can fail on Windows
+            # PowerShell 5.1 even when Kong returns a healthy Auth response.
+            $response = Invoke-WebRequest -Uri $authHealthUrl -TimeoutSec 2 -UseBasicParsing
             $isAuthReady = $response.StatusCode -eq 200
         }
         catch {
