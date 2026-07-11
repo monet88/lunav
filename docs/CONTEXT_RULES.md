@@ -12,7 +12,8 @@ Always read:
 - `docs/FEATURE_INTAKE.md`
 - `docs/PRODUCT_SCOPE.md`
 - `docs/INVARIANTS.md`
-- `.\scripts\bin\harness-cli.exe query matrix`
+- `scripts/bin/harness-cli query matrix` on macOS/Linux, or
+  `.\scripts\bin\harness-cli.exe query matrix` on Windows
 
 For high-risk work also read `docs/ARCHITECTURE.md`, relevant ADRs, and the
 complete story packet.

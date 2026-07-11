@@ -32,7 +32,8 @@ accepted product docs or become an implicit source dependency.
 
 1. Read `AGENTS.md`, `SPEC.md`, and the required Harness docs.
 2. Classify the request with `docs/FEATURE_INTAKE.md`.
-3. Record the intake with `scripts/bin/harness-cli.exe intake`.
+3. Record the intake with `scripts/bin/harness-cli intake` (macOS/Linux) or
+   `scripts/bin/harness-cli.exe intake` (Windows).
 4. Find or create the smallest relevant story packet.
 5. Confirm product contract, scope, risks, and proof.
 6. Implement only after the relevant design is approved.
@@ -49,9 +50,23 @@ must pass before the next phase begins.
 
 ## Durable Layer
 
-Operational state lives in local `harness.db`, managed by:
+Operational state lives in local `harness.db`, managed by the platform binary
+at `scripts/bin/harness-cli` on macOS/Linux or `scripts/bin/harness-cli.exe` on
+Windows. Git Bash on Windows can invoke the `.exe` path.
+
+```bash
+# macOS / Linux
+scripts/bin/harness-cli init
+scripts/bin/harness-cli intake --help
+scripts/bin/harness-cli story add --help
+scripts/bin/harness-cli story verify <story-id>
+scripts/bin/harness-cli query matrix
+scripts/bin/harness-cli decision add --help
+scripts/bin/harness-cli trace --help
+```
 
 ```powershell
+# Windows PowerShell
 .\scripts\bin\harness-cli.exe init
 .\scripts\bin\harness-cli.exe intake --help
 .\scripts\bin\harness-cli.exe story add --help
@@ -70,7 +85,14 @@ code.
 Do not commit, copy, or synchronize `harness.db`, `harness.db-wal`, or
 `harness.db-shm`. When a local database is absent, initialize a new empty one:
 
+```bash
+# macOS / Linux
+scripts/bin/harness-cli init
+scripts/bin/harness-cli query matrix
+```
+
 ```powershell
+# Windows PowerShell
 .\scripts\bin\harness-cli.exe init
 .\scripts\bin\harness-cli.exe query matrix
 ```

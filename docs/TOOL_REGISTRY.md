@@ -6,9 +6,18 @@ requires that capability for proof.
 
 ## Main Interface
 
-Use the installed Windows CLI:
+Use the installed platform CLI at `scripts/bin/harness-cli` on macOS/Linux or
+`scripts/bin/harness-cli.exe` on Windows:
+
+```bash
+# macOS / Linux
+scripts/bin/harness-cli query tools --summary
+scripts/bin/harness-cli query tools --capability <name> --status present
+scripts/bin/harness-cli tool check
+```
 
 ```powershell
+# Windows PowerShell
 .\scripts\bin\harness-cli.exe query tools --summary
 .\scripts\bin\harness-cli.exe query tools --capability <name> --status present
 .\scripts\bin\harness-cli.exe tool check

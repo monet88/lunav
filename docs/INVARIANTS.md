@@ -2,10 +2,9 @@
 
 ## Status
 
-Accepted Phase 0 product and architecture invariants. These rules describe what
-future implementation must enforce. The current repository has no application
-code yet, so a rule is not considered mechanically enforced until its owning
-phase adds and passes the stated guard.
+Accepted product and architecture invariants. The repository now has the
+implemented Foundation shells and quality gates, but product behavior remains
+unenforced until its owning story adds and passes the stated guard.
 
 Changing an invariant requires an ADR and corresponding documentation updates.
 

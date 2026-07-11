@@ -2,8 +2,9 @@
 
 ## Status
 
-Foundation defines the migration and authorization contract only. It creates no
-product table, migration, user profile, or persisted feature data.
+Foundation defines the migration and authorization contract only and creates
+no product table. US-006 plans the first product table, `public.profiles`; that
+schema remains planned until its migration and authorization proof pass.
 
 ## Supabase Project Boundary
 
@@ -22,6 +23,26 @@ product table, migration, user profile, or persisted feature data.
 - A client-provided user identifier is never authorization evidence.
 - Future private product tables store an owner reference named `user_id` that
   references the authenticated user identity when appropriate.
+
+## Planned Profile Table
+
+US-006 owns the planned one-to-one application profile:
+
+- `profiles.id` references `auth.users.id` with cascading deletion.
+- A database trigger creates the row after an Auth user is created.
+- `display_name` is the only user-editable MVP profile field.
+- Email remains canonical in Supabase Auth and is not duplicated.
+- Normal clients may select their own row and update only `display_name`.
+- Table-level update is revoked; `authenticated` receives column-level update
+  permission for `display_name` only.
+- A server-side trigger owns `updated_at`; clients cannot set identity or
+  timestamps.
+- Normal clients may not insert or delete profiles.
+- Cross-user select and update attempts must fail under RLS.
+
+These statements are an approved design contract, not implemented behavior.
+US-006 must replace this planned description with the exact fields, indexes,
+policies, retention, and executed proof after its migration lands.
 
 ## Migration Requirements
 

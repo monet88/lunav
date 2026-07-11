@@ -49,9 +49,9 @@ other languages can be added after core operation is stable.
 
 | Epic | Description | Status |
 | --- | --- | --- |
-| E00 | Reference audit and product contract | active |
-| E01 | Foundation monorepo and quality gates | unsliced |
-| E02 | Shared authentication and user identity | unsliced |
+| E00 | Reference audit and product contract | implemented |
+| E01 | Foundation monorepo and quality gates | implemented as US-003 |
+| E02 | Shared authentication and user identity | sliced as US-004 through US-008 |
 | E03 | Core chart workflow | unsliced |
 | E04 | AI explanations | unsliced |
 | E05 | Assistant conversations | unsliced |
@@ -84,7 +84,9 @@ Later roadmap phases remain named in `SPEC.md` but are not sliced yet.
 
 - `US-001`: complete Phase 0 reference audit and product contract.
 
-## Handoff Rule
+## Current Handoff Rule
 
-Stop after Phase 0 artifacts and proof. Create a Phase 1 implementation plan
-only after the user reviews and approves the written contract.
+US-004 is a coordination-only epic. Prepare US-005 through US-008 for Symphony,
+but do not start implementation until the product owner explicitly approves
+the execution handoff. Phase 3 remains blocked until the US-004 epic gate
+passes.

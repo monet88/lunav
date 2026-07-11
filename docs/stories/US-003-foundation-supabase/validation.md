@@ -21,7 +21,7 @@ user data table or sign-in flow.
 
 ## Acceptance Commands
 
-```powershell
+```bash
 pnpm install --frozen-lockfile
 pnpm lint
 pnpm typecheck
@@ -39,7 +39,7 @@ Foundation gate.
 
 Executed on 2026-07-10:
 
-```powershell
+```bash
 pnpm install --frozen-lockfile
 pnpm lint
 pnpm typecheck

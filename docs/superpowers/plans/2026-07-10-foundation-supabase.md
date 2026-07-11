@@ -529,7 +529,14 @@ Expected: every command exits with code `0`.
 
 Run:
 
+```bash
+# macOS / Linux
+scripts/bin/harness-cli story update --id US-003 --status implemented --unit 1 --integration 1 --e2e 0 --platform 1 --evidence "Record the exact successful command outputs and date."
+scripts/bin/harness-cli story verify US-003
+```
+
 ```powershell
+# Windows PowerShell
 .\scripts\bin\harness-cli.exe story update --id US-003 --status implemented --unit 1 --integration 1 --e2e 0 --platform 1 --evidence "Record the exact successful command outputs and date."
 .\scripts\bin\harness-cli.exe story verify US-003
 ```

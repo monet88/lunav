@@ -19,7 +19,9 @@ $requiredFiles = @(
     'docs/stories/US-001-phase-0-reference-audit/validation.md',
     'docs/stories/US-001-phase-0-reference-audit/execplan.md',
     'scripts/verify-reference-audit.ps1',
-    'scripts/verify-phase0.ps1'
+    'scripts/verify-reference-audit.sh',
+    'scripts/verify-phase0.ps1',
+    'scripts/verify-phase0.sh'
 )
 
 $missingFiles = $requiredFiles | Where-Object {
