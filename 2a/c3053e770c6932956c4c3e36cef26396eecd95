@@ -1,0 +1,19 @@
+docs/HARNESS_COMPONENTS.md
+  s_72de24d1edbb36::t_61ee23f1eadc39 51,71,76-80
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "2ac3053e770c6932956c4c3e36cef26396eecd95",
+  "prompts": {},
+  "sessions": {
+    "s_72de24d1edbb36": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "8f7cfb0b-10f3-4c2c-9946-895a0f703411",
+        "model": "unknown"
+      },
+      "human_author": "monet88 <minhthang421992@gmail.com>"
+    }
+  }
+}
