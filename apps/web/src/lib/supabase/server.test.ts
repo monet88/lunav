@@ -80,7 +80,8 @@ describe('createServerSupabaseClient', () => {
       { name: 'sb-session', value: 'existing-cookie' },
     ])
 
-    options.cookies.setAll?.([
+    expect(options.cookies.setAll).toBeDefined()
+    options.cookies.setAll!([
       {
         name: 'sb-session',
         options: { httpOnly: true, path: '/' },
@@ -120,8 +121,9 @@ describe('createServerSupabaseClient', () => {
       }
     }
 
+    expect(options.cookies.setAll).toBeDefined()
     expect(() =>
-      options.cookies.setAll?.([
+      options.cookies.setAll!([
         {
           name: 'sb-session',
           options: { httpOnly: true, path: '/' },
