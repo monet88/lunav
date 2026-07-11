@@ -22,9 +22,9 @@ vi.mock('./recovery-session', () => ({
   hasRecoverySession: hasRecoverySessionMock,
 }))
 
-import { isRedirectError } from 'next/dist/client/components/redirect-error'
 import { INITIAL_FORM_STATE } from './action-state'
 import { resetPasswordAction, signInAction, signUpAction } from './actions'
+import { isRedirectError } from './is-redirect-error'
 
 describe('signUpAction', () => {
   afterEach(() => {

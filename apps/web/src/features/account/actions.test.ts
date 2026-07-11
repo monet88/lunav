@@ -19,7 +19,7 @@ vi.mock('../auth/recovery-session', () => ({
   clearRecoverySession: clearRecoverySessionMock,
 }))
 
-import { isRedirectError } from 'next/dist/client/components/redirect-error'
+import { isRedirectError } from '../auth/is-redirect-error'
 import { signOutAction, updateProfileAction } from './actions'
 
 describe('updateProfileAction', () => {

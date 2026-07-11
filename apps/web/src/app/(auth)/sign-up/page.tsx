@@ -3,19 +3,10 @@ import Link from 'next/link'
 import { AuthForm } from '../../../features/auth/AuthForm'
 import { INITIAL_FORM_STATE } from '../../../features/auth/action-state'
 import { signUpAction } from '../../../features/auth/actions'
+import { withReturnTo } from '../../../features/auth/return-path'
 
 interface SignUpPageProps {
   searchParams: Promise<{ returnTo?: string }>
-}
-
-function withReturnTo(path: string, returnTo: string): string {
-  if (returnTo.length === 0 || returnTo === '/') {
-    return path
-  }
-
-  const url = new URL(path, 'http://localhost')
-  url.searchParams.set('returnTo', returnTo)
-  return `${url.pathname}${url.search}`
 }
 
 export default async function SignUpPage({ searchParams }: SignUpPageProps) {
