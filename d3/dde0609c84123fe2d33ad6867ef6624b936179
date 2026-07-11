@@ -1,0 +1,23 @@
+scripts/test-profile-rls-integration.mjs
+  s_4e743010a7bf28::t_1553f5637cf7a0 11,30-38,40-41,49,51
+scripts/verify-profile-rls.ps1
+  s_4e743010a7bf28::t_a46d3e3d85e565 3-39
+scripts/verify-profile-rls.sh
+  s_4e743010a7bf28::t_61e902f47d51a0 9-28
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "d3dde0609c84123fe2d33ad6867ef6624b936179",
+  "prompts": {},
+  "sessions": {
+    "s_4e743010a7bf28": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "a4aa11d7-d1bc-4d39-a27b-53c340888af8",
+        "model": "unknown"
+      },
+      "human_author": "monet88 <minhthang421992@gmail.com>"
+    }
+  }
+}
