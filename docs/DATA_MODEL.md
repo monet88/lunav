@@ -2,9 +2,8 @@
 
 ## Status
 
-Foundation defines the migration and authorization contract only and creates
-no product table. US-006 plans the first product table, `public.profiles`; that
-schema remains planned until its migration and authorization proof pass.
+US-006 implements the first product table, `public.profiles`, with fresh
+Supabase-local migration, lifecycle, authorization, and catalog proof.
 
 ## Supabase Project Boundary
 
@@ -24,25 +23,37 @@ schema remains planned until its migration and authorization proof pass.
 - Future private product tables store an owner reference named `user_id` that
   references the authenticated user identity when appropriate.
 
-## Planned Profile Table
+## Profile Table
 
-US-006 owns the planned one-to-one application profile:
+Migration `20260711104500_create_profiles.sql` creates the one-to-one private
+profile table:
 
-- `profiles.id` references `auth.users.id` with cascading deletion.
-- A database trigger creates the row after an Auth user is created.
-- `display_name` is the only user-editable MVP profile field.
-- Email remains canonical in Supabase Auth and is not duplicated.
-- Normal clients may select their own row and update only `display_name`.
-- Table-level update is revoked; `authenticated` receives column-level update
-  permission for `display_name` only.
-- A server-side trigger owns `updated_at`; clients cannot set identity or
-  timestamps.
-- Normal clients may not insert or delete profiles.
-- Cross-user select and update attempts must fail under RLS.
+| Column | Type | Contract |
+| --- | --- | --- |
+| `id` | `uuid` | Primary key and foreign key to `auth.users.id`; cascades on Auth-user deletion. |
+| `display_name` | `text` | Nullable; when present it is trimmed and 1 to 100 characters. |
+| `created_at` | `timestamptz` | Required and server-created with `now()`. |
+| `updated_at` | `timestamptz` | Required and replaced by a server trigger on every update. |
 
-These statements are an approved design contract, not implemented behavior.
-US-006 must replace this planned description with the exact fields, indexes,
-policies, retention, and executed proof after its migration lands.
+The primary key is the only index required for the one-row owner lookup. Email
+remains canonical in Supabase Auth and is not duplicated. Profiles have the
+same retention lifecycle as their Auth user because deletion cascades.
+
+An `AFTER INSERT` trigger on `auth.users` creates exactly one profile. Both
+profile trigger functions are `SECURITY DEFINER`, owned by the local Postgres
+administrative role, and use `search_path = ''`.
+
+RLS is enabled and forced. Authenticated users receive `SELECT` on the table
+and `UPDATE (display_name)` only. The select and update policies compare
+`auth.uid()` with `profiles.id`; update uses both `USING` and `WITH CHECK`.
+Anonymous users receive no profile privileges, and normal clients receive no
+insert or delete policy.
+
+The executable proof is `bash scripts/verify-profile-rls.sh` or
+`.\scripts\verify-profile-rls.ps1`. It resets the local database, exercises
+self-service signup and admin-created users, verifies owner and cross-user
+behavior through PostgREST, checks catalog policies/grants/function security,
+proves Auth-user cascade cleanup, and generates local Supabase types.
 
 ## Migration Requirements
 

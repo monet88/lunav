@@ -82,8 +82,28 @@ copy it into client environment files.
 
 ## Configuration Notes
 
-- Local email capture is configured under `[inbucket]`; `[local_smtp]` is not a
-  valid section for the installed Supabase CLI.
+- Local email capture is configured under `[local_smtp]`. Supabase CLI 2.109.1
+  warns that the former `[inbucket]` section is deprecated.
 - Local email confirmation remains enabled in `supabase/config.toml`.
 - The port map in `supabase/config.toml` is the source of truth. Update this
   runbook whenever it changes.
+
+## Realtime Reset Race
+
+With Supabase CLI 2.109.1, an already-running local Realtime container can race
+the CLI's transient Realtime migration runner after Postgres is recreated. Both
+processes may insert the same Ecto migration version into
+`_realtime.schema_migrations`, causing a `schema_migrations_pkey` duplicate
+before repository migrations run.
+
+The US-006 verification wrappers stop only the project-scoped Realtime
+container before `supabase db reset`. The reset command restarts the service
+after migrations complete. This does not delete local Docker volumes or affect
+other Supabase projects.
+
+The reset recreates Auth while leaving Kong running. On Docker Desktop, Kong
+can temporarily retain the old Auth upstream address and return HTTP 502 even
+after the new Auth container is healthy. The wrappers restart only the
+project-scoped Kong container after reset so it resolves the current Auth
+container. The wrappers then poll `/auth/v1/health` through Kong with a
+bounded timeout before integration requests begin.

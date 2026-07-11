@@ -2,7 +2,7 @@
 
 ## Status
 
-planned
+implemented
 
 ## Lane
 
@@ -12,10 +12,11 @@ high-risk
 
 - US-005 shared identity interface and adapters have fresh passing proof.
 
-## Current Behavior
+## Implemented Behavior
 
-No application table or RLS policy exists. Supabase Auth identities have no
-application-owned profile lifecycle.
+`public.profiles` is the application-owned one-to-one profile lifecycle for
+Supabase Auth identities. Database triggers create and timestamp the row, and
+forced Row Level Security keeps it private to its owner.
 
 ## Target Behavior
 

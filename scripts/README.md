@@ -178,6 +178,7 @@ Linux, Git Bash); use PowerShell on native Windows terminals.
 | `bash scripts/verify-reference-audit.sh [ref-root]` | `.\scripts\verify-reference-audit.ps1 [-ReferenceRoot path]` | Reference-repo evidence paths |
 | `bash scripts/verify-auth-user-planning.sh <story-id>` | `.\scripts\verify-auth-user-planning.ps1 -StoryId <story-id>` | Auth epic planning packet markers |
 | `bash scripts/verify-auth-session.sh` | `.\scripts\verify-auth-session.ps1` | US-005 executable auth session gate |
+| `bash scripts/verify-profile-rls.sh` | `.\scripts\verify-profile-rls.ps1` | US-006 profile migration, lifecycle, and RLS gate |
 
 Examples:
 
@@ -187,6 +188,7 @@ bash scripts/verify-reference-audit.sh /path/to/reference/repo
 # or: REFERENCE_REPO_ROOT=/path/to/reference/repo bash scripts/verify-reference-audit.sh
 bash scripts/verify-auth-user-planning.sh US-004
 bash scripts/verify-auth-session.sh
+bash scripts/verify-profile-rls.sh
 ```
 
 ```powershell
@@ -195,6 +197,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify-reference-aud
 # or: $env:REFERENCE_REPO_ROOT = "C:\path\to\reference\repo"; .\scripts\verify-reference-audit.ps1
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify-auth-user-planning.ps1 -StoryId US-004
 .\scripts\verify-auth-session.ps1
+.\scripts\verify-profile-rls.ps1
 ```
 
 ## Future Command Contract
