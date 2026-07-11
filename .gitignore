@@ -32,3 +32,4 @@ scripts/bin/harness-cli.exe
 .harness/
 .impeccable
 .turbo/
+AGENTS.md.bak
