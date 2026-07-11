@@ -1,0 +1,119 @@
+apps/mobile/src/lib/supabase/mobile-session.test.ts
+  s_d58c08a73d8206::t_fa538760fc0e39 304-305
+  s_d58c08a73d8206::t_0910a9f95b54de 2,12-15,152,173-177,309-332
+  s_d58c08a73d8206::t_4e951fee8574b9 383-403,412
+  s_d58c08a73d8206::t_8964fe79f4edce 413-429
+  s_d58c08a73d8206::t_b9c69e23ba3b53 1,3-11,16-116,129-141,143-146,148-151,153-172,178-281,283-302,306-308,382
+  s_d58c08a73d8206::t_589990c6ceddd3 142,147,430
+  s_d58c08a73d8206::t_18ba89e7176e36 282,303
+  s_d58c08a73d8206::t_bbd7db57179367 117-128,333-334,361-370,372-377,379-381
+  s_d58c08a73d8206::t_cf7e562c0ac11e 371,378,404-411
+  s_d58c08a73d8206::t_da82bd559d403e 335-360
+apps/web/src/lib/supabase/client.ts
+  s_d58c08a73d8206::t_f2b835e8886ef8 1-14
+supabase/config.toml
+  s_d58c08a73d8206::t_4e951fee8574b9 10
+packages/contracts/src/auth.test.ts
+  s_d58c08a73d8206::t_f6b77d9c7ed686 129-132
+  s_d58c08a73d8206::t_6aba20e6369976 1-128,133-171,173-181
+  s_d58c08a73d8206::t_beeba759db78e0 172,182
+apps/mobile/package.json
+  s_d58c08a73d8206::t_fddb2ed48cbae6 6
+  s_d58c08a73d8206::t_fe4642b06e5ed0 7-9
+  s_d58c08a73d8206::t_8d5583e89fd747 41-44
+  s_d58c08a73d8206::t_79936359376953 13
+packages/contracts/package.json
+  s_d58c08a73d8206::t_93f58937fd8e2a 13-15
+apps/mobile/src/lib/supabase/config.ts
+  s_d58c08a73d8206::t_c4f94454eacbd5 18,21
+  s_d58c08a73d8206::t_87244412dc1a8e 4,22
+  s_d58c08a73d8206::t_2b254e8aecfac1 1-3,5-11,17,19-20
+  s_d58c08a73d8206::t_f70249712750f3 12-16
+packages/contracts/src/auth.ts
+  s_d58c08a73d8206::t_a01fc98eb4b90a 6,122,135-138,149
+  s_d58c08a73d8206::t_cd82c9c67ff057 1-5,14-76,78-100,102-104,109-112,139-143,145-148,150-161
+  s_d58c08a73d8206::t_dcf3ad86deba61 113-121,123-134,144
+  s_d58c08a73d8206::t_7da17e31ee132b 105-108,162
+  s_d58c08a73d8206::t_581cc9be7dc91d 7-13,77,101
+apps/web/src/lib/supabase/server.test.ts
+  s_d58c08a73d8206::t_72884949037535 40,76
+  s_d58c08a73d8206::t_27296edc6953c4 1-39,41-75,77-151
+apps/mobile/src/lib/supabase/auth-state-controller.ts
+  s_d58c08a73d8206::t_4f92ad785b4f4a 180,187-188,190,192-196,199
+  s_d58c08a73d8206::t_b59c7112809b2c 80,92-95,101,112,182,197-198
+  s_d58c08a73d8206::t_87244412dc1a8e 2,218
+  s_d58c08a73d8206::t_18ba89e7176e36 40,189
+  s_d58c08a73d8206::t_e20ee2cb623659 1
+  s_d58c08a73d8206::t_39121577883afd 129-135,155-164,174
+  s_d58c08a73d8206::t_420e1403536a5b 81,96-97,100,102-103,113-114,144,173,183
+  s_d58c08a73d8206::t_c66d30d01b7d1d 184-185
+  s_d58c08a73d8206::t_eafbefad87f988 66-73,181,200-203
+  s_d58c08a73d8206::t_1e59eed6f382d2 3-39,41-65,74-79,82-91,98-99,104-111,115-128,136-143,145-154,165-172,175-179,186,191,204-217
+README.md
+  s_e467bf9fe06a72::t_0d20087b0b51c1 1,3-5,7,9-11,13,15-19,21,23-28,30-31,33,35-51,54,56-59,61,64,67-69,71,73,76
+  s_e467bf9fe06a72::t_50384850a63361 79,81-82,85,87,89-94,97-99,101,103-106,108-109
+apps/web/proxy.test.ts
+  s_d58c08a73d8206::t_72884949037535 21-26,80-83,90-99,102-105,152-157,162-171,185-187
+  s_d58c08a73d8206::t_045c178d024423 146-151,158-161,172-184,188-205
+  s_d58c08a73d8206::t_27296edc6953c4 1-20,27-79,84-89,100-101,106-145,206-224
+apps/mobile/src/lib/supabase/client.ts
+  s_d58c08a73d8206::t_f0b1f0f964ea05 2-6,8-23,29-44
+  s_d58c08a73d8206::t_18ba89e7176e36 45-49
+  s_d58c08a73d8206::t_c66d30d01b7d1d 7,24-28
+  s_d58c08a73d8206::t_87244412dc1a8e 1,50
+apps/web/src/lib/supabase/server.ts
+  s_d58c08a73d8206::t_f2b835e8886ef8 1-64
+apps/web/src/lib/supabase/config.test.ts
+  s_d58c08a73d8206::t_27296edc6953c4 1-16,18-21,23-24
+  s_d58c08a73d8206::t_589990c6ceddd3 17,22
+apps/web/src/lib/supabase/client.test.ts
+  s_d58c08a73d8206::t_27296edc6953c4 1-33
+packages/contracts/src/index.ts
+  s_d58c08a73d8206::t_cd82c9c67ff057 1-6
+apps/web/proxy.ts
+  s_d58c08a73d8206::t_f2b835e8886ef8 1-33,37-50,52,54,58-76
+  s_d58c08a73d8206::t_8cabd4b2a84682 34-36,51,53,55-57
+apps/web/src/lib/supabase/config.ts
+  s_d58c08a73d8206::t_f2b835e8886ef8 1-17,19-20,22
+  s_d58c08a73d8206::t_c4f94454eacbd5 18,21
+scripts/test-auth-session-integration.mjs
+  s_d58c08a73d8206::t_fa447e6d902597 1-5,8-13,18-81,83-90,93-141,153,168-175
+  s_d58c08a73d8206::t_581cc9be7dc91d 6-7,14-17,82,91-92,142-152,154-167
+  s_d58c08a73d8206::t_96c0de920e0b78 176-178
+  s_d58c08a73d8206::t_1af6b01be83086 179-185
+docs/stories/US-005-auth-session-identity/validation.md
+  s_d58c08a73d8206::t_052e4b9a7e50b7 5-34
+  s_d58c08a73d8206::t_7ac74ed0b7aa2a 2-4
+apps/web/package.json
+  s_d58c08a73d8206::t_4c2e45deb57bf2 15-17,25
+AGENTS.md
+  s_d58c08a73d8206::t_b983359b0caf70 18-23,35,37-38,42
+pnpm-lock.yaml
+  s_d58c08a73d8206::t_dbcd4245c4bb44 38-49,59-61,108-116,185-189,1590-1594,1802-1833,2760-2763,3307-3311,3641-3644,3786-3789,4283-4286,7541-7545,7769-7805,8855-8856,9595-9598,9968-9969,10104-10105,10822-10825
+package.json
+  s_d58c08a73d8206::t_ef38b44c354307 13
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "8ea5bdaedd9eadb1ceb82865d16fe95f4806cfcb",
+  "prompts": {},
+  "sessions": {
+    "s_d58c08a73d8206": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "50f3b149-ee9e-406f-a3d4-ecdb001a44c2",
+        "model": "gpt-4.1"
+      },
+      "human_author": "monet88 <minhthang421992@gmail.com>"
+    },
+    "s_e467bf9fe06a72": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "a1360392-95c4-43e3-ac84-706c8c4ddcbd",
+        "model": "gpt-4.1"
+      },
+      "human_author": "monet88 <minhthang421992@gmail.com>"
+    }
+  }
+}
