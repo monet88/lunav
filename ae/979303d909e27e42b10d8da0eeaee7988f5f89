@@ -1,0 +1,19 @@
+apps/web/src/lib/supabase/server.test.ts
+  s_d58c08a73d8206::t_d07128facded1f 83-84,124,126
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "ae979303d909e27e42b10d8da0eeaee7988f5f89",
+  "prompts": {},
+  "sessions": {
+    "s_d58c08a73d8206": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "50f3b149-ee9e-406f-a3d4-ecdb001a44c2",
+        "model": "unknown"
+      },
+      "human_author": "monet88 <minhthang421992@gmail.com>"
+    }
+  }
+}
