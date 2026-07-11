@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { expect, test } from 'vitest'
 
@@ -17,6 +17,21 @@ test('defines the Foundation quality tasks', () => {
   expect(Object.keys(turbo.tasks)).toEqual(
     expect.arrayContaining(['lint', 'typecheck', 'test', 'build'])
   )
+})
+
+test('provides runtime source shims for contract JavaScript exports', () => {
+  const contractsSource = resolve(root, 'packages/contracts/src')
+  const contractsIndex = readFileSync(
+    resolve(contractsSource, 'index.ts'),
+    'utf8'
+  )
+  const exportedJavaScriptModules = [
+    ...contractsIndex.matchAll(/from '\.\/([^']+)\.js'/g),
+  ].map((match) => match[1])
+
+  for (const moduleName of new Set(exportedJavaScriptModules)) {
+    expect(existsSync(resolve(contractsSource, `${moduleName}.js`))).toBe(true)
+  }
 })
 
 test('pins the Supabase CLI used by the profile integration gate', () => {

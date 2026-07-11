@@ -42,7 +42,7 @@ Supabase stack after the final review and reset-lifecycle fixes:
 	cleanup passed
 - repository lint: 8 of 8 tasks passed
 - repository typecheck: 8 of 8 tasks passed
-- repository tests: web 20, mobile 19, contracts 44, config 2, and root 15
+- repository tests: web 20, mobile 19, contracts 44, config 2, and root 16
 	tests passed
 - local Supabase type generation and client-secret scan passed
 - project-scoped Realtime quiescing prevented concurrent Ecto migration writes,
