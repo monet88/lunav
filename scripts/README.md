@@ -183,16 +183,16 @@ Examples:
 
 ```bash
 bash scripts/verify-phase0.sh
-bash scripts/verify-reference-audit.sh <ref-root>
-# or: REFERENCE_REPO_ROOT=<ref-root> bash scripts/verify-reference-audit.sh
+bash scripts/verify-reference-audit.sh /path/to/reference/repo
+# or: REFERENCE_REPO_ROOT=/path/to/reference/repo bash scripts/verify-reference-audit.sh
 bash scripts/verify-auth-user-planning.sh US-004
 bash scripts/verify-auth-session.sh
 ```
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify-phase0.ps1
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify-reference-audit.ps1 -ReferenceRoot <ref-root>
-# or: $env:REFERENCE_REPO_ROOT = '<ref-root>'; .\scripts\verify-reference-audit.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify-reference-audit.ps1 -ReferenceRoot "C:\path\to\reference\repo"
+# or: $env:REFERENCE_REPO_ROOT = "C:\path\to\reference\repo"; .\scripts\verify-reference-audit.ps1
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/verify-auth-user-planning.ps1 -StoryId US-004
 .\scripts\verify-auth-session.ps1
 ```

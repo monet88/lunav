@@ -48,7 +48,7 @@ Status values:
 
 | File / area | Primary responsibility | Secondary |
 | --- | --- | --- |
-| `AGENTS.md` | Context selection | Task specification, permissions |
+| `AGENTS.md` | Context selection | Task specification, Permissions |
 | `SPEC.md` | Task specification | Project memory |
 | `README.md` | Task specification | Project memory |
 | `docs/PRODUCT_SCOPE.md` | Task specification | Permissions |
@@ -68,16 +68,16 @@ Status values:
 | `docs/GLOSSARY.md` | Project memory | Context selection |
 | `docs/stories/US-001-*` … `US-008-*` | Task specification | Verification |
 | `docs/decisions/*` | Project memory | Permissions |
-| `scripts/bin/harness-cli(.exe)` | Tool access | Task state, verification |
+| `scripts/bin/harness-cli(.exe)` | Tool access | Task state, Verification |
 | `scripts/schema/*.sql` | Task state | Observability |
 | `scripts/verify-phase0.*` | Verification | Task specification |
 | `scripts/verify-reference-audit.*` | Verification | Project memory |
 | `scripts/verify-auth-user-planning.*` | Verification | Task specification |
-| `scripts/verify-auth-session.*` | Verification | Security |
-| `apps/web/**` | Product delta | Verification |
-| `apps/mobile/**` | Product delta | Verification |
-| `packages/**` | Product delta | Verification |
-| `supabase/**` | Product delta | Verification |
+| `scripts/verify-auth-session.*` | Verification | Permissions |
+| `apps/web/**` | Failure attribution | Verification |
+| `apps/mobile/**` | Failure attribution | Verification |
+| `packages/**` | Failure attribution | Verification |
+| `supabase/**` | Failure attribution | Verification |
 | `.github/workflows/**` | Verification | Tool access |
 
 ## Coverage Summary
