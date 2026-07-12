@@ -22,6 +22,10 @@ function RootNavigator() {
         <Stack.Screen name="(protected)" />
       </Stack.Protected>
 
+      {/* Always registered so lunav://auth/confirm cold-starts resolve. */}
+      <Stack.Screen name="auth/confirm" />
+      {/* Outside Stack.Protected so callback failures work during auth boot. */}
+      <Stack.Screen name="auth/confirm-failed" />
       <Stack.Screen name="index" />
     </Stack>
   )
