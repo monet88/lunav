@@ -98,8 +98,20 @@ export async function hasRecoverySession(
   return record.userId === trimmed
 }
 
+/**
+ * Drop the local recovery proof. Prefer delete; if delete fails, overwrite with
+ * an already-expired record so hasRecoverySession fails closed.
+ */
 export async function clearRecoverySession(
   store: RecoverySessionStore = SecureStore
 ): Promise<void> {
-  await store.deleteItemAsync(RECOVERY_SESSION_KEY)
+  try {
+    await store.deleteItemAsync(RECOVERY_SESSION_KEY)
+  } catch {
+    // SecureStore delete can fail while write still works — expire in place.
+    await store.setItemAsync(
+      RECOVERY_SESSION_KEY,
+      JSON.stringify({ expiresAt: 0, userId: '_' })
+    )
+  }
 }

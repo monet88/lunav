@@ -227,5 +227,9 @@ describe('mobile gated reset-password', () => {
       kind: 'password-updated',
       message: 'Mat khau da duoc cap nhat.',
     })
+    // Delete failed, but clearRecoverySession overwrites with an expired proof.
+    expect(store.values.get(RECOVERY_SESSION_KEY)).toBe(
+      JSON.stringify({ expiresAt: 0, userId: '_' })
+    )
   })
 })

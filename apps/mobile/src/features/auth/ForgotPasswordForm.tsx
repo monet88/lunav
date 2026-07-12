@@ -38,7 +38,8 @@ export function ForgotPasswordForm({
     inFlightRef.current = true
     setPending(true)
     try {
-      const next = await onSubmit({ email })
+      // Trim keyboard/autofill trailing spaces before shared contract validation.
+      const next = await onSubmit({ email: email.trim() })
       setState(next)
     } catch {
       // Unexpected throws from onSubmit must not leave an unhandled rejection

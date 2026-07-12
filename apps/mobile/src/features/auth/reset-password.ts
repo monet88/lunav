@@ -17,13 +17,13 @@ import {
 export interface ResetPasswordAuthClient {
   auth: {
     getUser: () => Promise<{
-      data: {
-        user: {
+      data?: {
+        user?: {
           email?: string
           email_confirmed_at?: string | null
           id?: string
         } | null
-      }
+      } | null
       error: unknown | null
     }>
     updateUser: (input: {
@@ -59,15 +59,16 @@ export async function resetPasswordWithRecoveryProof(
 
   try {
     const identityResult = await client.auth.getUser()
+    const user = identityResult.data?.user
 
-    if (identityResult.error !== null || identityResult.data.user === null) {
+    if (identityResult.error !== null || !user) {
       return genericFailureState()
     }
 
     const authState = normalizeAuthState({
-      email: identityResult.data.user.email,
-      email_confirmed_at: identityResult.data.user.email_confirmed_at ?? null,
-      id: identityResult.data.user.id,
+      email: user.email,
+      email_confirmed_at: user.email_confirmed_at ?? null,
+      id: user.id,
     })
 
     if (authState.status !== 'authenticated') {

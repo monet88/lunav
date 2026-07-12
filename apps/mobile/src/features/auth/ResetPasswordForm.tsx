@@ -69,7 +69,7 @@ export function ResetPasswordForm({
       <TextInput
         accessibilityLabel="Mat khau moi"
         autoCapitalize="none"
-        autoComplete="password-new"
+        autoComplete="new-password"
         editable={!pending}
         onChangeText={setPassword}
         secureTextEntry
@@ -83,7 +83,7 @@ export function ResetPasswordForm({
       <TextInput
         accessibilityLabel="Nhap lai mat khau moi"
         autoCapitalize="none"
-        autoComplete="password-new"
+        autoComplete="new-password"
         editable={!pending}
         onChangeText={setPasswordConfirmation}
         secureTextEntry
