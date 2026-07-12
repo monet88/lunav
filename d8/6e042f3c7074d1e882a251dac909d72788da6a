@@ -1,0 +1,47 @@
+apps/mobile/src/features/auth/ForgotPasswordForm.tsx
+  s_8746fe7318701a::t_110664c9c1428d 41-42
+apps/mobile/src/features/auth/ResetPasswordForm.tsx
+  s_8746fe7318701a::t_49a6a637fa370d 72,86
+apps/mobile/src/features/auth/SignUpForm.tsx
+  s_dc9e062f375acf::t_1a1de5a5482a1c 77,91
+apps/mobile/src/features/auth/auth-callback-work.ts
+  s_dfb9385de3c03b::t_98500674dfd545 4-7,22-27,35-39
+apps/mobile/src/features/auth/recovery-session.ts
+  s_8746fe7318701a::t_89dc5b47b19bb0 101-104,108-116
+apps/mobile/src/features/auth/reset-password.test.ts
+  s_8746fe7318701a::t_57fbcf080a34f8 230-233
+apps/mobile/src/features/auth/reset-password.ts
+  s_8746fe7318701a::t_856ec403b8d381 20-21,26,62,64,69-71
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "d86e042f3c7074d1e882a251dac909d72788da6a",
+  "prompts": {},
+  "sessions": {
+    "s_8746fe7318701a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9145c38c-cb4f-4b56-9cb3-cfa2fa67ac71",
+        "model": "unknown"
+      },
+      "human_author": "monet88 <minhthang421992@gmail.com>"
+    },
+    "s_dc9e062f375acf": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "de9fd9b5-d35e-4dc8-b3f4-e3e7217cd509",
+        "model": "unknown"
+      },
+      "human_author": "monet88 <minhthang421992@gmail.com>"
+    },
+    "s_dfb9385de3c03b": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "f1cda67e-a9c8-4c60-9eb6-126f6f00af54",
+        "model": "unknown"
+      },
+      "human_author": "monet88 <minhthang421992@gmail.com>"
+    }
+  }
+}
