@@ -7,15 +7,15 @@ the approved shared identity and profile modules.
 
 ## Work Phases
 
-1. Add failing tests for form validation, auth-state navigation, and callback
-   parsing.
-2. Configure the local app scheme, hosted verified Android App Links, and
+1. ~~Protect the private route group with `Stack.Protected` and a single mobile
+   auth session source of truth (session provider, loading surface, ordered
+   sign-out cleanup stub).~~ **Done in PR #12 (`4902f5c`).**
+2. Add failing tests for form validation and callback parsing.
+3. Configure the local app scheme, hosted verified Android App Links, and
    explicit confirmation/recovery callback routes.
-3. Add signup, sign-in, confirmation-pending, forgot-password, and reset forms.
-4. Protect the private route group with `Stack.Protected` and confirmed auth
-   state.
+4. Add signup, sign-in, confirmation-pending, forgot-password, and reset forms.
 5. Add the account screen and owner-scoped `display_name` update.
-6. Add sign-out cache cleanup and public navigation.
+6. Wire sign-out cache cleanup to real product caches and public navigation.
 7. Run focused checks, Android emulator/device flow, and hosted email/deep-link
    smoke proof.
 
