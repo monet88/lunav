@@ -27,6 +27,10 @@ export function waitForAuthState(
 
   return new Promise<AuthState>((resolve, reject) => {
     let settled = false
+    // Nullable handles: subscribe may invoke the listener synchronously, so
+    // finish must not close over const bindings still in the TDZ.
+    let timer: ReturnType<typeof setTimeout> | undefined
+    let unsubscribe: (() => void) | undefined
 
     const finish = (action: () => void): void => {
       if (settled) {
@@ -34,18 +38,25 @@ export function waitForAuthState(
       }
 
       settled = true
-      clearTimeout(timer)
-      unsubscribe()
+      if (timer !== undefined) {
+        clearTimeout(timer)
+      }
+      unsubscribe?.()
       action()
     }
 
-    const unsubscribe = source.subscribe((nextState) => {
+    unsubscribe = source.subscribe((nextState) => {
       if (predicate(nextState)) {
         finish(() => resolve(nextState))
       }
     })
 
-    const timer = setTimeout(() => {
+    // Sync emission already settled the promise — skip timer and re-check.
+    if (settled) {
+      return
+    }
+
+    timer = setTimeout(() => {
       finish(() => reject(new Error('auth-state-timeout')))
     }, timeoutMs)
 

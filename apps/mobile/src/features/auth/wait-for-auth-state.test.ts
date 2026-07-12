@@ -65,6 +65,31 @@ describe('waitForAuthState', () => {
     await expect(pending).resolves.toMatchObject({ status: 'authenticated' })
   })
 
+  test('resolves when subscribe emits a matching state synchronously', async () => {
+    const authenticated: AuthState = {
+      status: 'authenticated',
+      identity: {
+        userId: 'user-sync',
+        email: 'sync@example.com',
+        isEmailConfirmed: true,
+      },
+    }
+
+    const source = {
+      getState: () => ({ status: 'anonymous' }) as AuthState,
+      subscribe: (listener: (state: AuthState) => void) => {
+        // Synchronous emission is permitted by AuthStateSource and used to
+        // be a TDZ trap for finish() closing over const timer/unsubscribe.
+        listener(authenticated)
+        return () => undefined
+      },
+    }
+
+    await expect(
+      waitForAuthState(source, canAccessPrivateShell, { timeoutMs: 100 })
+    ).resolves.toEqual(authenticated)
+  })
+
   test('rejects on timeout when private shell never opens', async () => {
     const { source } = createSource({ status: 'anonymous' })
 
