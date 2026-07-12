@@ -1,0 +1,51 @@
+apps/mobile/src/app/(auth)/confirm-email.tsx
+  s_7584b2176c3ff5::t_d5a556273b5988 1-48
+apps/mobile/src/app/(auth)/index.tsx
+  s_7584b2176c3ff5::t_a5fff474cb5bd3 2,6,12,14,16-18,47-55
+apps/mobile/src/app/_layout.tsx
+  s_7584b2176c3ff5::t_94d4254f610bf9 25-26
+apps/mobile/src/app/auth/confirm.tsx
+  s_7584b2176c3ff5::t_edf9ab690ed1fa 1-41
+apps/mobile/src/features/auth/ConfirmCallbackScreen.test.tsx
+  s_7584b2176c3ff5::t_e035fc2384531d 1-92
+apps/mobile/src/features/auth/auth-callback.test.ts
+  s_7584b2176c3ff5::t_5681cdc6a07ed3 1-141
+apps/mobile/src/features/auth/auth-callback.ts
+  s_7584b2176c3ff5::t_7e1350c50d6c7b 1-110
+apps/mobile/src/features/auth/auth-result.test.ts
+  s_7584b2176c3ff5::t_9334d165dd2a7c 1-84
+apps/mobile/src/features/auth/auth-result.ts
+  s_7584b2176c3ff5::t_5da29e92884d3c 1-101
+apps/mobile/src/features/auth/confirm-request-url.test.ts
+  s_7584b2176c3ff5::t_d770349720fe03 1-19
+apps/mobile/src/features/auth/confirm-request-url.ts
+  s_7584b2176c3ff5::t_3b6f96574f0027 1-19
+apps/mobile/src/features/auth/mobile-redirect.ts
+  s_7584b2176c3ff5::t_9a0001abf4015f 1-9
+apps/mobile/src/features/auth/session-provider.tsx
+  s_7584b2176c3ff5::t_9142d9d6819f48 16,38-40
+apps/mobile/src/features/auth/sign-up.test.ts
+  s_7584b2176c3ff5::t_32c99424b0a58a 1-134
+apps/mobile/src/features/auth/sign-up.ts
+  s_7584b2176c3ff5::t_2f85cff50dd9ea 1-68
+apps/mobile/src/lib/supabase/shared-client.ts
+  s_7584b2176c3ff5::t_2f9ed28f1996d3 1-22
+supabase/config.toml
+  s_7584b2176c3ff5::t_7ffb1655b7eb73 169-170
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "3c90d6d4991171206efa54a3dd99ba21bb1437d9",
+  "prompts": {},
+  "sessions": {
+    "s_7584b2176c3ff5": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "cea5c416-1686-4c2b-9450-0434dfd16956",
+        "model": "unknown"
+      },
+      "human_author": "monet88 <minhthang421992@gmail.com>"
+    }
+  }
+}
