@@ -34,10 +34,8 @@ function Test-LocalSupabaseReady {
         }
     }
 
+    # E2E helpers and Mailpit probes are Mailpit-specific; do not fall back to Inbucket.
     $mailpitUrl = $environment["MAILPIT_URL"]
-    if (-not $mailpitUrl) {
-        $mailpitUrl = $environment["INBUCKET_URL"]
-    }
 
     if (-not $environment["API_URL"] -or -not $mailpitUrl) {
         return $false

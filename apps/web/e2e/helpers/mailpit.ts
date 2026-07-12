@@ -31,36 +31,37 @@ export async function waitForMailpitMessage(options: {
   const recipient = options.recipient.toLowerCase()
 
   while (Date.now() - startedAt < timeoutMs) {
-    const listResponse = await fetch(
-      `${options.mailpitUrl}/api/v1/messages?limit=50`
-    )
-
-    if (!listResponse.ok) {
-      throw new Error(`Mailpit list failed with HTTP ${listResponse.status}.`)
-    }
-
-    const list = (await listResponse.json()) as MailpitListResponse
-    const match = list.messages.find((message) => {
-      const addresses = message.To?.map((entry) => entry.Address.toLowerCase()) ?? []
-      return (
-        addresses.includes(recipient) &&
-        message.Subject.toLowerCase().includes(options.subjectIncludes.toLowerCase())
-      )
-    })
-
-    if (match) {
-      const detailResponse = await fetch(
-        `${options.mailpitUrl}/api/v1/message/${match.ID}`
+    try {
+      const listResponse = await fetch(
+        `${options.mailpitUrl}/api/v1/messages?limit=50`
       )
 
-      if (!detailResponse.ok) {
-        throw new Error(
-          `Mailpit message fetch failed with HTTP ${detailResponse.status}.`
-        )
+      if (listResponse.ok) {
+        const list = (await listResponse.json()) as MailpitListResponse
+        const match = list.messages.find((message) => {
+          const addresses =
+            message.To?.map((entry) => entry.Address.toLowerCase()) ?? []
+          return (
+            addresses.includes(recipient) &&
+            message.Subject.toLowerCase().includes(
+              options.subjectIncludes.toLowerCase()
+            )
+          )
+        })
+
+        if (match) {
+          const detailResponse = await fetch(
+            `${options.mailpitUrl}/api/v1/message/${match.ID}`
+          )
+
+          if (detailResponse.ok) {
+            const detail = (await detailResponse.json()) as MailpitMessageDetail
+            return { ...detail, ID: match.ID }
+          }
+        }
       }
-
-      const detail = (await detailResponse.json()) as MailpitMessageDetail
-      return { ...detail, ID: match.ID }
+    } catch {
+      // Transient Mailpit/network errors should retry until timeout.
     }
 
     await sleep(500)

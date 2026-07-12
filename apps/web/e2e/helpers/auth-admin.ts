@@ -8,13 +8,24 @@ export async function deleteAuthUser(
     return
   }
 
-  await fetch(`${environment.url}/auth/v1/admin/users/${userId}`, {
-    headers: {
-      apikey: environment.serviceRoleKey,
-      authorization: `Bearer ${environment.serviceRoleKey}`,
-    },
-    method: 'DELETE',
-  })
+  const response = await fetch(
+    `${environment.url}/auth/v1/admin/users/${userId}`,
+    {
+      headers: {
+        apikey: environment.serviceRoleKey,
+        authorization: `Bearer ${environment.serviceRoleKey}`,
+      },
+      method: 'DELETE',
+    }
+  )
+
+  if (!response.ok) {
+    // Cleanup must not throw when called from a test finally block — that would
+    // mask the original assertion failure. Surface the miss via stderr instead.
+    console.error(
+      `Admin user delete failed with HTTP ${response.status} for user ${userId}.`
+    )
+  }
 }
 
 export async function findAuthUserIdByEmail(

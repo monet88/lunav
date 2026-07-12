@@ -18,7 +18,9 @@ function parseEnvironmentValue(value: string): string {
 }
 
 function readStatusEnvironment(): Record<string, string> {
-  const rootDirectory = resolve(process.cwd(), '../..')
+  // Resolve from this helper file so Playwright works whether invoked from
+  // apps/web, the monorepo root, or an IDE test runner.
+  const rootDirectory = resolve(__dirname, '../../../..')
   const result = spawnSync('supabase', ['status', '--output', 'env'], {
     cwd: rootDirectory,
     encoding: 'utf8',
@@ -44,7 +46,7 @@ export function readLocalSupabaseEnvironment(): LocalSupabaseEnvironment {
   const url = environment.API_URL
   const publishableKey = environment.ANON_KEY ?? environment.PUBLISHABLE_KEY
   const serviceRoleKey = environment.SERVICE_ROLE_KEY ?? environment.SECRET_KEY
-  const mailpitUrl = environment.MAILPIT_URL ?? environment.INBUCKET_URL
+  const mailpitUrl = environment.MAILPIT_URL
   const webOrigin = process.env.WEB_ORIGIN ?? 'http://127.0.0.1:3000'
 
   if (!url || !publishableKey || !serviceRoleKey || !mailpitUrl) {

@@ -16,16 +16,15 @@ local_stack_ready() {
     return 1
   fi
 
-  mailpit_url="$(printf "%s\n" "$status_output" | sed -n "s/^MAILPIT_URL=//p" | tr -d "\"")"
-  if [[ -z "$mailpit_url" ]]; then
-    mailpit_url="$(printf "%s\n" "$status_output" | sed -n "s/^INBUCKET_URL=//p" | tr -d "\"")"
-  fi
+  # Strip quotes and CR so Git Bash/MSYS/Windows env dumps stay valid URLs.
+  mailpit_url="$(printf "%s\n" "$status_output" | sed -n "s/^MAILPIT_URL=//p" | tr -d '"\r')"
 
   if [[ -z "$mailpit_url" ]]; then
     return 1
   fi
 
-  curl -fsS "${mailpit_url%/}/api/v1/messages?limit=1" >/dev/null
+  curl -fsS --connect-timeout 5 --max-time 10 \
+    "${mailpit_url%/}/api/v1/messages?limit=1" >/dev/null
 }
 
 run pnpm --filter @lunav/contracts test

@@ -84,6 +84,19 @@ describe('findForbiddenClientSecrets', () => {
     expect(scanClientFiles(rootDirectory)).toEqual([])
   })
 
+  test('ignores Playwright e2e helpers under apps', () => {
+    const rootDirectory = mkdtempSync(join(tmpdir(), 'lunav-client-secret-'))
+    const e2eHelperDirectory = join(rootDirectory, 'apps', 'web', 'e2e', 'helpers')
+
+    mkdirSync(e2eHelperDirectory, { recursive: true })
+    writeFileSync(
+      join(e2eHelperDirectory, 'local-env.ts'),
+      'const serviceRoleKey = "local-admin-secret"'
+    )
+
+    expect(scanClientFiles(rootDirectory)).toEqual([])
+  })
+
   test('ignores generated Next.js build artifacts', () => {
     const rootDirectory = mkdtempSync(join(tmpdir(), 'lunav-client-secret-'))
     const buildDirectory = join(rootDirectory, 'apps', 'web', '.next')

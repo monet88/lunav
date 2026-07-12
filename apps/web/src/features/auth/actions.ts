@@ -30,10 +30,21 @@ function genericFailureState(): FormActionState {
 function pickFields(
   formData: FormData,
   keys: readonly string[]
-): Record<string, FormDataEntryValue | null> {
+): Record<string, FormDataEntryValue> {
   // Next.js server actions inject bookkeeping fields such as $ACTION_ID_*.
   // Strict web-auth contracts must only see the declared form inputs.
-  return Object.fromEntries(keys.map((key) => [key, formData.get(key)]))
+  // Omit missing keys instead of passing null so Zod optional/default fields
+  // keep receiving string | undefined rather than null.
+  const result: Record<string, FormDataEntryValue> = {}
+
+  for (const key of keys) {
+    const value = formData.get(key)
+    if (value !== null) {
+      result[key] = value
+    }
+  }
+
+  return result
 }
 
 export async function signUpAction(

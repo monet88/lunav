@@ -18,7 +18,6 @@ export default defineConfig({
   expect: {
     timeout: 20_000,
   },
-  globalSetup: "./e2e/global-setup.ts",
   use: {
     ...devices["Desktop Chrome"],
     baseURL: localEnvironment.webOrigin,

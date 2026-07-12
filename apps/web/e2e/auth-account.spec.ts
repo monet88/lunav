@@ -115,10 +115,15 @@ test("completes local web auth confirmation, account, recovery, and logout", asy
     await expect(page).toHaveURL(/\/sign-in/)
     await expectSignedOutFromAccount(page)
   } finally {
-    if (!userId) {
-      userId = await findAuthUserIdByEmail(environment, email)
-    }
+    try {
+      if (!userId) {
+        userId = await findAuthUserIdByEmail(environment, email)
+      }
 
-    await deleteAuthUser(environment, userId)
+      await deleteAuthUser(environment, userId)
+    } catch (error) {
+      // Preserve the original test failure; cleanup issues are secondary.
+      console.error("Failed to clean up web auth E2E user:", error)
+    }
   }
 })
