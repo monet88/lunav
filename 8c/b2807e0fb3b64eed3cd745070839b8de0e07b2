@@ -1,0 +1,21 @@
+apps/mobile/src/features/auth/auth-callback-work.test.ts
+  s_dfb9385de3c03b::t_6653c661913e49 39-40,50
+apps/mobile/src/features/auth/auth-callback-work.ts
+  s_dfb9385de3c03b::t_32b665d390be5d 20-22,24,26,30-31
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "8cb2807e0fb3b64eed3cd745070839b8de0e07b2",
+  "prompts": {},
+  "sessions": {
+    "s_dfb9385de3c03b": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "f1cda67e-a9c8-4c60-9eb6-126f6f00af54",
+        "model": "unknown"
+      },
+      "human_author": "monet88 <minhthang421992@gmail.com>"
+    }
+  }
+}
