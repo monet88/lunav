@@ -2,7 +2,7 @@
 
 ## Status
 
-planned
+in_progress
 
 ## Lane
 
@@ -15,9 +15,12 @@ high-risk
 
 ## Current Behavior
 
-The Expo Router app renders a Foundation index route and can export an Android
-bundle. It has no native auth screens, protected navigation, persisted session,
-deep-link callback, recovery flow, or account settings.
+The Expo Router app has a merged mobile auth session shell (PR #12 / `4902f5c`):
+`MobileAuthSessionProvider`, `Stack.Protected` public/private route groups,
+`AuthLoadingScreen`, ordered sign-out cleanup stub, and focused unit coverage for
+shell eligibility plus controller start/stop cancel/idempotency. Signup, email
+confirmation deep links, sign-in, recovery/reset, account `display_name`, Android
+runtime proof, and hosted App Link smoke are still open.
 
 ## Target Behavior
 
