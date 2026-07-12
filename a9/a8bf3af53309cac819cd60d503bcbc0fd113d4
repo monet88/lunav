@@ -1,0 +1,19 @@
+apps/web/e2e/helpers/mailpit.ts
+  s_532a841c6c9db8::t_27dd7ac0c070dc 23-30,40,48-50,72-75,78-81,87-91,93
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "a9a8bf3af53309cac819cd60d503bcbc0fd113d4",
+  "prompts": {},
+  "sessions": {
+    "s_532a841c6c9db8": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "86024d38-7f40-465b-969c-140dd5fbbb9d",
+        "model": "unknown"
+      },
+      "human_author": "monet88 <minhthang421992@gmail.com>"
+    }
+  }
+}
