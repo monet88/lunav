@@ -1,0 +1,37 @@
+apps/web/e2e/auth-account.spec.ts
+  s_532a841c6c9db8::t_4222bdd88f41ae 118-126
+apps/web/e2e/helpers/auth-admin.ts
+  s_532a841c6c9db8::t_55ce4196d0f0fb 11-28
+apps/web/e2e/helpers/local-env.ts
+  s_532a841c6c9db8::t_d70067d51b9cb4 21-23,49
+apps/web/e2e/helpers/mailpit.ts
+  s_532a841c6c9db8::t_e3f4392735701f 34-36,39-50,52-55,57-64
+apps/web/src/features/auth/actions.ts
+  s_532a841c6c9db8::t_b911d19c2f7bb9 33,36-47
+docs/superpowers/plans/2026-07-12-us-007-web-auth-e2e-smoke.md
+  s_532a841c6c9db8::t_6c7198564f8367 23,27-30,34-39,43-45
+scripts/check-client-secrets.mjs
+  s_532a841c6c9db8::t_2e8cdc5be9affe 28-29
+scripts/check-client-secrets.test.ts
+  s_532a841c6c9db8::t_90a27b2675d28b 87-99
+scripts/verify-web-auth.ps1
+  s_532a841c6c9db8::t_fa623fcfe81e14 37
+scripts/verify-web-auth.sh
+  s_532a841c6c9db8::t_86f49dd0a44065 19-20,26-27
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "0509502dcab9bbaf40a0c8b36476440c4795cc14",
+  "prompts": {},
+  "sessions": {
+    "s_532a841c6c9db8": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "86024d38-7f40-465b-969c-140dd5fbbb9d",
+        "model": "unknown"
+      },
+      "human_author": "monet88 <minhthang421992@gmail.com>"
+    }
+  }
+}
