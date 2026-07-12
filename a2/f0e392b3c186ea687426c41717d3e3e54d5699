@@ -1,0 +1,37 @@
+apps/mobile/src/app/_layout.tsx
+  s_dc9e062f375acf::t_c9eb33ae24b58f 27-28
+apps/mobile/src/app/auth/confirm-failed.tsx
+  s_dc9e062f375acf::t_2b8981d7b4d67b 1-38
+apps/mobile/src/features/auth/ConfirmCallbackScreen.test.tsx
+  s_dc9e062f375acf::t_1efe219bb6feba 61,84
+apps/mobile/src/features/auth/ConfirmCallbackScreen.tsx
+  s_dc9e062f375acf::t_5b616097d1763d 40-42
+apps/mobile/src/features/auth/auth-result.test.ts
+  s_dc9e062f375acf::t_c45a61006698a8 32-49,62-72
+apps/mobile/src/features/auth/auth-result.ts
+  s_dc9e062f375acf::t_ae4309ca73430b 43-56,60-66,71-75,77-78,88-94,99-103,105-106,135-138
+apps/mobile/src/features/auth/search-params.test.ts
+  s_dc9e062f375acf::t_068ca571b8afca 19-30,46-48
+apps/mobile/src/features/auth/search-params.ts
+  s_dc9e062f375acf::t_4e87c1731c4ab2 5-9,12,16
+apps/mobile/src/features/auth/sign-up.test.ts
+  s_dc9e062f375acf::t_707e5dc1476b45 94-134,175-195
+apps/mobile/src/features/auth/sign-up.ts
+  s_dc9e062f375acf::t_dfd7d19360fc0a 6,39-47,57,65-71,81
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "a2f0e392b3c186ea687426c41717d3e3e54d5699",
+  "prompts": {},
+  "sessions": {
+    "s_dc9e062f375acf": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "de9fd9b5-d35e-4dc8-b3f4-e3e7217cd509",
+        "model": "unknown"
+      },
+      "human_author": "monet88 <minhthang421992@gmail.com>"
+    }
+  }
+}
