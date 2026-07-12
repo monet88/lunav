@@ -16,6 +16,18 @@ describe('auth route search params', () => {
     })
   })
 
+  test('preserves empty duplicate code values so cardinality stays fail-closed', () => {
+    expect(parseConfirmSearchParams({ code: ['valid', ''] })).toEqual({
+      codes: ['valid', ''],
+    })
+    expect(parseConfirmSearchParams({ code: ['', 'valid'] })).toEqual({
+      codes: ['', 'valid'],
+    })
+    expect(parseConfirmSearchParams({ code: '' })).toEqual({
+      codes: [''],
+    })
+  })
+
   test('fails closed on non-object confirm params', () => {
     expect(parseConfirmSearchParams(null)).toEqual({ codes: [] })
     expect(parseConfirmSearchParams('code=abc')).toEqual({ codes: [] })
@@ -31,5 +43,8 @@ describe('auth route search params', () => {
     expect(
       parseConfirmEmailSearchParams({ status: ['error', 'error'] })
     ).toEqual({ initialError: false })
+    expect(parseConfirmEmailSearchParams({ status: ['error', ''] })).toEqual({
+      initialError: false,
+    })
   })
 })

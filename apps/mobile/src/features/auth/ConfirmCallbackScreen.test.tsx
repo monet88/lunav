@@ -58,9 +58,7 @@ describe('ConfirmCallbackScreen', () => {
     })
 
     await waitFor(() => {
-      expect(replace).toHaveBeenCalledWith(
-        '/(auth)/confirm-email?status=error'
-      )
+      expect(replace).toHaveBeenCalledWith('/auth/confirm-failed')
     })
     expect(client.auth.exchangeCodeForSession).not.toHaveBeenCalled()
   })
@@ -83,9 +81,7 @@ describe('ConfirmCallbackScreen', () => {
     })
 
     await waitFor(() => {
-      expect(replace).toHaveBeenCalledWith(
-        '/(auth)/confirm-email?status=error'
-      )
+      expect(replace).toHaveBeenCalledWith('/auth/confirm-failed')
     })
     expect(client.auth.signOut).toHaveBeenCalledTimes(1)
   })

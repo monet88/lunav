@@ -29,6 +29,24 @@ describe('mobile auth provider result mapping', () => {
     })
   })
 
+  test('maps unexpected provider failures without claiming email was sent', () => {
+    expect(
+      mapConfirmationPendingResult({
+        error: { code: 'unexpected_failure', message: 'redirect misconfigured' },
+      })
+    ).toEqual({
+      kind: 'error',
+      message: 'Khong the hoan tat yeu cau. Vui long thu lai.',
+    })
+  })
+
+  test('keeps successful signup as confirmation pending', () => {
+    expect(mapSignUpResult({ error: null })).toEqual({
+      kind: 'confirmation-pending',
+      message: 'Neu dia chi email hop le, ban se nhan duoc huong dan xac nhan.',
+    })
+  })
+
   test('keeps password recovery enumeration safe for an unknown account', () => {
     expect(
       mapForgotPasswordResult({
@@ -38,6 +56,17 @@ describe('mobile auth provider result mapping', () => {
       kind: 'recovery-pending',
       message:
         'Neu dia chi email hop le, ban se nhan duoc huong dan dat lai mat khau.',
+    })
+  })
+
+  test('maps unexpected recovery provider failures without claiming email was sent', () => {
+    expect(
+      mapForgotPasswordResult({
+        error: { code: 'unexpected_failure', message: 'smtp down' },
+      })
+    ).toEqual({
+      kind: 'error',
+      message: 'Khong the hoan tat yeu cau. Vui long thu lai.',
     })
   })
 

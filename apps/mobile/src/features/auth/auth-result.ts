@@ -40,17 +40,42 @@ function isRateLimitError(error: ProviderError | null): boolean {
   )
 }
 
+/**
+ * Only mask codes that would otherwise reveal whether an account exists.
+ * Operational / unexpected provider failures must surface as a generic error
+ * so the user is not told an email was sent when it was not.
+ */
+function isEnumerationSafeConfirmationCode(code: string | undefined): boolean {
+  return (
+    code === 'email_exists' ||
+    code === 'user_already_exists' ||
+    code === 'identity_already_exists' ||
+    code === 'user_not_found'
+  )
+}
+
 export function mapConfirmationPendingResult(
   result: ProviderResult
 ): AuthActionResult {
+  if (result.error === null) {
+    return {
+      kind: 'confirmation-pending',
+      message: CONFIRMATION_PENDING_MESSAGE,
+    }
+  }
+
   if (isRateLimitError(result.error)) {
     return { kind: 'error', message: RATE_LIMIT_MESSAGE }
   }
 
-  return {
-    kind: 'confirmation-pending',
-    message: CONFIRMATION_PENDING_MESSAGE,
+  if (isEnumerationSafeConfirmationCode(result.error.code)) {
+    return {
+      kind: 'confirmation-pending',
+      message: CONFIRMATION_PENDING_MESSAGE,
+    }
   }
+
+  return { kind: 'error', message: GENERIC_FAILURE_MESSAGE }
 }
 
 export function mapSignUpResult(result: ProviderResult): AuthActionResult {
@@ -60,14 +85,25 @@ export function mapSignUpResult(result: ProviderResult): AuthActionResult {
 export function mapForgotPasswordResult(
   result: ProviderResult
 ): AuthActionResult {
+  if (result.error === null) {
+    return {
+      kind: 'recovery-pending',
+      message: RECOVERY_PENDING_MESSAGE,
+    }
+  }
+
   if (isRateLimitError(result.error)) {
     return { kind: 'error', message: RATE_LIMIT_MESSAGE }
   }
 
-  return {
-    kind: 'recovery-pending',
-    message: RECOVERY_PENDING_MESSAGE,
+  if (isEnumerationSafeConfirmationCode(result.error.code)) {
+    return {
+      kind: 'recovery-pending',
+      message: RECOVERY_PENDING_MESSAGE,
+    }
   }
+
+  return { kind: 'error', message: GENERIC_FAILURE_MESSAGE }
 }
 
 export function mapSignInError(error: ProviderError | null): AuthActionResult {
@@ -94,6 +130,10 @@ export function mapCallbackFailure(error: ProviderError): AuthActionResult {
 
 export function invalidFormState(): AuthActionResult {
   return { kind: 'error', message: INVALID_FORM_MESSAGE }
+}
+
+export function genericFailureState(): AuthActionResult {
+  return { kind: 'error', message: GENERIC_FAILURE_MESSAGE }
 }
 
 export function confirmLinkFailureMessage(): string {

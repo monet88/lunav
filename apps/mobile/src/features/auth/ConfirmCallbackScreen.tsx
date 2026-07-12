@@ -37,7 +37,9 @@ export function ConfirmCallbackScreen({
   requestUrl,
   navigation,
   successPath = '/',
-  failurePath = '/(auth)/confirm-email?status=error',
+  // Outside Stack.Protected so cold-start failures remain reachable while the
+  // public (auth) group is still gated by the loading session state.
+  failurePath = '/auth/confirm-failed',
 }: ConfirmCallbackScreenProps) {
   const startedRef = useRef(false)
 

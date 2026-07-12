@@ -2,15 +2,18 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null
 }
 
+/**
+ * Preserve every string entry (including empty) so callers can enforce true
+ * cardinality. Filtering empties here would collapse `code=valid&code=` into a
+ * single valid code and incorrectly allow exchange.
+ */
 function asStringList(value: unknown): string[] {
   if (typeof value === 'string') {
-    return value.length > 0 ? [value] : []
+    return [value]
   }
 
   if (Array.isArray(value)) {
-    return value.filter(
-      (entry): entry is string => typeof entry === 'string' && entry.length > 0
-    )
+    return value.filter((entry): entry is string => typeof entry === 'string')
   }
 
   return []

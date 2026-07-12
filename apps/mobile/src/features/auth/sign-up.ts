@@ -3,6 +3,7 @@ import {
   parseSignUpInput,
 } from '@lunav/contracts'
 import {
+  genericFailureState,
   invalidFormState,
   mapConfirmationPendingResult,
   mapSignUpResult,
@@ -35,8 +36,16 @@ export async function signUpWithEmailPassword(
   client: SignUpAuthClient,
   fields: SignUpInputFields
 ): Promise<AuthActionResult> {
+  // Validation failures and transport failures must stay distinct so a network
+  // outage is never presented as "please check the form".
+  let input: ReturnType<typeof parseSignUpInput>
   try {
-    const input = parseSignUpInput(fields)
+    input = parseSignUpInput(fields)
+  } catch {
+    return invalidFormState()
+  }
+
+  try {
     const result = await client.auth.signUp({
       email: input.email,
       password: input.password,
@@ -45,7 +54,7 @@ export async function signUpWithEmailPassword(
 
     return mapSignUpResult(result)
   } catch {
-    return invalidFormState()
+    return genericFailureState()
   }
 }
 
@@ -53,8 +62,14 @@ export async function resendSignupConfirmation(
   client: SignUpAuthClient,
   email: string
 ): Promise<AuthActionResult> {
+  let input: ReturnType<typeof parseForgotPasswordInput>
   try {
-    const input = parseForgotPasswordInput({ email })
+    input = parseForgotPasswordInput({ email })
+  } catch {
+    return invalidFormState()
+  }
+
+  try {
     const result = await client.auth.resend({
       type: 'signup',
       email: input.email,
@@ -63,6 +78,6 @@ export async function resendSignupConfirmation(
 
     return mapConfirmationPendingResult(result)
   } catch {
-    return invalidFormState()
+    return genericFailureState()
   }
 }

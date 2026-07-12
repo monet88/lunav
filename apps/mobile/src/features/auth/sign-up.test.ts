@@ -91,6 +91,47 @@ describe('mobile sign-up and resend', () => {
     })
   })
 
+  test('maps unexpected signup provider errors without claiming email was sent', async () => {
+    const { client } = createClient({
+      signUpResult: {
+        error: { code: 'unexpected_failure', message: 'provider detail' },
+      },
+    })
+
+    const result = await signUpWithEmailPassword(client, {
+      email: 'member@example.com',
+      password: 'password12',
+      passwordConfirmation: 'password12',
+    })
+
+    expect(result).toEqual({
+      kind: 'error',
+      message: 'Khong the hoan tat yeu cau. Vui long thu lai.',
+    })
+  })
+
+  test('maps transport exceptions as a generic failure, not a form error', async () => {
+    const signUp = jest.fn().mockRejectedValue(new Error('network down'))
+    const client: SignUpAuthClient = {
+      auth: {
+        signUp,
+        resend: jest.fn(),
+      },
+    }
+
+    const result = await signUpWithEmailPassword(client, {
+      email: 'member@example.com',
+      password: 'password12',
+      passwordConfirmation: 'password12',
+    })
+
+    expect(result).toEqual({
+      kind: 'error',
+      message: 'Khong the hoan tat yeu cau. Vui long thu lai.',
+    })
+    expect(signUp).toHaveBeenCalled()
+  })
+
   test('resend confirmation keeps the same safe pending messaging', async () => {
     const { client, resend } = createClient({
       resendResult: {
@@ -130,5 +171,26 @@ describe('mobile sign-up and resend', () => {
       kind: 'error',
       message: 'Ban da thu qua nhieu lan. Vui long thu lai sau it phut.',
     })
+  })
+
+  test('maps resend transport exceptions as a generic failure, not a form error', async () => {
+    const resend = jest.fn().mockRejectedValue(new Error('network down'))
+    const client: SignUpAuthClient = {
+      auth: {
+        signUp: jest.fn(),
+        resend,
+      },
+    }
+
+    const result = await resendSignupConfirmation(
+      client,
+      'member@example.com'
+    )
+
+    expect(result).toEqual({
+      kind: 'error',
+      message: 'Khong the hoan tat yeu cau. Vui long thu lai.',
+    })
+    expect(resend).toHaveBeenCalled()
   })
 })
