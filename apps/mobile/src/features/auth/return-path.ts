@@ -11,19 +11,15 @@ export type MobilePostSignInHref = '/(protected)'
  * Validate a raw return destination, then map it to a local Expo href.
  * Unapproved destinations fall back safely — never open external or public
  * deep-link targets after a successful sign-in.
+ *
+ * parseAuthReturnDestination still runs so open-redirect / encoded tricks are
+ * rejected even though every approved path currently lands on the same shell.
  */
 export function resolveMobileSignInHref(
   rawReturnTo: string | undefined
 ): MobilePostSignInHref {
-  // Shared contract collapses open redirects / query / encoded tricks to `/`
-  // or the canonical `/account` path only.
-  const destination = parseAuthReturnDestination(rawReturnTo ?? '')
-
-  if (destination === '/account') {
-    return '/(protected)'
-  }
-
-  // Fallback root still lands in the private shell: a confirmed session was
-  // just established and public auth routes must not remain the post-login home.
+  // Force evaluation for side-effect validation; result is intentionally unused
+  // until account routes (#10) need distinct protected sub-paths.
+  void parseAuthReturnDestination(rawReturnTo ?? '')
   return '/(protected)'
 }

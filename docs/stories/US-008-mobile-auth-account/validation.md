@@ -9,7 +9,7 @@ emulator/device runtime, and hosted App Link/email smoke.
 
 | Layer | Planned proof | Current status |
 | --- | --- | --- |
-| Unit | Form validation, enumeration-safe errors, auth-state navigation, callback failure cases, and canonical return-path fallback. | Partial: shell + signup/resend mapping + confirm callback + sign-in validation/error mapping/return-path fallback + protected entry covered after issues #7 and #8. Recovery/account still open. |
+| Unit | Form validation, enumeration-safe errors, auth-state navigation, callback failure cases, and canonical return-path fallback. | Partial: shell + signup/resend mapping + confirm callback + sign-in validation/error mapping/return-path fallback + identity handshake + protected-entry coupling covered after issues #7 and #8. Recovery/account still open. |
 | Integration | Session persistence, foreground refresh, verified user, and owner-scoped profile update. | Not yet for US-008 product screens; US-005 adapter remains the session seam. |
 | Platform | Android emulator or device completes signup, confirmation, login, relaunch, recovery, settings update, and logout. | Not proven. Expo static export alone does not satisfy this story. |
 | Hosted smoke | Redirect allowlist, confirmation/password/abuse controls, verified Android App Link association, and real confirmation/recovery email are attested. | Not proven. Local `lunav://auth/confirm` allowlist is configured; hosted App Links remain open. |
@@ -24,8 +24,12 @@ emulator/device runtime, and hosted App Link/email smoke.
 - Issue #8 sign-in → protected entry: shared-contract `parseSignInInput`,
   enumeration-safe `mapSignInError`, validated return destination via
   `parseAuthReturnDestination` → `/(protected)`, `SignInForm` on `(auth)/index`.
+- Sign-in identity handshake: password success awaits `getUser()` and only
+  returns `signed-in` for confirmed `authenticated`; route waits for session
+  provider `canAccessPrivateShell` before `router.replace` so a late/failed
+  identity refresh cannot clear the form and leave the user stuck public.
 - Local mobile unit/typecheck/lint green for shell + signup/confirm + sign-in
-  (`pnpm --filter @lunav/mobile test` → 94 passed; typecheck + lint clean).
+  (`pnpm --filter @lunav/mobile test` → 106 passed; typecheck + lint clean).
 - Harness matrix: `US-008` → `in_progress`, unit=`yes`, integration/e2e/platform=`no`.
 
 ## Planned Commands

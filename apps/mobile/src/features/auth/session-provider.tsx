@@ -10,6 +10,7 @@ import {
 } from 'react'
 import {
   createMobileAuthStateController,
+  type AuthStateListener,
   type MobileAuthStateController,
   type SignOutCleanup,
 } from '@/lib/supabase/auth-state-controller'
@@ -18,6 +19,12 @@ import { stubSignOutCleanup } from './sign-out-cleanup'
 
 export interface MobileAuthSessionValue {
   state: AuthState
+  /**
+   * Live controller snapshot — preferred over React `state` when waiting for
+   * post-sign-in eligibility so submit does not race a stale render.
+   */
+  getState: () => AuthState
+  subscribe: (listener: AuthStateListener) => () => void
   signOut: () => Promise<void>
 }
 
@@ -86,12 +93,20 @@ export function MobileAuthSessionProvider({
     await controller.signOut(cleanup)
   }, [cleanup, controller])
 
+  const getState = useCallback(() => controller.getState(), [controller])
+  const subscribe = useCallback(
+    (listener: AuthStateListener) => controller.subscribe(listener),
+    [controller]
+  )
+
   const value = useMemo(
     () => ({
       state,
+      getState,
+      subscribe,
       signOut,
     }),
-    [signOut, state]
+    [getState, signOut, state, subscribe]
   )
 
   return (

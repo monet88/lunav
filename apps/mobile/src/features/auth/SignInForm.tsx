@@ -7,8 +7,11 @@ import {
   TextInput,
   View,
 } from 'react-native'
-import type { FormActionState } from './auth-result'
-import { INITIAL_FORM_STATE } from './auth-result'
+import {
+  genericFailureState,
+  INITIAL_FORM_STATE,
+  type FormActionState,
+} from './auth-result'
 import type { SignInResult } from './sign-in'
 
 interface SignInFormProps {
@@ -43,6 +46,10 @@ export function SignInForm({ onSubmit, onSignedIn }: SignInFormProps) {
       }
 
       setState(next)
+    } catch {
+      // Unexpected throws from onSubmit/onSignedIn must not leave an unhandled
+      // rejection after void handleSubmit() — keep the user on a retryable error.
+      setState(genericFailureState())
     } finally {
       inFlightRef.current = false
       setPending(false)
