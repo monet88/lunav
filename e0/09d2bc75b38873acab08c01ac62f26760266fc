@@ -1,0 +1,45 @@
+apps/mobile/src/app/(auth)/_layout.tsx
+  s_24a53d4323c255::t_1611c5ac4b5da3 1-5
+apps/mobile/src/app/(auth)/index.tsx
+  s_24a53d4323c255::t_236ba8988b674c 1-43
+apps/mobile/src/app/(protected)/_layout.tsx
+  s_24a53d4323c255::t_4ae104c9c7488a 1-5
+apps/mobile/src/app/(protected)/index.tsx
+  s_24a53d4323c255::t_fb684ec7768a87 1-46
+apps/mobile/src/app/_layout.tsx
+  s_24a53d4323c255::t_1371b444b0cfda 2-28,31-35
+apps/mobile/src/app/index.tsx
+  s_24a53d4323c255::t_f85b636bfc1451 1-4,7-12,14-15
+apps/mobile/src/features/auth/AuthLoadingScreen.tsx
+  s_24a53d4323c255::t_5243b12979678c 1-40
+apps/mobile/src/features/auth/auth-shell.test.ts
+  s_24a53d4323c255::t_481d8ecef5d224 1-54
+apps/mobile/src/features/auth/auth-shell.ts
+  s_24a53d4323c255::t_d94249d1e9b767 1-41
+apps/mobile/src/features/auth/protected-navigation.test.ts
+  s_24a53d4323c255::t_f59fadc9a8e4cf 1-74
+apps/mobile/src/features/auth/session-provider.test.tsx
+  s_24a53d4323c255::t_ea0d6ebbe4812d 1-187
+apps/mobile/src/features/auth/session-provider.tsx
+  s_24a53d4323c255::t_d096ad5e6631fc 1-115
+apps/mobile/src/features/auth/sign-out-cleanup.ts
+  s_24a53d4323c255::t_119a3c85bc5e55 1-14
+apps/mobile/src/tests/index-route.test.tsx
+  s_24a53d4323c255::t_708489fc0a8bcd 1-2,5,7-94
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "e009d2bc75b38873acab08c01ac62f26760266fc",
+  "prompts": {},
+  "sessions": {
+    "s_24a53d4323c255": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "58e1af77-2e9c-4a42-b891-c8b3ce8a0c7f",
+        "model": "unknown"
+      },
+      "human_author": "monet88 <minhthang421992@gmail.com>"
+    }
+  }
+}
