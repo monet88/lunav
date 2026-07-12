@@ -15,6 +15,7 @@ export type AuthActionResult = {
 export type FormActionState =
   | AuthActionResult
   | { kind: 'idle'; message: '' }
+  | { kind: 'success'; message: string }
 
 export const INITIAL_FORM_STATE: FormActionState = { kind: 'idle', message: '' }
 

@@ -74,7 +74,7 @@ export function SignUpForm({ onSubmit }: SignUpFormProps) {
       <TextInput
         accessibilityLabel="Mat khau"
         autoCapitalize="none"
-        autoComplete="new-password"
+        autoComplete="password-new"
         editable={!pending}
         onChangeText={setPassword}
         secureTextEntry
@@ -88,7 +88,7 @@ export function SignUpForm({ onSubmit }: SignUpFormProps) {
       <TextInput
         accessibilityLabel="Nhap lai mat khau"
         autoCapitalize="none"
-        autoComplete="new-password"
+        autoComplete="password-new"
         editable={!pending}
         onChangeText={setPasswordConfirmation}
         secureTextEntry

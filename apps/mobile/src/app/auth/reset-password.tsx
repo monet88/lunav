@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { Link } from 'expo-router'
+import { Link, router } from 'expo-router'
 import { ResetPasswordForm } from '@/features/auth/ResetPasswordForm'
 import { resetPasswordWithRecoveryProof } from '@/features/auth/reset-password'
 import { getSharedMobileSupabaseClient } from '@/lib/supabase/shared-client'
@@ -15,6 +15,10 @@ export default function AuthResetPasswordRoute() {
     <View style={styles.container} testID="reset-password-screen">
       <SafeAreaView style={styles.safeArea}>
         <ResetPasswordForm
+          onPasswordUpdated={() => {
+            // Recovery already authenticated the session; public (auth) is closed.
+            router.replace('/(protected)' as never)
+          }}
           onSubmit={async (fields) =>
             resetPasswordWithRecoveryProof(
               getSharedMobileSupabaseClient(),
@@ -22,8 +26,8 @@ export default function AuthResetPasswordRoute() {
             )
           }
         />
-        <Link href="/(auth)" style={styles.link}>
-          <Text style={styles.linkText}>Quay lai dang nhap</Text>
+        <Link href="/(protected)" style={styles.link}>
+          <Text style={styles.linkText}>Ve man hinh chinh</Text>
         </Link>
       </SafeAreaView>
     </View>

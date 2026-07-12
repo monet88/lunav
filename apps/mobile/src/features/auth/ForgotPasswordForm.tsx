@@ -8,6 +8,7 @@ import {
   View,
 } from 'react-native'
 import {
+  genericFailureState,
   recoveryLinkFailureMessage,
   type AuthActionResult,
   type FormActionState,
@@ -39,6 +40,10 @@ export function ForgotPasswordForm({
     try {
       const next = await onSubmit({ email })
       setState(next)
+    } catch {
+      // Unexpected throws from onSubmit must not leave an unhandled rejection
+      // after void handleSubmit() — keep the user on a retryable error.
+      setState(genericFailureState())
     } finally {
       inFlightRef.current = false
       setPending(false)

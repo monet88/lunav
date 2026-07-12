@@ -1,6 +1,7 @@
-import { useEffect, useRef } from 'react'
+import { useEffect } from 'react'
 import { View } from 'react-native'
 import { completeAuthCallback } from './auth-callback'
+import { getOrCreateAuthCallbackWork } from './auth-callback-work'
 import { AuthLoadingScreen } from './AuthLoadingScreen'
 
 export type ConfirmCallbackNavigation = {
@@ -31,6 +32,9 @@ export interface ConfirmCallbackScreenProps {
 /**
  * Exchanges a single confirmation authorization code, then replaces navigation
  * so the callback credentials do not remain in history.
+ *
+ * Work is keyed + shared across StrictMode remounts so a single-use confirm code
+ * is exchanged once, while the latest active mount still receives the replace.
  */
 export function ConfirmCallbackScreen({
   client,
@@ -41,39 +45,37 @@ export function ConfirmCallbackScreen({
   // public (auth) group is still gated by the loading session state.
   failurePath = '/auth/confirm-failed',
 }: ConfirmCallbackScreenProps) {
-  const startedRef = useRef(false)
-
   useEffect(() => {
-    if (startedRef.current) {
-      return
-    }
-    startedRef.current = true
     let isActive = true
+    // Key by URL + paths so StrictMode remount reuses the same single-use exchange.
+    const workKey = `confirm\0${requestUrl ?? ''}\0${successPath}\0${failurePath}`
 
-    const run = async () => {
-      if (requestUrl === null || requestUrl.length === 0) {
-        if (isActive) {
-          navigation.replace(failurePath)
+    const work = getOrCreateAuthCallbackWork(workKey, async () => {
+      try {
+        if (requestUrl === null || requestUrl.length === 0) {
+          return failurePath
         }
-        return
+
+        const result = await completeAuthCallback({
+          client,
+          expectedRedirectType: 'confirmation',
+          requestUrl,
+          successPath,
+        })
+
+        return result.kind === 'success' ? result.path : failurePath
+      } catch {
+        // Unexpected throws must still strip the code from history.
+        return failurePath
       }
+    })
 
-      const result = await completeAuthCallback({
-        client,
-        expectedRedirectType: 'confirmation',
-        requestUrl,
-        successPath,
-      })
-
-      if (!isActive) {
-        return
+    void work.then((path) => {
+      if (isActive) {
+        // Always replace so the authorization code is stripped from history.
+        navigation.replace(path)
       }
-
-      // Always replace so the authorization code is stripped from history.
-      navigation.replace(result.kind === 'success' ? result.path : failurePath)
-    }
-
-    void run()
+    })
 
     return () => {
       isActive = false

@@ -1,5 +1,10 @@
-import { act, render, waitFor } from '@testing-library/react-native'
+import { act, cleanup, render, waitFor } from '@testing-library/react-native'
+import { clearAuthCallbackWorkCacheForTests } from './auth-callback-work'
 import { ConfirmCallbackScreen } from './ConfirmCallbackScreen'
+
+beforeEach(() => {
+  clearAuthCallbackWorkCacheForTests()
+})
 
 function createClient(result: {
   data: { redirectType: string | null; user?: { id: string } | null }
@@ -84,5 +89,64 @@ describe('ConfirmCallbackScreen', () => {
       expect(replace).toHaveBeenCalledWith('/auth/confirm-failed')
     })
     expect(client.auth.signOut).toHaveBeenCalledTimes(1)
+  })
+
+  test('exchanges once across StrictMode remount and still replaces on the active mount', async () => {
+    const client = createClient({
+      data: { redirectType: null, user: { id: 'user-1' } },
+      error: null,
+    })
+    const replace = jest.fn()
+    let resolveExchange:
+      | ((value: {
+          data: { redirectType: string | null; user?: { id: string } | null }
+          error: { code: string } | null
+        }) => void)
+      | undefined
+
+    client.auth.exchangeCodeForSession = jest.fn(
+      () =>
+        new Promise((resolve) => {
+          resolveExchange = resolve
+        })
+    )
+
+    await act(async () => {
+      render(
+        <ConfirmCallbackScreen
+          client={client}
+          navigation={{ replace }}
+          requestUrl="lunav://auth/confirm?code=valid-code"
+          successPath="/"
+        />
+      )
+    })
+
+    // Simulate React 18 StrictMode: unmount then remount before the exchange resolves.
+    await act(async () => {
+      cleanup()
+    })
+    await act(async () => {
+      render(
+        <ConfirmCallbackScreen
+          client={client}
+          navigation={{ replace }}
+          requestUrl="lunav://auth/confirm?code=valid-code"
+          successPath="/"
+        />
+      )
+    })
+
+    await act(async () => {
+      resolveExchange?.({
+        data: { redirectType: null, user: { id: 'user-1' } },
+        error: null,
+      })
+    })
+
+    await waitFor(() => {
+      expect(replace).toHaveBeenCalledWith('/')
+    })
+    expect(client.auth.exchangeCodeForSession).toHaveBeenCalledTimes(1)
   })
 })

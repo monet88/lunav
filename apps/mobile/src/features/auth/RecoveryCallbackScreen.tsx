@@ -1,6 +1,7 @@
-import { useEffect, useRef } from 'react'
+import { useEffect } from 'react'
 import { View } from 'react-native'
 import { completeAuthCallback } from './auth-callback'
+import { getOrCreateAuthCallbackWork } from './auth-callback-work'
 import { AuthLoadingScreen } from './AuthLoadingScreen'
 import {
   setRecoverySession,
@@ -36,6 +37,9 @@ export interface RecoveryCallbackScreenProps {
 /**
  * Exchanges a single recovery authorization code, stores a mobile-owned recovery
  * proof, then replaces navigation so callback credentials do not remain in history.
+ *
+ * Work is keyed + shared across StrictMode remounts so a single-use recovery code
+ * is exchanged once, while the latest active mount still receives the replace.
  */
 export function RecoveryCallbackScreen({
   client,
@@ -47,48 +51,42 @@ export function RecoveryCallbackScreen({
   failurePath = '/auth/recovery-failed',
   recoveryStore,
 }: RecoveryCallbackScreenProps) {
-  const startedRef = useRef(false)
-
   useEffect(() => {
-    if (startedRef.current) {
-      return
-    }
-    startedRef.current = true
     let isActive = true
+    // Key by URL + paths so StrictMode remount reuses the same single-use exchange.
+    const workKey = `recovery\0${requestUrl ?? ''}\0${successPath}\0${failurePath}`
 
-    const run = async () => {
-      if (requestUrl === null || requestUrl.length === 0) {
-        if (isActive) {
-          navigation.replace(failurePath)
+    const work = getOrCreateAuthCallbackWork(workKey, async () => {
+      try {
+        if (requestUrl === null || requestUrl.length === 0) {
+          return failurePath
         }
-        return
-      }
 
-      const result = await completeAuthCallback({
-        client,
-        expectedRedirectType: 'recovery',
-        requestUrl,
-        successPath,
-      })
+        const result = await completeAuthCallback({
+          client,
+          expectedRedirectType: 'recovery',
+          requestUrl,
+          successPath,
+        })
 
-      if (!isActive) {
-        return
-      }
-
-      if (result.kind === 'success') {
-        await setRecoverySession(result.userId, recoveryStore)
-        if (!isActive) {
-          return
+        if (result.kind === 'success') {
+          await setRecoverySession(result.userId, recoveryStore)
+          return result.path
         }
-        navigation.replace(result.path)
-        return
+
+        return failurePath
+      } catch {
+        // SecureStore / unexpected throws must still strip the code from history.
+        return failurePath
       }
+    })
 
-      // Always replace so the authorization code is stripped from history.
-      navigation.replace(failurePath)
-    }
-
-    void run()
+    void work.then((path) => {
+      if (isActive) {
+        // Always replace so the authorization code is stripped from history.
+        navigation.replace(path)
+      }
+    })
 
     return () => {
       isActive = false

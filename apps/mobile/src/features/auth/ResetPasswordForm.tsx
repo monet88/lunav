@@ -43,7 +43,7 @@ export function ResetPasswordForm({
     try {
       const next = await onSubmit({ password, passwordConfirmation })
       if (next.kind === 'password-updated') {
-        setState({ kind: 'confirmation-pending', message: next.message })
+        setState({ kind: 'success', message: next.message })
         onPasswordUpdated?.(next.message)
         return
       }
@@ -69,7 +69,7 @@ export function ResetPasswordForm({
       <TextInput
         accessibilityLabel="Mat khau moi"
         autoCapitalize="none"
-        autoComplete="new-password"
+        autoComplete="password-new"
         editable={!pending}
         onChangeText={setPassword}
         secureTextEntry
@@ -83,7 +83,7 @@ export function ResetPasswordForm({
       <TextInput
         accessibilityLabel="Nhap lai mat khau moi"
         autoCapitalize="none"
-        autoComplete="new-password"
+        autoComplete="password-new"
         editable={!pending}
         onChangeText={setPasswordConfirmation}
         secureTextEntry
