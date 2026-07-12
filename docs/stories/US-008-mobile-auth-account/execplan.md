@@ -11,15 +11,17 @@ the approved shared identity and profile modules.
    auth session source of truth (session provider, loading surface, ordered
    sign-out cleanup stub).~~ **Done in PR #12 (`4902f5c`).**
 2. ~~Add failing tests for form validation and callback parsing.~~ **Done for
-   signup/confirm slice (issue #7).**
+   signup/confirm slice (issue #7 / PR #14).**
 3. ~~Configure the local app scheme and explicit confirmation callback route
-   (`lunav://auth/confirm`).~~ Hosted verified Android App Links remain later.
-4. ~~Add signup + confirmation-pending/resend.~~ Sign-in, forgot-password, and
-   reset forms remain later tickets.
-5. Add the account screen and owner-scoped `display_name` update.
-6. Wire sign-out cache cleanup to real product caches and public navigation.
+   (`lunav://auth/confirm` + unguarded `/auth/confirm-failed`).~~ Hosted
+   verified Android App Links remain later.
+4. ~~Add signup + confirmation-pending/resend.~~ Sign-in (#8), forgot-password /
+   recovery (#9) remain later tickets.
+5. Add the account screen and owner-scoped `display_name` update (#10).
+6. Wire sign-out cache cleanup to real product caches and public navigation
+   (#10).
 7. Run focused checks, Android emulator/device flow, and hosted email/deep-link
-   smoke proof.
+   smoke proof (#11).
 
 ## Stop Conditions
 

@@ -17,10 +17,13 @@ high-risk
 
 The Expo Router app has a merged mobile auth session shell (PR #12 / `4902f5c`)
 plus signup → confirmation-pending → local `lunav://auth/confirm` exchange
-(issue #7): shared-message mapping, form validation via contracts, resend,
-callback replace navigation, and focused unit coverage. Sign-in, recovery/reset,
-account `display_name`, Android runtime proof, and hosted App Link smoke remain
-open.
+(PR #14 / `5d435d6`, issue #7): shared-contract validation, enumeration-safe
+pending only for account-existence codes, rate-limit and generic provider-error
+mapping, resend, fail-closed multi-code / empty-duplicate params, unguarded
+`/auth/confirm-failed` cold-start failure surface, callback replace navigation,
+shared Supabase client, and focused unit coverage. Sign-in (#8), recovery/reset
+(#9), account `display_name` + sign-out (#10), Android runtime proof + closeout
+(#11), and hosted App Link smoke remain open.
 
 ## Target Behavior
 
