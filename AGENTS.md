@@ -6,6 +6,24 @@ Use `.claude/skills/harness-intake-griller/SKILL.md` when a request needs
 discussion, feature intake, docs, or story shaping before Symphony execution.
 The skill is project-scoped; do not use a global copy as the source of truth.
 
+## Agent skills
+
+### Issue tracker
+
+Issues live in GitHub Issues for monet88/lunav (via `gh` CLI). See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Default five-role vocabulary: needs-triage, needs-info, ready-for-agent, ready-for-human, wontfix. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context, Harness-mapped: product contract + `docs/GLOSSARY.md` + `docs/decisions/` (not `docs/adr/`). See `docs/agents/domain.md`.
+
+### Hybrid work flow
+
+Plan with `harness-intake-griller`, then Matt skills for fog/tickets/build/review. See `docs/agents/hybrid-flow.md`.
+
 ## Product Entry Point
 
 Read `SPEC.md`, `docs/PRODUCT_SCOPE.md`, and `docs/INVARIANTS.md` before product
