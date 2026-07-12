@@ -1,0 +1,27 @@
+apps/mobile/src/app/(auth)/confirm-email.tsx
+  s_7584b2176c3ff5::t_78fddc4d3b285f 5,10-11
+apps/mobile/src/app/auth/confirm.tsx
+  s_7584b2176c3ff5::t_f40df2809f567c 5,13-15
+apps/mobile/src/features/auth/ConfirmCallbackScreen.tsx
+  s_7584b2176c3ff5::t_f6a0389bc60d68 49,53-55,66-69,75-78
+apps/mobile/src/features/auth/search-params.test.ts
+  s_7584b2176c3ff5::t_531af19f892025 1-35
+apps/mobile/src/features/auth/search-params.ts
+  s_7584b2176c3ff5::t_030963c744aef9 1-46
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "193884b309274860766f618d23e79ee9f900932a",
+  "prompts": {},
+  "sessions": {
+    "s_7584b2176c3ff5": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "cea5c416-1686-4c2b-9450-0434dfd16956",
+        "model": "unknown"
+      },
+      "human_author": "monet88 <minhthang421992@gmail.com>"
+    }
+  }
+}
