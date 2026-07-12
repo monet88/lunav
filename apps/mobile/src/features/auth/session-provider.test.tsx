@@ -170,7 +170,7 @@ describe('MobileAuthSessionProvider', () => {
     })
   })
 
-  test('waits for an in-flight start before stopping on unmount', async () => {
+  test('stops immediately on unmount even while start is still in flight', async () => {
     const harness = createControllerHarness({ status: 'loading' })
     let resolveStart!: () => void
     const startGate = new Promise<void>((resolve) => {
@@ -198,16 +198,16 @@ describe('MobileAuthSessionProvider', () => {
     })
 
     view.unmount()
-    await Promise.resolve()
-
-    expect(harness.stop).not.toHaveBeenCalled()
-
-    resolveStart()
 
     await waitFor(() => {
       expect(harness.stop).toHaveBeenCalledTimes(1)
     })
-    expect(callOrder).toEqual(['start-begin', 'start-end', 'stop'])
+    // stop must not wait for the still-pending start promise.
+    expect(callOrder).toEqual(['start-begin', 'stop'])
+
+    resolveStart()
+    await Promise.resolve()
+    expect(callOrder).toEqual(['start-begin', 'stop', 'start-end'])
   })
 
   test('falls back to anonymous when controller start fails', async () => {

@@ -615,7 +615,44 @@ describe('mobile auth-state controller', () => {
     await expect(controller.start()).resolves.toBeUndefined()
   })
 
-  test('serializes stop after an in-flight start so auto-refresh cannot revive', async () => {
+  test('cancels an in-flight start immediately so stalled getUser cannot delay teardown', async () => {
+    const auth = createAuthHarness()
+    const appState = createAppStateHarness('active')
+    const controller = createMobileAuthStateController({
+      client: auth.client,
+      appState: appState.appState,
+    })
+    const delayedUser = createDeferred<{
+      data: { user: typeof confirmedUser }
+      error: null
+    }>()
+    auth.getUser.mockReturnValueOnce(delayedUser.promise)
+
+    const startPromise = controller.start()
+    // Let start attach subscriptions and reach the stalled getUser await.
+    await flushAsyncWork()
+    expect(auth.client.auth.onAuthStateChange).toHaveBeenCalledTimes(1)
+
+    // Teardown must complete without waiting for getUser to resolve.
+    await expect(controller.stop()).resolves.toBeUndefined()
+    expect(auth.unsubscribeAuth).toHaveBeenCalledTimes(1)
+    expect(appState.removeAppStateListener).toHaveBeenCalledTimes(1)
+    expect(auth.stopAutoRefresh).toHaveBeenCalled()
+
+    // Resolving the stalled lookup after stop must not revive auth state.
+    delayedUser.resolve({ data: { user: confirmedUser }, error: null })
+    await expect(startPromise).resolves.toBeUndefined()
+    await flushAsyncWork()
+
+    expect(controller.getState()).toEqual({ status: 'loading' })
+
+    const startCallsAfterTeardown = auth.startAutoRefresh.mock.calls.length
+    appState.emitAppState('active')
+    await flushAsyncWork()
+    expect(auth.startAutoRefresh).toHaveBeenCalledTimes(startCallsAfterTeardown)
+  })
+
+  test('tears down immediately while startAutoRefresh is still in flight', async () => {
     const auth = createAuthHarness()
     const appState = createAppStateHarness('active')
     const controller = createMobileAuthStateController({
@@ -628,28 +665,24 @@ describe('mobile auth-state controller', () => {
     })
 
     const startPromise = controller.start()
-    const stopPromise = controller.stop()
-
-    // Release the blocked start; stop must still run after it and leave refresh off.
-    delayedStartRefresh.resolve()
-    await expect(startPromise).resolves.toBeUndefined()
-    await expect(stopPromise).resolves.toBeUndefined()
+    // Reach the blocked startAutoRefresh after subscriptions are attached.
     await flushAsyncWork()
+    expect(auth.client.auth.onAuthStateChange).toHaveBeenCalledTimes(1)
 
+    await expect(controller.stop()).resolves.toBeUndefined()
     expect(auth.unsubscribeAuth).toHaveBeenCalledTimes(1)
     expect(appState.removeAppStateListener).toHaveBeenCalledTimes(1)
-    expect(auth.stopAutoRefresh).toHaveBeenCalled()
 
-    const stopCallsAfterTeardown = auth.stopAutoRefresh.mock.calls.length
-    const startCallsAfterTeardown = auth.startAutoRefresh.mock.calls.length
-
-    // A late AppState event must not re-enable refresh after stop completed.
-    appState.emitAppState('active')
+    delayedStartRefresh.resolve()
+    await expect(startPromise).resolves.toBeUndefined()
     await flushAsyncWork()
 
+    // In-flight startAutoRefresh must be countermanded after stop.
+    expect(auth.stopAutoRefresh).toHaveBeenCalled()
+
+    const startCallsAfterTeardown = auth.startAutoRefresh.mock.calls.length
+    appState.emitAppState('active')
+    await flushAsyncWork()
     expect(auth.startAutoRefresh).toHaveBeenCalledTimes(startCallsAfterTeardown)
-    expect(auth.stopAutoRefresh.mock.calls.length).toBeGreaterThanOrEqual(
-      stopCallsAfterTeardown
-    )
   })
 })

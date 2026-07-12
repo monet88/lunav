@@ -64,9 +64,9 @@ export function MobileAuthSessionProvider({
       }
     })
 
-    // Keep start/stop ordered for this effect generation so a Strict Mode
-    // remount cannot interleave stop() with an in-flight start().
-    const startPromise = controller.start().catch(() => {
+    // Controller stop() cancels an in-flight start synchronously, so cleanup
+    // does not wait for getUser()/auto-refresh to finish before tearing down.
+    void controller.start().catch(() => {
       // Setup failure tears the controller down with no further auth events.
       // Fall back to public anonymous so boot still resolves without private flash.
       if (isActive) {
@@ -77,9 +77,7 @@ export function MobileAuthSessionProvider({
     return () => {
       isActive = false
       unsubscribe()
-      void startPromise.finally(() => {
-        void controller.stop().catch(() => undefined)
-      })
+      void controller.stop().catch(() => undefined)
     }
   }, [controller])
 

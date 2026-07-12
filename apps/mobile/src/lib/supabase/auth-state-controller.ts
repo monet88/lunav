@@ -95,17 +95,21 @@ export function createMobileAuthStateController({
   let isStarted = false
   let isSigningOut = false
   let authGeneration = 0
+  // Bumped by stop() and each new start() so an in-flight start can detect
+  // cancellation at await yield points without waiting on network I/O.
+  let lifecycleRunId = 0
   let autoRefreshQueue = Promise.resolve()
-  // Serialize start/stop so Strict Mode remounts and rapid teardown cannot
-  // interleave lifecycle transitions on the same controller instance.
-  let lifecycleQueue = Promise.resolve()
+  // Only serializes the short subscription-setup critical section so two starts
+  // cannot attach listeners concurrently. Long awaits (getUser / auto-refresh)
+  // stay outside this queue so stop() is never blocked by a stalled request.
+  let setupQueue = Promise.resolve()
   let authSubscription: AuthSubscription | null = null
   let appStateSubscription: AppStateSubscription | null = null
   const listeners = new Set<AuthStateListener>()
 
-  const enqueueLifecycle = (operation: () => Promise<void>): Promise<void> => {
-    const next = lifecycleQueue.then(operation, operation)
-    lifecycleQueue = next.catch(() => undefined)
+  const enqueueSetup = (operation: () => Promise<void>): Promise<void> => {
+    const next = setupQueue.then(operation, operation)
+    setupQueue = next.catch(() => undefined)
     return next
   }
 
@@ -115,7 +119,7 @@ export function createMobileAuthStateController({
   }
 
   const refreshStateFromUser = async (): Promise<void> => {
-    if (isSigningOut) {
+    if (isSigningOut || !isStarted) {
       return
     }
 
@@ -154,6 +158,10 @@ export function createMobileAuthStateController({
 
     if (nextAppState === 'active') {
       await client.auth.startAutoRefresh()
+      // stop() may have cancelled while startAutoRefresh was in flight.
+      if (!isStarted) {
+        await client.auth.stopAutoRefresh()
+      }
       return
     }
 
@@ -177,9 +185,19 @@ export function createMobileAuthStateController({
     appStateSubscription = null
   }
 
-  const start = (): Promise<void> =>
-    enqueueLifecycle(async () => {
-      if (isStarted) {
+  const tearDownStartedController = async (): Promise<void> => {
+    isStarted = false
+    authGeneration += 1
+    removeSubscriptions()
+    await client.auth.stopAutoRefresh().catch(() => undefined)
+  }
+
+  const start = (): Promise<void> => {
+    const runId = ++lifecycleRunId
+
+    return enqueueSetup(async () => {
+      // stop() or a newer start() may have invalidated this run before setup ran.
+      if (runId !== lifecycleRunId || isStarted) {
         return
       }
 
@@ -201,34 +219,56 @@ export function createMobileAuthStateController({
             void queueAutoRefresh(nextState).catch(() => undefined)
           }
         )
+      } catch (error: unknown) {
+        if (runId !== lifecycleRunId) {
+          return
+        }
 
+        await tearDownStartedController()
+        throw error
+      }
+
+      // stop() may have cancelled between isStarted=true and listener attach.
+      if (runId !== lifecycleRunId) {
+        removeSubscriptions()
+        isStarted = false
+        return
+      }
+    }).then(async () => {
+      // Long network work stays outside setupQueue so a stalled getUser cannot
+      // block stop() or a later remount start().
+      if (runId !== lifecycleRunId || !isStarted) {
+        return
+      }
+
+      try {
         await queueAutoRefresh(appState.currentState)
 
-        if (!isStarted) {
+        if (runId !== lifecycleRunId || !isStarted) {
           return
         }
 
         await refreshStateFromUser()
       } catch (error: unknown) {
-        isStarted = false
-        authGeneration += 1
-        removeSubscriptions()
-        await client.auth.stopAutoRefresh().catch(() => undefined)
+        if (runId !== lifecycleRunId) {
+          return
+        }
+
+        await tearDownStartedController()
         throw error
       }
     })
+  }
 
-  const stop = (): Promise<void> =>
-    enqueueLifecycle(async () => {
-      if (!isStarted) {
-        return
-      }
-
-      isStarted = false
-      authGeneration += 1
-      removeSubscriptions()
-      await client.auth.stopAutoRefresh()
-    })
+  const stop = async (): Promise<void> => {
+    // Invalidate any in-flight start immediately, drop listeners now, and stop
+    // auto-refresh without waiting for getUser() or setupQueue to drain.
+    lifecycleRunId += 1
+    isStarted = false
+    authGeneration += 1
+    removeSubscriptions()
+    await client.auth.stopAutoRefresh().catch(() => undefined)
+  }
 
   const signOut = async (cleanup: SignOutCleanup): Promise<void> => {
     const userId = getUserId(state)
