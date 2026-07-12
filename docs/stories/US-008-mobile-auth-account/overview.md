@@ -15,15 +15,17 @@ high-risk
 
 ## Current Behavior
 
-The Expo Router app has a merged mobile auth session shell (PR #12 / `4902f5c`)
-plus signup → confirmation-pending → local `lunav://auth/confirm` exchange
-(PR #14 / `5d435d6`, issue #7): shared-contract validation, enumeration-safe
-pending only for account-existence codes, rate-limit and generic provider-error
-mapping, resend, fail-closed multi-code / empty-duplicate params, unguarded
-`/auth/confirm-failed` cold-start failure surface, callback replace navigation,
-shared Supabase client, and focused unit coverage. Sign-in (#8), recovery/reset
-(#9), account `display_name` + sign-out (#10), Android runtime proof + closeout
-(#11), and hosted App Link smoke remain open.
+The Expo Router app has a merged mobile auth session shell (PR #12 / `4902f5c`),
+signup → confirmation-pending → local `lunav://auth/confirm` exchange
+(PR #14 / `5d435d6`, issue #7), and sign-in → protected entry (issue #8):
+shared-contract validation, enumeration-safe sign-in failure for bad credentials /
+unknown / unconfirmed, rate-limit + generic provider-error mapping, validated
+return destination falling back safely to the private shell, post-password
+identity refresh via `getUser()` before `signed-in`, session wait for
+`authenticated` before replace navigation, unconfirmed sessions still blocked
+from private routes by `Stack.Protected`, and focused unit coverage.
+Recovery/reset (#9), account `display_name` + sign-out (#10), Android runtime
+proof + closeout (#11), and hosted App Link smoke remain open.
 
 ## Target Behavior
 

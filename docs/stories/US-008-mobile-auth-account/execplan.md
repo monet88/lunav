@@ -15,8 +15,8 @@ the approved shared identity and profile modules.
 3. ~~Configure the local app scheme and explicit confirmation callback route
    (`lunav://auth/confirm` + unguarded `/auth/confirm-failed`).~~ Hosted
    verified Android App Links remain later.
-4. ~~Add signup + confirmation-pending/resend.~~ Sign-in (#8), forgot-password /
-   recovery (#9) remain later tickets.
+4. ~~Add signup + confirmation-pending/resend.~~ ~~Sign-in + protected return
+   destination (#8).~~ Forgot-password / recovery (#9) remain later tickets.
 5. Add the account screen and owner-scoped `display_name` update (#10).
 6. Wire sign-out cache cleanup to real product caches and public navigation
    (#10).

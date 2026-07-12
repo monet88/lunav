@@ -1,6 +1,7 @@
 import {
   parseConfirmEmailSearchParams,
   parseConfirmSearchParams,
+  parseSignInSearchParams,
 } from './search-params'
 
 describe('auth route search params', () => {
@@ -46,5 +47,16 @@ describe('auth route search params', () => {
     expect(parseConfirmEmailSearchParams({ status: ['error', ''] })).toEqual({
       initialError: false,
     })
+  })
+
+  test('accepts a single sign-in returnTo string and fails closed otherwise', () => {
+    expect(parseSignInSearchParams({ returnTo: '/account' })).toEqual({
+      returnTo: '/account',
+    })
+    expect(parseSignInSearchParams({ returnTo: ['/account', '/other'] })).toEqual({
+      returnTo: '',
+    })
+    expect(parseSignInSearchParams(null)).toEqual({ returnTo: '' })
+    expect(parseSignInSearchParams({})).toEqual({ returnTo: '' })
   })
 })
