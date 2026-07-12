@@ -170,6 +170,46 @@ describe('MobileAuthSessionProvider', () => {
     })
   })
 
+  test('waits for an in-flight start before stopping on unmount', async () => {
+    const harness = createControllerHarness({ status: 'loading' })
+    let resolveStart!: () => void
+    const startGate = new Promise<void>((resolve) => {
+      resolveStart = resolve
+    })
+    const callOrder: string[] = []
+
+    harness.start.mockImplementation(async () => {
+      callOrder.push('start-begin')
+      await startGate
+      callOrder.push('start-end')
+    })
+    harness.stop.mockImplementation(async () => {
+      callOrder.push('stop')
+    })
+
+    const view = await render(
+      <MobileAuthSessionProvider controller={harness.controller}>
+        <AuthStateProbe />
+      </MobileAuthSessionProvider>
+    )
+
+    await waitFor(() => {
+      expect(harness.start).toHaveBeenCalledTimes(1)
+    })
+
+    view.unmount()
+    await Promise.resolve()
+
+    expect(harness.stop).not.toHaveBeenCalled()
+
+    resolveStart()
+
+    await waitFor(() => {
+      expect(harness.stop).toHaveBeenCalledTimes(1)
+    })
+    expect(callOrder).toEqual(['start-begin', 'start-end', 'stop'])
+  })
+
   test('falls back to anonymous when controller start fails', async () => {
     const harness = createControllerHarness({ status: 'loading' })
     harness.start.mockRejectedValueOnce(new Error('subscription unavailable'))

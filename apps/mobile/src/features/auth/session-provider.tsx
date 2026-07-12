@@ -45,10 +45,14 @@ export function MobileAuthSessionProvider({
   controller: injectedController,
   cleanup = stubSignOutCleanup,
 }: MobileAuthSessionProviderProps) {
-  const controller = useMemo(
-    () => injectedController ?? createDefaultController(),
-    [injectedController]
+  // useState lazy init guarantees one controller instance per provider mount.
+  // useMemo is not safe here: React may discard memoized values, and recreating
+  // the controller would leak Supabase sockets / auth subscriptions.
+  const [defaultController] = useState(() =>
+    injectedController ? null : createDefaultController()
   )
+  const controller = injectedController ?? defaultController!
+
   const [state, setState] = useState<AuthState>(() => controller.getState())
 
   useEffect(() => {
@@ -60,7 +64,9 @@ export function MobileAuthSessionProvider({
       }
     })
 
-    void controller.start().catch(() => {
+    // Keep start/stop ordered for this effect generation so a Strict Mode
+    // remount cannot interleave stop() with an in-flight start().
+    const startPromise = controller.start().catch(() => {
       // Setup failure tears the controller down with no further auth events.
       // Fall back to public anonymous so boot still resolves without private flash.
       if (isActive) {
@@ -71,7 +77,9 @@ export function MobileAuthSessionProvider({
     return () => {
       isActive = false
       unsubscribe()
-      void controller.stop().catch(() => undefined)
+      void startPromise.finally(() => {
+        void controller.stop().catch(() => undefined)
+      })
     }
   }, [controller])
 

@@ -96,9 +96,18 @@ export function createMobileAuthStateController({
   let isSigningOut = false
   let authGeneration = 0
   let autoRefreshQueue = Promise.resolve()
+  // Serialize start/stop so Strict Mode remounts and rapid teardown cannot
+  // interleave lifecycle transitions on the same controller instance.
+  let lifecycleQueue = Promise.resolve()
   let authSubscription: AuthSubscription | null = null
   let appStateSubscription: AppStateSubscription | null = null
   const listeners = new Set<AuthStateListener>()
+
+  const enqueueLifecycle = (operation: () => Promise<void>): Promise<void> => {
+    const next = lifecycleQueue.then(operation, operation)
+    lifecycleQueue = next.catch(() => undefined)
+    return next
+  }
 
   const publish = (nextState: AuthState): void => {
     state = nextState
@@ -137,6 +146,12 @@ export function createMobileAuthStateController({
   const synchronizeAutoRefresh = async (
     nextAppState: AppStateStatus
   ): Promise<void> => {
+    // A delayed queue item must not re-enable refresh after stop().
+    if (!isStarted) {
+      await client.auth.stopAutoRefresh()
+      return
+    }
+
     if (nextAppState === 'active') {
       await client.auth.startAutoRefresh()
       return
@@ -162,48 +177,58 @@ export function createMobileAuthStateController({
     appStateSubscription = null
   }
 
-  const start = async (): Promise<void> => {
-    if (isStarted) {
-      return
-    }
+  const start = (): Promise<void> =>
+    enqueueLifecycle(async () => {
+      if (isStarted) {
+        return
+      }
 
-    isStarted = true
-    try {
-      authSubscription = client.auth.onAuthStateChange((event) => {
-        authGeneration += 1
+      isStarted = true
+      try {
+        authSubscription = client.auth.onAuthStateChange((event) => {
+          authGeneration += 1
 
-        if (event === 'SIGNED_OUT') {
-          publish({ status: 'anonymous' })
+          if (event === 'SIGNED_OUT') {
+            publish({ status: 'anonymous' })
+            return
+          }
+
+          void refreshStateFromUser()
+        }).data.subscription
+        appStateSubscription = appState.addEventListener(
+          'change',
+          (nextState) => {
+            void queueAutoRefresh(nextState).catch(() => undefined)
+          }
+        )
+
+        await queueAutoRefresh(appState.currentState)
+
+        if (!isStarted) {
           return
         }
 
-        void refreshStateFromUser()
-      }).data.subscription
-      appStateSubscription = appState.addEventListener('change', (nextState) => {
-        void queueAutoRefresh(nextState).catch(() => undefined)
-      })
+        await refreshStateFromUser()
+      } catch (error: unknown) {
+        isStarted = false
+        authGeneration += 1
+        removeSubscriptions()
+        await client.auth.stopAutoRefresh().catch(() => undefined)
+        throw error
+      }
+    })
 
-      await queueAutoRefresh(appState.currentState)
-      await refreshStateFromUser()
-    } catch (error: unknown) {
+  const stop = (): Promise<void> =>
+    enqueueLifecycle(async () => {
+      if (!isStarted) {
+        return
+      }
+
       isStarted = false
       authGeneration += 1
       removeSubscriptions()
-      await client.auth.stopAutoRefresh().catch(() => undefined)
-      throw error
-    }
-  }
-
-  const stop = async (): Promise<void> => {
-    if (!isStarted) {
-      return
-    }
-
-    isStarted = false
-    authGeneration += 1
-    removeSubscriptions()
-    await client.auth.stopAutoRefresh()
-  }
+      await client.auth.stopAutoRefresh()
+    })
 
   const signOut = async (cleanup: SignOutCleanup): Promise<void> => {
     const userId = getUserId(state)
