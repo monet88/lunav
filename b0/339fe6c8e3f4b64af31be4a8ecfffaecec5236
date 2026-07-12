@@ -1,0 +1,39 @@
+apps/mobile/src/app/(auth)/index.tsx
+  s_cb67db120cb1ba::t_21ff62a7957c0a 5-6,9-10,16,22-23,28-43
+apps/mobile/src/features/auth/SignInForm.tsx
+  s_cb67db120cb1ba::t_ff057707985ac8 10-14,49-52
+apps/mobile/src/features/auth/protected-navigation.test.ts
+  s_cb67db120cb1ba::t_f4b6a4978e4774 6,8,26-36,88-135
+apps/mobile/src/features/auth/return-path.ts
+  s_cb67db120cb1ba::t_dbc82f16f0e373 14-16,21-23
+apps/mobile/src/features/auth/session-provider.tsx
+  s_cb67db120cb1ba::t_3899342aab55f8 13,22-27,96-101,105-106,109
+apps/mobile/src/features/auth/sign-in.test.ts
+  s_cb67db120cb1ba::t_00e4cdb1fa5e78 6-17,20-24,27,33-40,46,49,56,68,71-72,87,112-201,209,219,229,240,269,271,284
+apps/mobile/src/features/auth/sign-in.ts
+  s_cb67db120cb1ba::t_43b2fb12675e21 1,19-32,46-49,79-103
+apps/mobile/src/features/auth/wait-for-auth-state.test.ts
+  s_cb67db120cb1ba::t_48dcce71da54cb 1-94
+apps/mobile/src/features/auth/wait-for-auth-state.ts
+  s_cb67db120cb1ba::t_537bb4b3c9d61a 1-59
+docs/stories/US-008-mobile-auth-account/overview.md
+  s_cb67db120cb1ba::t_e379cab0085da1 23-26
+docs/stories/US-008-mobile-auth-account/validation.md
+  s_cb67db120cb1ba::t_00064ff21590e7 12,27-30,32
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "b0339fe6c8e3f4b64af31be4a8ecfffaecec5236",
+  "prompts": {},
+  "sessions": {
+    "s_cb67db120cb1ba": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d4cef8cc-16a6-40da-a79c-28cac89a0498",
+        "model": "unknown"
+      },
+      "human_author": "monet88 <minhthang421992@gmail.com>"
+    }
+  }
+}
