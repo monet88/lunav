@@ -614,4 +614,96 @@ describe('mobile auth-state controller', () => {
     await expect(controller.start()).rejects.toThrow('subscription unavailable')
     await expect(controller.start()).resolves.toBeUndefined()
   })
+
+  test('duplicate start while running is a no-op for network work', async () => {
+    const auth = createAuthHarness()
+    const appState = createAppStateHarness('active')
+    const controller = createMobileAuthStateController({
+      client: auth.client,
+      appState: appState.appState,
+    })
+
+    await controller.start()
+    expect(auth.startAutoRefresh).toHaveBeenCalledTimes(1)
+    expect(auth.getUser).toHaveBeenCalledTimes(1)
+    expect(auth.client.auth.onAuthStateChange).toHaveBeenCalledTimes(1)
+
+    await controller.start()
+    await flushAsyncWork()
+
+    expect(auth.startAutoRefresh).toHaveBeenCalledTimes(1)
+    expect(auth.getUser).toHaveBeenCalledTimes(1)
+    expect(auth.client.auth.onAuthStateChange).toHaveBeenCalledTimes(1)
+  })
+
+  test('cancels an in-flight start immediately so stalled getUser cannot delay teardown', async () => {
+    const auth = createAuthHarness()
+    const appState = createAppStateHarness('active')
+    const controller = createMobileAuthStateController({
+      client: auth.client,
+      appState: appState.appState,
+    })
+    const delayedUser = createDeferred<{
+      data: { user: typeof confirmedUser }
+      error: null
+    }>()
+    auth.getUser.mockReturnValueOnce(delayedUser.promise)
+
+    const startPromise = controller.start()
+    // Let start attach subscriptions and reach the stalled getUser await.
+    await flushAsyncWork()
+    expect(auth.client.auth.onAuthStateChange).toHaveBeenCalledTimes(1)
+
+    // Teardown must complete without waiting for getUser to resolve.
+    await expect(controller.stop()).resolves.toBeUndefined()
+    expect(auth.unsubscribeAuth).toHaveBeenCalledTimes(1)
+    expect(appState.removeAppStateListener).toHaveBeenCalledTimes(1)
+    expect(auth.stopAutoRefresh).toHaveBeenCalled()
+
+    // Resolving the stalled lookup after stop must not revive auth state.
+    delayedUser.resolve({ data: { user: confirmedUser }, error: null })
+    await expect(startPromise).resolves.toBeUndefined()
+    await flushAsyncWork()
+
+    expect(controller.getState()).toEqual({ status: 'loading' })
+
+    const startCallsAfterTeardown = auth.startAutoRefresh.mock.calls.length
+    appState.emitAppState('active')
+    await flushAsyncWork()
+    expect(auth.startAutoRefresh).toHaveBeenCalledTimes(startCallsAfterTeardown)
+  })
+
+  test('tears down immediately while startAutoRefresh is still in flight', async () => {
+    const auth = createAuthHarness()
+    const appState = createAppStateHarness('active')
+    const controller = createMobileAuthStateController({
+      client: auth.client,
+      appState: appState.appState,
+    })
+    const delayedStartRefresh = createDeferred<void>()
+    auth.startAutoRefresh.mockImplementationOnce(async () => {
+      await delayedStartRefresh.promise
+    })
+
+    const startPromise = controller.start()
+    // Reach the blocked startAutoRefresh after subscriptions are attached.
+    await flushAsyncWork()
+    expect(auth.client.auth.onAuthStateChange).toHaveBeenCalledTimes(1)
+
+    await expect(controller.stop()).resolves.toBeUndefined()
+    expect(auth.unsubscribeAuth).toHaveBeenCalledTimes(1)
+    expect(appState.removeAppStateListener).toHaveBeenCalledTimes(1)
+
+    delayedStartRefresh.resolve()
+    await expect(startPromise).resolves.toBeUndefined()
+    await flushAsyncWork()
+
+    // In-flight startAutoRefresh must be countermanded after stop.
+    expect(auth.stopAutoRefresh).toHaveBeenCalled()
+
+    const startCallsAfterTeardown = auth.startAutoRefresh.mock.calls.length
+    appState.emitAppState('active')
+    await flushAsyncWork()
+    expect(auth.startAutoRefresh).toHaveBeenCalledTimes(startCallsAfterTeardown)
+  })
 })

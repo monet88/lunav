@@ -95,10 +95,26 @@ export function createMobileAuthStateController({
   let isStarted = false
   let isSigningOut = false
   let authGeneration = 0
+  // Bumped by stop() and each new start() so an in-flight start can detect
+  // cancellation at await yield points without waiting on network I/O.
+  let lifecycleRunId = 0
   let autoRefreshQueue = Promise.resolve()
+  // Only serializes the short subscription-setup critical section so two starts
+  // cannot attach listeners concurrently. Long awaits (getUser / auto-refresh)
+  // stay outside this queue so stop() is never blocked by a stalled request.
+  let setupQueue: Promise<unknown> = Promise.resolve()
   let authSubscription: AuthSubscription | null = null
   let appStateSubscription: AppStateSubscription | null = null
   const listeners = new Set<AuthStateListener>()
+
+  const enqueueSetup = <T>(operation: () => Promise<T>): Promise<T> => {
+    const next = setupQueue.then(operation, operation)
+    setupQueue = next.then(
+      () => undefined,
+      () => undefined
+    )
+    return next
+  }
 
   const publish = (nextState: AuthState): void => {
     state = nextState
@@ -106,7 +122,7 @@ export function createMobileAuthStateController({
   }
 
   const refreshStateFromUser = async (): Promise<void> => {
-    if (isSigningOut) {
+    if (isSigningOut || !isStarted) {
       return
     }
 
@@ -137,8 +153,18 @@ export function createMobileAuthStateController({
   const synchronizeAutoRefresh = async (
     nextAppState: AppStateStatus
   ): Promise<void> => {
+    // A delayed queue item must not re-enable refresh after stop().
+    if (!isStarted) {
+      await client.auth.stopAutoRefresh()
+      return
+    }
+
     if (nextAppState === 'active') {
       await client.auth.startAutoRefresh()
+      // stop() may have cancelled while startAutoRefresh was in flight.
+      if (!isStarted) {
+        await client.auth.stopAutoRefresh()
+      }
       return
     }
 
@@ -162,47 +188,90 @@ export function createMobileAuthStateController({
     appStateSubscription = null
   }
 
-  const start = async (): Promise<void> => {
-    if (isStarted) {
-      return
-    }
-
-    isStarted = true
-    try {
-      authSubscription = client.auth.onAuthStateChange((event) => {
-        authGeneration += 1
-
-        if (event === 'SIGNED_OUT') {
-          publish({ status: 'anonymous' })
-          return
-        }
-
-        void refreshStateFromUser()
-      }).data.subscription
-      appStateSubscription = appState.addEventListener('change', (nextState) => {
-        void queueAutoRefresh(nextState).catch(() => undefined)
-      })
-
-      await queueAutoRefresh(appState.currentState)
-      await refreshStateFromUser()
-    } catch (error: unknown) {
-      isStarted = false
-      authGeneration += 1
-      removeSubscriptions()
-      await client.auth.stopAutoRefresh().catch(() => undefined)
-      throw error
-    }
-  }
-
-  const stop = async (): Promise<void> => {
-    if (!isStarted) {
-      return
-    }
-
+  const tearDownStartedController = async (): Promise<void> => {
     isStarted = false
     authGeneration += 1
     removeSubscriptions()
-    await client.auth.stopAutoRefresh()
+    await client.auth.stopAutoRefresh().catch(() => undefined)
+  }
+
+  const start = (): Promise<void> =>
+    // Acquire ownership inside setupQueue. Returning null means this call is a
+    // no-op (already started / cancelled) so the network phase is skipped.
+    enqueueSetup(async (): Promise<number | null> => {
+      if (isStarted) {
+        return null
+      }
+
+      const runId = ++lifecycleRunId
+      isStarted = true
+      try {
+        authSubscription = client.auth.onAuthStateChange((event) => {
+          authGeneration += 1
+
+          if (event === 'SIGNED_OUT') {
+            publish({ status: 'anonymous' })
+            return
+          }
+
+          void refreshStateFromUser()
+        }).data.subscription
+        appStateSubscription = appState.addEventListener(
+          'change',
+          (nextState) => {
+            void queueAutoRefresh(nextState).catch(() => undefined)
+          }
+        )
+      } catch (error: unknown) {
+        if (runId !== lifecycleRunId) {
+          return null
+        }
+
+        await tearDownStartedController()
+        throw error
+      }
+
+      // stop() may have cancelled between isStarted=true and listener attach.
+      if (runId !== lifecycleRunId) {
+        removeSubscriptions()
+        isStarted = false
+        return null
+      }
+
+      return runId
+    }).then(async (runId) => {
+      // Long network work stays outside setupQueue so a stalled getUser cannot
+      // block stop() or a later remount start().
+      if (runId === null || runId !== lifecycleRunId || !isStarted) {
+        return
+      }
+
+      try {
+        await queueAutoRefresh(appState.currentState)
+
+        if (runId !== lifecycleRunId || !isStarted) {
+          return
+        }
+
+        await refreshStateFromUser()
+      } catch (error: unknown) {
+        if (runId !== lifecycleRunId) {
+          return
+        }
+
+        await tearDownStartedController()
+        throw error
+      }
+    })
+
+  const stop = async (): Promise<void> => {
+    // Invalidate any in-flight start immediately, drop listeners now, and stop
+    // auto-refresh without waiting for getUser() or setupQueue to drain.
+    lifecycleRunId += 1
+    isStarted = false
+    authGeneration += 1
+    removeSubscriptions()
+    await client.auth.stopAutoRefresh().catch(() => undefined)
   }
 
   const signOut = async (cleanup: SignOutCleanup): Promise<void> => {

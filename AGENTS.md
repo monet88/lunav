@@ -39,6 +39,22 @@ For substantial feature work or multi-step implementations, create and use a
 new Git branch. Small, isolated changes may use the current branch. Do not
 create Git worktrees unless the user explicitly asks for one.
 
+## PR Review Fixes
+
+When fixing issues from a PR (review threads, inline review comments, bot
+findings, or requested changes):
+
+1. Validate each issue first — fix only valid ones; leave false positives
+   unfixed and say why.
+2. After the fix is implemented and the smallest relevant validation passes
+   (typecheck / tests for the touched surface), **always commit and push**
+   to the PR branch. Do not leave a finished review fix only in the working
+   tree or wait for an extra "commit push" ask.
+3. Keep commits focused on the review fix; use a conventional message such as
+   `fix: …` describing the root cause addressed.
+4. Still stop and ask before destructive actions (merge, force-push, push to
+   default branch, deleting remote branches).
+
 <!-- HARNESS:BEGIN -->
 ## Harness
 
