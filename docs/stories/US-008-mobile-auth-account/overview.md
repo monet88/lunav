@@ -15,12 +15,12 @@ high-risk
 
 ## Current Behavior
 
-The Expo Router app has a merged mobile auth session shell (PR #12 / `4902f5c`):
-`MobileAuthSessionProvider`, `Stack.Protected` public/private route groups,
-`AuthLoadingScreen`, ordered sign-out cleanup stub, and focused unit coverage for
-shell eligibility plus controller start/stop cancel/idempotency. Signup, email
-confirmation deep links, sign-in, recovery/reset, account `display_name`, Android
-runtime proof, and hosted App Link smoke are still open.
+The Expo Router app has a merged mobile auth session shell (PR #12 / `4902f5c`)
+plus signup → confirmation-pending → local `lunav://auth/confirm` exchange
+(issue #7): shared-message mapping, form validation via contracts, resend,
+callback replace navigation, and focused unit coverage. Sign-in, recovery/reset,
+account `display_name`, Android runtime proof, and hosted App Link smoke remain
+open.
 
 ## Target Behavior
 

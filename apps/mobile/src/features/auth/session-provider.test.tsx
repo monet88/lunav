@@ -17,15 +17,8 @@ import {
   useSignOut,
 } from './session-provider'
 
-jest.mock('@/lib/supabase/client', () => ({
-  createMobileSupabaseClient: jest.fn(),
-}))
-
-jest.mock('@/lib/supabase/config', () => ({
-  getMobileSupabaseConfig: jest.fn(() => ({
-    url: 'https://project.supabase.co',
-    publishableKey: 'sb_publishable_public',
-  })),
+jest.mock('@/lib/supabase/shared-client', () => ({
+  getSharedMobileSupabaseClient: jest.fn(),
 }))
 
 function createControllerHarness(initial: AuthState = { status: 'loading' }): {

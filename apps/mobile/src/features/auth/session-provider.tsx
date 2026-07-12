@@ -13,8 +13,7 @@ import {
   type MobileAuthStateController,
   type SignOutCleanup,
 } from '@/lib/supabase/auth-state-controller'
-import { createMobileSupabaseClient } from '@/lib/supabase/client'
-import { getMobileSupabaseConfig } from '@/lib/supabase/config'
+import { getSharedMobileSupabaseClient } from '@/lib/supabase/shared-client'
 import { stubSignOutCleanup } from './sign-out-cleanup'
 
 export interface MobileAuthSessionValue {
@@ -36,7 +35,9 @@ const MobileAuthSessionContext = createContext<MobileAuthSessionValue | null>(
 )
 
 function createDefaultController(): MobileAuthStateController {
-  const client = createMobileSupabaseClient(getMobileSupabaseConfig())
+  // Share one Supabase client with signup/callback flows so session storage
+  // and auth-state listeners stay on the same adapter instance.
+  const client = getSharedMobileSupabaseClient()
   return createMobileAuthStateController({ client })
 }
 

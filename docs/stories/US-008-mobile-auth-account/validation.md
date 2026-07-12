@@ -8,7 +8,7 @@ runtime, and hosted App Link/email smoke.
 
 | Layer | Planned proof | Current status |
 | --- | --- | --- |
-| Unit | Form validation, enumeration-safe errors, auth-state navigation, callback failure cases, and canonical return-path fallback. | Partial: shell eligibility, session-provider lifecycle, controller cancel/idempotency covered after PR #12. Forms/callbacks not yet built. |
+| Unit | Form validation, enumeration-safe errors, auth-state navigation, callback failure cases, and canonical return-path fallback. | Partial: shell + signup/resend mapping + confirm callback success/failure/wrong-flow covered after issue #7. Sign-in/recovery/account still open. |
 | Integration | Session persistence, foreground refresh, verified user, and owner-scoped profile update. | Not yet for US-008 product screens; US-005 adapter remains the session seam. |
 | Platform | Android emulator or device completes signup, confirmation, login, relaunch, recovery, settings update, and logout. | Not proven. Expo static export alone does not satisfy this story. |
 | Hosted smoke | Redirect allowlist, confirmation/password/abuse controls, verified Android App Link association, and real confirmation/recovery email are attested. | Not proven. |
@@ -37,7 +37,7 @@ type/config compatibility may be checked, but iOS runtime remains unproven.
 
 ## Residual open work before implemented
 
-- Signup / confirmation-pending / local confirm deep-link exchange
+- ~~Signup / confirmation-pending / local confirm deep-link exchange~~ (issue #7)
 - Sign-in + protected return destination
 - Password recovery / reset with recovery proof
 - Account `display_name` update + real sign-out navigation
