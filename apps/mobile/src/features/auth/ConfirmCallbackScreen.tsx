@@ -46,10 +46,13 @@ export function ConfirmCallbackScreen({
       return
     }
     startedRef.current = true
+    let isActive = true
 
     const run = async () => {
       if (requestUrl === null || requestUrl.length === 0) {
-        navigation.replace(failurePath)
+        if (isActive) {
+          navigation.replace(failurePath)
+        }
         return
       }
 
@@ -60,11 +63,19 @@ export function ConfirmCallbackScreen({
         successPath,
       })
 
+      if (!isActive) {
+        return
+      }
+
       // Always replace so the authorization code is stripped from history.
       navigation.replace(result.kind === 'success' ? result.path : failurePath)
     }
 
     void run()
+
+    return () => {
+      isActive = false
+    }
   }, [client, failurePath, navigation, requestUrl, successPath])
 
   return (
