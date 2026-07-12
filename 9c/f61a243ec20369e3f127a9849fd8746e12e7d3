@@ -1,0 +1,49 @@
+apps/mobile/src/app/(auth)/forgot-password.tsx
+  s_8746fe7318701a::t_20565968e10748 1,4,15-16,23-24
+apps/mobile/src/app/(auth)/index.tsx
+  s_8746fe7318701a::t_e75eb0c34b5afa 1,7,20-21,50-51,53-54
+apps/mobile/src/app/(auth)/sign-up.tsx
+  s_dc9e062f375acf::t_d907f1a9149f05 1,4,11-12,18-19,21-22
+apps/mobile/src/app/auth/recovery-failed.tsx
+  s_8746fe7318701a::t_39df8fc06a73b0 5,14-15,19,22-23,25-26
+apps/mobile/src/app/auth/reset-password.tsx
+  s_8746fe7318701a::t_7aeaff40936d5c 1,4,16-17,30-31
+apps/mobile/src/features/auth/confirm-request-url.test.ts
+  s_8746fe7318701a::t_8cfbad6cb67c80 25-28
+apps/mobile/src/features/auth/confirm-request-url.ts
+  s_8746fe7318701a::t_4f947285208366 15
+apps/mobile/src/features/auth/recovery-session.ts
+  s_8746fe7318701a::t_eea6859157106a 6-9
+apps/mobile/src/features/auth/reset-password.test.ts
+  s_8746fe7318701a::t_2de67184f8b72f 163-230
+apps/mobile/src/features/auth/reset-password.ts
+  s_8746fe7318701a::t_ae9fd305461c8e 90-96
+apps/mobile/src/features/auth/search-params.test.ts
+  s_8746fe7318701a::t_4c6f300ccf5d53 71-76
+apps/mobile/src/features/auth/search-params.ts
+  s_8746fe7318701a::t_49b4c3b18a57f2 58,84-91
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "9cf61a243ec20369e3f127a9849fd8746e12e7d3",
+  "prompts": {},
+  "sessions": {
+    "s_8746fe7318701a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9145c38c-cb4f-4b56-9cb3-cfa2fa67ac71",
+        "model": "unknown"
+      },
+      "human_author": "monet88 <minhthang421992@gmail.com>"
+    },
+    "s_dc9e062f375acf": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "de9fd9b5-d35e-4dc8-b3f4-e3e7217cd509",
+        "model": "unknown"
+      },
+      "human_author": "monet88 <minhthang421992@gmail.com>"
+    }
+  }
+}
