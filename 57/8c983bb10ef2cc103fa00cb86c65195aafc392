@@ -1,0 +1,39 @@
+apps/mobile/src/app/(auth)/index.tsx
+  s_1091aac1ed8952::t_fcfa55bccbd986 3-7,10-12,16-28,47,50,54
+apps/mobile/src/features/auth/SignInForm.tsx
+  s_1091aac1ed8952::t_3381e637acbd42 1-176
+apps/mobile/src/features/auth/return-path.test.ts
+  s_1091aac1ed8952::t_84cf8aad18a671 1-28
+apps/mobile/src/features/auth/return-path.ts
+  s_1091aac1ed8952::t_ee95267b505d73 1-29
+apps/mobile/src/features/auth/search-params.test.ts
+  s_1091aac1ed8952::t_dc83c09790ffb3 4,51-61
+apps/mobile/src/features/auth/search-params.ts
+  s_1091aac1ed8952::t_b5b390adc20f78 50-65
+apps/mobile/src/features/auth/sign-in.test.ts
+  s_1091aac1ed8952::t_1381f6352389f4 1-162
+apps/mobile/src/features/auth/sign-in.ts
+  s_1091aac1ed8952::t_4f1b71828bf510 1-67
+docs/stories/US-008-mobile-auth-account/execplan.md
+  s_1091aac1ed8952::t_cda6f16038c561 18-19
+docs/stories/US-008-mobile-auth-account/overview.md
+  s_1091aac1ed8952::t_dfc93bef219982 18-26
+docs/stories/US-008-mobile-auth-account/validation.md
+  s_1091aac1ed8952::t_f6d7870c242c02 5-8,12,24-28,49
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "578c983bb10ef2cc103fa00cb86c65195aafc392",
+  "prompts": {},
+  "sessions": {
+    "s_1091aac1ed8952": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c8703957-8b4e-43bc-981a-88ca841625bb",
+        "model": "unknown"
+      },
+      "human_author": "monet88 <minhthang421992@gmail.com>"
+    }
+  }
+}
