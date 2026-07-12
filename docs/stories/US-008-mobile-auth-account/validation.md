@@ -9,7 +9,7 @@ emulator/device runtime, and hosted App Link/email smoke.
 
 | Layer | Planned proof | Current status |
 | --- | --- | --- |
-| Unit | Form validation, enumeration-safe errors, auth-state navigation, callback failure cases, and canonical return-path fallback. | Partial: shell + signup/resend mapping + confirm callback + sign-in validation/error mapping/return-path fallback + identity handshake + protected-entry coupling covered after issues #7 and #8. Recovery/account still open. |
+| Unit | Form validation, enumeration-safe errors, auth-state navigation, callback failure cases, and canonical return-path fallback. | Partial: shell + signup/resend mapping + confirm callback + sign-in validation/error mapping/return-path fallback + identity handshake + protected-entry coupling covered after issues #7 / PR #14 and #8 / PR #16. Recovery/account still open. |
 | Integration | Session persistence, foreground refresh, verified user, and owner-scoped profile update. | Not yet for US-008 product screens; US-005 adapter remains the session seam. |
 | Platform | Android emulator or device completes signup, confirmation, login, relaunch, recovery, settings update, and logout. | Not proven. Expo static export alone does not satisfy this story. |
 | Hosted smoke | Redirect allowlist, confirmation/password/abuse controls, verified Android App Link association, and real confirmation/recovery email are attested. | Not proven. Local `lunav://auth/confirm` allowlist is configured; hosted App Links remain open. |
@@ -21,15 +21,18 @@ emulator/device runtime, and hosted App Link/email smoke.
 - Merged PR #14 (`5d435d6`, issue #7): signup → confirmation-pending/resend →
   local `lunav://auth/confirm` PKCE exchange; review harden for provider-error
   mapping, empty-duplicate code cardinality, and unguarded confirm-failed route.
-- Issue #8 sign-in → protected entry: shared-contract `parseSignInInput`,
-  enumeration-safe `mapSignInError`, validated return destination via
-  `parseAuthReturnDestination` → `/(protected)`, `SignInForm` on `(auth)/index`.
+- Merged PR #16 (`340f2ae`, issue #8): sign-in → protected entry with
+  shared-contract `parseSignInInput`, enumeration-safe `mapSignInError`,
+  validated return destination via `parseAuthReturnDestination` →
+  `/(protected)`, and `SignInForm` on `(auth)/index`.
 - Sign-in identity handshake: password success awaits `getUser()` and only
   returns `signed-in` for confirmed `authenticated`; route waits for session
   provider `canAccessPrivateShell` before `router.replace` so a late/failed
   identity refresh cannot clear the form and leave the user stuck public.
+- `waitForAuthState` cleanup is TDZ-safe for synchronous `subscribe` emission
+  and passes `prefer-const` via a mutable cleanup handle.
 - Local mobile unit/typecheck/lint green for shell + signup/confirm + sign-in
-  (`pnpm --filter @lunav/mobile test` → 106 passed; typecheck + lint clean).
+  (`pnpm --filter @lunav/mobile test` → 107 passed; typecheck + lint clean).
 - Harness matrix: `US-008` → `in_progress`, unit=`yes`, integration/e2e/platform=`no`.
 
 ## Planned Commands
