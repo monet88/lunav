@@ -2,22 +2,27 @@
 
 ## Required Proof
 
-Partial local unit proof exists for the auth session shell only. Full story
-completion still requires forms, deep-link callbacks, Android emulator/device
-runtime, and hosted App Link/email smoke.
+Partial local unit proof exists for the auth session shell and the
+signup/confirm deep-link slice. Full story completion still requires sign-in,
+recovery/reset, account settings, Android emulator/device runtime, and hosted
+App Link/email smoke.
 
 | Layer | Planned proof | Current status |
 | --- | --- | --- |
-| Unit | Form validation, enumeration-safe errors, auth-state navigation, callback failure cases, and canonical return-path fallback. | Partial: shell + signup/resend mapping + confirm callback success/failure/wrong-flow covered after issue #7. Sign-in/recovery/account still open. |
+| Unit | Form validation, enumeration-safe errors, auth-state navigation, callback failure cases, and canonical return-path fallback. | Partial: shell + signup/resend mapping + confirm callback success/failure/wrong-flow + fail-closed params covered after issue #7 / PR #14. Sign-in/recovery/account still open. |
 | Integration | Session persistence, foreground refresh, verified user, and owner-scoped profile update. | Not yet for US-008 product screens; US-005 adapter remains the session seam. |
 | Platform | Android emulator or device completes signup, confirmation, login, relaunch, recovery, settings update, and logout. | Not proven. Expo static export alone does not satisfy this story. |
-| Hosted smoke | Redirect allowlist, confirmation/password/abuse controls, verified Android App Link association, and real confirmation/recovery email are attested. | Not proven. |
-| Security | Session storage is not plain AsyncStorage; unverified custom-scheme handlers cannot receive hosted callbacks; callback credentials and raw tokens are absent from logs/history. | Shell reuses US-005 secure storage; callback handlers and hosted App Links remain open. |
+| Hosted smoke | Redirect allowlist, confirmation/password/abuse controls, verified Android App Link association, and real confirmation/recovery email are attested. | Not proven. Local `lunav://auth/confirm` allowlist is configured; hosted App Links remain open. |
+| Security | Session storage is not plain AsyncStorage; unverified custom-scheme handlers cannot receive hosted callbacks; callback credentials and raw tokens are absent from logs/history. | Shell reuses US-005 secure storage; local confirm callback strips history and avoids logging URL/code/session. Hosted App Links remain open. |
 
 ## Evidence recorded (2026-07-12)
 
 - Merged PR #12 (`4902f5c`): mobile auth session shell + protected navigation.
-- Local mobile unit/typecheck green for the shell slice.
+- Merged PR #14 (`5d435d6`, issue #7): signup → confirmation-pending/resend →
+  local `lunav://auth/confirm` PKCE exchange; review harden for provider-error
+  mapping, empty-duplicate code cardinality, and unguarded confirm-failed route.
+- Local mobile unit/typecheck/lint green for shell + signup/confirm slice
+  (`pnpm --filter @lunav/mobile test` → 76 passed after review fixes).
 - Harness matrix: `US-008` → `in_progress`, unit=`yes`, integration/e2e/platform=`no`.
 
 ## Planned Commands
