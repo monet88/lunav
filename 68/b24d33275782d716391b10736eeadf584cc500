@@ -1,0 +1,57 @@
+.gitignore
+  s_5bb5e80e827477::t_f8ec7d94d09993 38-44
+apps/web/e2e/auth-account.spec.ts
+  s_5bb5e80e827477::t_4261a811bc1486 1-124
+apps/web/e2e/global-setup.ts
+  s_5bb5e80e827477::t_eec556c685dcce 1-17
+apps/web/e2e/helpers/auth-admin.ts
+  s_5bb5e80e827477::t_2e147c5518d952 1-47
+apps/web/e2e/helpers/auth-ui.ts
+  s_5bb5e80e827477::t_a818512e1a40f6 1-59
+apps/web/e2e/helpers/local-env.ts
+  s_5bb5e80e827477::t_7354aaf49ffe2f 1-73
+apps/web/e2e/helpers/mailpit.ts
+  s_5bb5e80e827477::t_0c872e01a89d6b 1-82
+apps/web/package.json
+  s_5bb5e80e827477::t_0933d27b7a88ed 11,24
+apps/web/playwright.config.ts
+  s_5bb5e80e827477::t_e44e0f1d5df27a 1-41
+docs/LOCAL_SUPABASE.md
+  s_4e743010a7bf28::t_84cb2fdca83b51 44-55
+docs/stories/US-007-web-auth-account/hosted-smoke.md
+  s_5bb5e80e827477::t_e4b196de01c553 1-79
+docs/superpowers/plans/2026-07-12-us-007-web-auth-e2e-smoke.md
+  s_5bb5e80e827477::t_ced21942fb1bf6 1-50
+pnpm-lock.yaml
+  s_5bb5e80e827477::t_bd60fb06b19559 128,136-138,1383-1387,3475-3479,4698-4707,7393-7396,9237-9238,9260,9271,9275,9282,9286,9297,9823-9825,11120,11139,11349-11356
+scripts/verify-web-auth.ps1
+  s_5bb5e80e827477::t_35953be7f0433c 1,3-52,55-60,64-65,67-70,72
+scripts/verify-web-auth.sh
+  s_5bb5e80e827477::t_8d3fe5e42260f8 7,11-30,37-43
+supabase/config.toml
+  s_4e743010a7bf28::t_d1af3e842afd0c 163-169
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "68b24d33275782d716391b10736eeadf584cc500",
+  "prompts": {},
+  "sessions": {
+    "s_4e743010a7bf28": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "a4aa11d7-d1bc-4d39-a27b-53c340888af8",
+        "model": "unknown"
+      },
+      "human_author": "monet88 <minhthang421992@gmail.com>"
+    },
+    "s_5bb5e80e827477": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "42ed3d09-1ccb-432f-9c9c-9c1850e31f3d",
+        "model": "unknown"
+      },
+      "human_author": "monet88 <minhthang421992@gmail.com>"
+    }
+  }
+}
