@@ -1,0 +1,21 @@
+apps/mobile/src/features/auth/wait-for-auth-state.test.ts
+  s_a609b1f36ddeb5::t_9242c4361b43c1 68-92
+apps/mobile/src/features/auth/wait-for-auth-state.ts
+  s_a609b1f36ddeb5::t_5538f5ca05bd91 30-33,41-44,48,54-59
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "0ca95b2880c60bc8ef359824e7b4af74bacc225c",
+  "prompts": {},
+  "sessions": {
+    "s_a609b1f36ddeb5": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6c9ef9b3-9b61-48e2-86a5-3f9f77b906f2",
+        "model": "unknown"
+      },
+      "human_author": "monet88 <minhthang421992@gmail.com>"
+    }
+  }
+}
