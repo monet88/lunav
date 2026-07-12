@@ -1,0 +1,35 @@
+apps/mobile/src/app/(protected)/index.tsx
+  s_bbcfb097442614::t_2271d40196c08b 3,7-8,20-22,51-59
+apps/mobile/src/features/auth/protected-navigation.test.ts
+  s_a609b1f36ddeb5::t_420c7d6f298104 90-91,93-94,135
+apps/mobile/src/features/auth/return-path.test.ts
+  s_a609b1f36ddeb5::t_b77e294d84b500 5,7
+apps/mobile/src/features/auth/return-path.ts
+  s_a609b1f36ddeb5::t_00bfabae87d84c 5-6,8,18-22
+apps/mobile/src/features/auth/sign-in.test.ts
+  s_a609b1f36ddeb5::t_a15fa89727b4fa 90
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "c808d830f2a6d98c8a4800dd3dfca2e0bea88e66",
+  "prompts": {},
+  "sessions": {
+    "s_a609b1f36ddeb5": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6c9ef9b3-9b61-48e2-86a5-3f9f77b906f2",
+        "model": "unknown"
+      },
+      "human_author": "monet88 <minhthang421992@gmail.com>"
+    },
+    "s_bbcfb097442614": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "2a21becf-30f3-4639-8149-ae369aca28d6",
+        "model": "unknown"
+      },
+      "human_author": "monet88 <minhthang421992@gmail.com>"
+    }
+  }
+}
