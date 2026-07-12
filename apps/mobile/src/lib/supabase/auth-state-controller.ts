@@ -102,14 +102,17 @@ export function createMobileAuthStateController({
   // Only serializes the short subscription-setup critical section so two starts
   // cannot attach listeners concurrently. Long awaits (getUser / auto-refresh)
   // stay outside this queue so stop() is never blocked by a stalled request.
-  let setupQueue = Promise.resolve()
+  let setupQueue: Promise<unknown> = Promise.resolve()
   let authSubscription: AuthSubscription | null = null
   let appStateSubscription: AppStateSubscription | null = null
   const listeners = new Set<AuthStateListener>()
 
-  const enqueueSetup = (operation: () => Promise<void>): Promise<void> => {
+  const enqueueSetup = <T>(operation: () => Promise<T>): Promise<T> => {
     const next = setupQueue.then(operation, operation)
-    setupQueue = next.catch(() => undefined)
+    setupQueue = next.then(
+      () => undefined,
+      () => undefined
+    )
     return next
   }
 
@@ -192,15 +195,15 @@ export function createMobileAuthStateController({
     await client.auth.stopAutoRefresh().catch(() => undefined)
   }
 
-  const start = (): Promise<void> => {
-    const runId = ++lifecycleRunId
-
-    return enqueueSetup(async () => {
-      // stop() or a newer start() may have invalidated this run before setup ran.
-      if (runId !== lifecycleRunId || isStarted) {
-        return
+  const start = (): Promise<void> =>
+    // Acquire ownership inside setupQueue. Returning null means this call is a
+    // no-op (already started / cancelled) so the network phase is skipped.
+    enqueueSetup(async (): Promise<number | null> => {
+      if (isStarted) {
+        return null
       }
 
+      const runId = ++lifecycleRunId
       isStarted = true
       try {
         authSubscription = client.auth.onAuthStateChange((event) => {
@@ -221,7 +224,7 @@ export function createMobileAuthStateController({
         )
       } catch (error: unknown) {
         if (runId !== lifecycleRunId) {
-          return
+          return null
         }
 
         await tearDownStartedController()
@@ -232,12 +235,14 @@ export function createMobileAuthStateController({
       if (runId !== lifecycleRunId) {
         removeSubscriptions()
         isStarted = false
-        return
+        return null
       }
-    }).then(async () => {
+
+      return runId
+    }).then(async (runId) => {
       // Long network work stays outside setupQueue so a stalled getUser cannot
       // block stop() or a later remount start().
-      if (runId !== lifecycleRunId || !isStarted) {
+      if (runId === null || runId !== lifecycleRunId || !isStarted) {
         return
       }
 
@@ -258,7 +263,6 @@ export function createMobileAuthStateController({
         throw error
       }
     })
-  }
 
   const stop = async (): Promise<void> => {
     // Invalidate any in-flight start immediately, drop listeners now, and stop

@@ -615,6 +615,27 @@ describe('mobile auth-state controller', () => {
     await expect(controller.start()).resolves.toBeUndefined()
   })
 
+  test('duplicate start while running is a no-op for network work', async () => {
+    const auth = createAuthHarness()
+    const appState = createAppStateHarness('active')
+    const controller = createMobileAuthStateController({
+      client: auth.client,
+      appState: appState.appState,
+    })
+
+    await controller.start()
+    expect(auth.startAutoRefresh).toHaveBeenCalledTimes(1)
+    expect(auth.getUser).toHaveBeenCalledTimes(1)
+    expect(auth.client.auth.onAuthStateChange).toHaveBeenCalledTimes(1)
+
+    await controller.start()
+    await flushAsyncWork()
+
+    expect(auth.startAutoRefresh).toHaveBeenCalledTimes(1)
+    expect(auth.getUser).toHaveBeenCalledTimes(1)
+    expect(auth.client.auth.onAuthStateChange).toHaveBeenCalledTimes(1)
+  })
+
   test('cancels an in-flight start immediately so stalled getUser cannot delay teardown', async () => {
     const auth = createAuthHarness()
     const appState = createAppStateHarness('active')
