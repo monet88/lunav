@@ -160,4 +160,72 @@ describe('mobile gated reset-password', () => {
     expect(result.kind).toBe('error')
     expect(updateUser).not.toHaveBeenCalled()
   })
+
+  test('returns generic failure when updateUser reports an error', async () => {
+    const { client, updateUser } = createClient({
+      userId: 'user-1',
+      updateError: { code: 'unexpected_failure', message: 'provider down' },
+    })
+    const store = createMemoryStore({
+      [RECOVERY_SESSION_KEY]: JSON.stringify({
+        expiresAt: Date.now() + RECOVERY_SESSION_TTL_MS,
+        userId: 'user-1',
+      }),
+    })
+
+    const result = await resetPasswordWithRecoveryProof(
+      client,
+      {
+        password: 'password12',
+        passwordConfirmation: 'password12',
+      },
+      store
+    )
+
+    expect(updateUser).toHaveBeenCalledWith({ password: 'password12' })
+    expect(result).toEqual({
+      kind: 'error',
+      message: 'Khong the hoan tat yeu cau. Vui long thu lai.',
+    })
+    expect(store.values.has(RECOVERY_SESSION_KEY)).toBe(true)
+  })
+
+  test('still reports password-updated when proof cleanup fails after update', async () => {
+    const { client, updateUser } = createClient({ userId: 'user-1' })
+    const store: RecoverySessionStore & { values: Map<string, string> } = {
+      values: new Map([
+        [
+          RECOVERY_SESSION_KEY,
+          JSON.stringify({
+            expiresAt: Date.now() + RECOVERY_SESSION_TTL_MS,
+            userId: 'user-1',
+          }),
+        ],
+      ]),
+      async getItemAsync(key: string) {
+        return this.values.has(key) ? (this.values.get(key) as string) : null
+      },
+      async setItemAsync(key: string, value: string) {
+        this.values.set(key, value)
+      },
+      async deleteItemAsync() {
+        throw new Error('secure store delete failed')
+      },
+    }
+
+    const result = await resetPasswordWithRecoveryProof(
+      client,
+      {
+        password: 'password12',
+        passwordConfirmation: 'password12',
+      },
+      store
+    )
+
+    expect(updateUser).toHaveBeenCalledWith({ password: 'password12' })
+    expect(result).toEqual({
+      kind: 'password-updated',
+      message: 'Mat khau da duoc cap nhat.',
+    })
+  })
 })

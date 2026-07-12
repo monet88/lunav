@@ -68,6 +68,12 @@ describe('auth route search params', () => {
     expect(parseForgotPasswordSearchParams({ status: 'ok' })).toEqual({
       initialError: false,
     })
+    expect(
+      parseForgotPasswordSearchParams({ status: ['error', 'error'] })
+    ).toEqual({ initialError: false })
+    expect(parseForgotPasswordSearchParams({ status: ['error', ''] })).toEqual({
+      initialError: false,
+    })
   })
 
   test('accepts a single sign-in returnTo string and fails closed otherwise', () => {

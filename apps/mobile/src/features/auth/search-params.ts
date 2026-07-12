@@ -55,12 +55,7 @@ function parseAuthCodeSearchParams(input: unknown): {
 export function parseConfirmEmailSearchParams(input: unknown): {
   initialError: boolean
 } {
-  if (!isRecord(input)) {
-    return { initialError: false }
-  }
-
-  const statuses = asStringList(input.status)
-  return { initialError: statuses.length === 1 && statuses[0] === 'error' }
+  return parseSingleErrorStatus(input)
 }
 
 /**
@@ -86,6 +81,14 @@ export function parseSignInSearchParams(input: unknown): {
 export function parseForgotPasswordSearchParams(input: unknown): {
   initialError: boolean
 } {
+  return parseSingleErrorStatus(input)
+}
+
+/**
+ * Fail-closed status gate shared by confirm-email and forgot-password routes.
+ * Only a single `status=error` value is treated as an initial error.
+ */
+function parseSingleErrorStatus(input: unknown): { initialError: boolean } {
   if (!isRecord(input)) {
     return { initialError: false }
   }

@@ -3,6 +3,10 @@ import * as SecureStore from 'expo-secure-store'
 /**
  * Mobile recovery proof is device-local (SecureStore), not a web cookie.
  * Bound to the userId from a successful recovery exchange and expires quickly.
+ *
+ * TTL uses wall-clock time and is a local UX gate only. Authorization still
+ * requires a live authenticated Supabase recovery session + matching userId
+ * before updateUser; server session lifetime remains the real hard bound.
  */
 export const RECOVERY_SESSION_KEY = 'lunav-recovery-session'
 export const RECOVERY_SESSION_TTL_MS = 600_000

@@ -1,6 +1,7 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Link, router } from 'expo-router'
+import { authScreenStyles } from '@/features/auth/auth-screen-styles'
 import { ResetPasswordForm } from '@/features/auth/ResetPasswordForm'
 import { resetPasswordWithRecoveryProof } from '@/features/auth/reset-password'
 import { getSharedMobileSupabaseClient } from '@/lib/supabase/shared-client'
@@ -12,8 +13,8 @@ import { getSharedMobileSupabaseClient } from '@/lib/supabase/shared-client'
  */
 export default function AuthResetPasswordRoute() {
   return (
-    <View style={styles.container} testID="reset-password-screen">
-      <SafeAreaView style={styles.safeArea}>
+    <View style={authScreenStyles.container} testID="reset-password-screen">
+      <SafeAreaView style={authScreenStyles.safeArea}>
         <ResetPasswordForm
           onPasswordUpdated={() => {
             // Recovery already authenticated the session; public (auth) is closed.
@@ -26,33 +27,10 @@ export default function AuthResetPasswordRoute() {
             )
           }
         />
-        <Link href="/(protected)" style={styles.link}>
-          <Text style={styles.linkText}>Ve man hinh chinh</Text>
+        <Link href="/(protected)" style={authScreenStyles.link}>
+          <Text style={authScreenStyles.linkText}>Ve man hinh chinh</Text>
         </Link>
       </SafeAreaView>
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f8fafc',
-  },
-  safeArea: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 24,
-    gap: 16,
-  },
-  link: {
-    marginTop: 8,
-  },
-  linkText: {
-    color: '#208AEF',
-    fontSize: 15,
-    fontWeight: '600',
-    textAlign: 'center',
-  },
-})

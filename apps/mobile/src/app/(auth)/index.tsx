@@ -1,9 +1,10 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Link, router, useLocalSearchParams } from 'expo-router'
 import { SignInForm } from '@/features/auth/SignInForm'
 import { canAccessPrivateShell } from '@/features/auth/auth-shell'
 import { genericFailureState } from '@/features/auth/auth-result'
+import { authScreenStyles } from '@/features/auth/auth-screen-styles'
 import { signInWithEmailPassword } from '@/features/auth/sign-in'
 import { parseSignInSearchParams } from '@/features/auth/search-params'
 import { useMobileAuthSession } from '@/features/auth/session-provider'
@@ -16,8 +17,8 @@ export default function AuthIndexRoute() {
   const session = useMobileAuthSession()
 
   return (
-    <View style={styles.container} testID="public-auth-shell">
-      <SafeAreaView style={styles.safeArea}>
+    <View style={authScreenStyles.container} testID="public-auth-shell">
+      <SafeAreaView style={authScreenStyles.safeArea}>
         <SignInForm
           onSubmit={async (fields) => {
             const result = await signInWithEmailPassword(
@@ -46,36 +47,13 @@ export default function AuthIndexRoute() {
             router.replace(href)
           }}
         />
-        <Link href="/(auth)/forgot-password" style={styles.link}>
-          <Text style={styles.linkText}>Quen mat khau?</Text>
+        <Link href="/(auth)/forgot-password" style={authScreenStyles.link}>
+          <Text style={authScreenStyles.linkText}>Quen mat khau?</Text>
         </Link>
-        <Link href="/(auth)/sign-up" style={styles.link}>
-          <Text style={styles.linkText}>Tao tai khoan moi</Text>
+        <Link href="/(auth)/sign-up" style={authScreenStyles.link}>
+          <Text style={authScreenStyles.linkText}>Tao tai khoan moi</Text>
         </Link>
       </SafeAreaView>
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f8fafc',
-  },
-  safeArea: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 24,
-    gap: 16,
-  },
-  link: {
-    marginTop: 8,
-  },
-  linkText: {
-    color: '#208AEF',
-    fontSize: 15,
-    fontWeight: '600',
-    textAlign: 'center',
-  },
-})

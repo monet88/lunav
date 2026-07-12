@@ -12,6 +12,7 @@ export function buildConfirmRequestUrl(
 /**
  * Rebuild a lunav:// recovery URL for the shared callback parser.
  * Same multi-code cardinality rules as confirmation.
+ * The resulting URL must never be logged.
  */
 export function buildRecoveryRequestUrl(
   codes: readonly string[]

@@ -87,7 +87,13 @@ export async function resetPasswordWithRecoveryProof(
       return genericFailureState()
     }
 
-    await clearRecoverySession(store)
+    // Password mutation already succeeded. Cleanup is best-effort so a
+    // SecureStore failure does not ask the user to retry an applied update.
+    try {
+      await clearRecoverySession(store)
+    } catch {
+      // Best-effort only: the recovery proof may linger until TTL/expiry.
+    }
     return { kind: 'password-updated', message: passwordUpdatedMessage() }
   } catch {
     return genericFailureState()

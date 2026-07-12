@@ -22,6 +22,10 @@ describe('buildConfirmRequestUrl', () => {
 })
 
 describe('buildRecoveryRequestUrl', () => {
+  test('returns null when no codes are present', () => {
+    expect(buildRecoveryRequestUrl([])).toBeNull()
+  })
+
   test('builds a single-code local recovery deep link', () => {
     expect(buildRecoveryRequestUrl(['abc123'])).toBe(
       'lunav://auth/recovery?code=abc123'
