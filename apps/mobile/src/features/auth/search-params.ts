@@ -47,3 +47,19 @@ export function parseConfirmEmailSearchParams(input: unknown): {
   const statuses = asStringList(input.status)
   return { initialError: statuses.length === 1 && statuses[0] === 'error' }
 }
+
+/**
+ * Parse optional sign-in return destination. Only a single string value is
+ * accepted; arrays / missing keys fall back to empty so the shared contract
+ * applies its safe default.
+ */
+export function parseSignInSearchParams(input: unknown): {
+  returnTo: string
+} {
+  if (!isRecord(input)) {
+    return { returnTo: '' }
+  }
+
+  const values = asStringList(input.returnTo)
+  return { returnTo: values.length === 1 ? values[0] : '' }
+}

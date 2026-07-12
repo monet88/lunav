@@ -1,18 +1,31 @@
 import { StyleSheet, Text, View } from 'react-native'
-import { Link } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { Link, router, useLocalSearchParams } from 'expo-router'
+import { SignInForm } from '@/features/auth/SignInForm'
+import { signInWithEmailPassword } from '@/features/auth/sign-in'
+import { parseSignInSearchParams } from '@/features/auth/search-params'
+import { getSharedMobileSupabaseClient } from '@/lib/supabase/shared-client'
 
-/**
- * Public auth entry. Full sign-in UX arrives in a later ticket (#8).
- */
 export default function AuthIndexRoute() {
+  const rawParams = useLocalSearchParams()
+  const { returnTo } = parseSignInSearchParams(rawParams)
+
   return (
     <View style={styles.container} testID="public-auth-shell">
       <SafeAreaView style={styles.safeArea}>
-        <Text style={styles.title}>Dang nhap</Text>
-        <Text style={styles.subtitle}>
-          Vui long dang nhap de su dung ZIWEI AI.
-        </Text>
+        <SignInForm
+          onSubmit={async (fields) =>
+            signInWithEmailPassword(
+              getSharedMobileSupabaseClient(),
+              fields,
+              returnTo
+            )
+          }
+          onSignedIn={(href) => {
+            // Replace so the sign-in form is not left under the private shell.
+            router.replace(href)
+          }}
+        />
         <Link href="/(auth)/sign-up" style={styles.link}>
           <Text style={styles.linkText}>Tao tai khoan moi</Text>
         </Link>
@@ -31,25 +44,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 24,
-  },
-  title: {
-    color: '#1e293b',
-    fontSize: 28,
-    fontWeight: '700',
-    textAlign: 'center',
-  },
-  subtitle: {
-    color: '#475569',
-    fontSize: 16,
-    marginTop: 12,
-    textAlign: 'center',
+    gap: 16,
   },
   link: {
-    marginTop: 24,
+    marginTop: 8,
   },
   linkText: {
     color: '#208AEF',
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '600',
     textAlign: 'center',
   },
