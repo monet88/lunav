@@ -17,7 +17,7 @@ the approved shared identity and profile modules.
    verified Android App Links remain later.
 4. ~~Add signup + confirmation-pending/resend.~~ ~~Sign-in + protected return
    destination (#8 / PR #16).~~ ~~Forgot-password / recovery / gated reset
-   (#9).~~
+   (#9 / PR #18).~~
 5. Add the account screen and owner-scoped `display_name` update (#10).
 6. Wire sign-out cache cleanup to real product caches and public navigation
    (#10).

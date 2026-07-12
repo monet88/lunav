@@ -9,11 +9,11 @@ emulator/device runtime, and hosted App Link/email smoke.
 
 | Layer | Planned proof | Current status |
 | --- | --- | --- |
-| Unit | Form validation, enumeration-safe errors, auth-state navigation, callback failure cases, and canonical return-path fallback. | Partial: shell + signup/resend + confirm callback + sign-in + recovery messaging/callback separation + SecureStore recovery proof + gated reset covered after issues #7 / #8 / #9. Account still open. |
+| Unit | Form validation, enumeration-safe errors, auth-state navigation, callback failure cases, and canonical return-path fallback. | Partial: shell + signup/resend + confirm callback + sign-in + recovery messaging/callback separation + SecureStore recovery proof + gated reset + callback-work eviction covered after issues #7 / #8 / #9 (PRs #14 / #16 / #18). Account still open. |
 | Integration | Session persistence, foreground refresh, verified user, and owner-scoped profile update. | Not yet for US-008 product screens; US-005 adapter remains the session seam. |
 | Platform | Android emulator or device completes signup, confirmation, login, relaunch, recovery, settings update, and logout. | Not proven. Expo static export alone does not satisfy this story. |
 | Hosted smoke | Redirect allowlist, confirmation/password/abuse controls, verified Android App Link association, and real confirmation/recovery email are attested. | Not proven. Local `lunav://auth/confirm` and `lunav://auth/recovery` allowlists are configured; hosted App Links remain open. |
-| Security | Session storage is not plain AsyncStorage; unverified custom-scheme handlers cannot receive hosted callbacks; callback credentials and raw tokens are absent from logs/history. | Shell reuses US-005 secure storage; local confirm/recovery callbacks strip history and avoid logging URL/code/session; reset requires SecureStore recovery proof bound to userId. Hosted App Links remain open. |
+| Security | Session storage is not plain AsyncStorage; unverified custom-scheme handlers cannot receive hosted callbacks; callback credentials and raw tokens are absent from logs/history. | Shell reuses US-005 secure storage; local confirm/recovery callbacks strip history and avoid logging URL/code/session; reset requires SecureStore recovery proof bound to userId with best-effort clear and expire-on-delete-fail fallback. Hosted App Links remain open. |
 
 ## Evidence recorded (2026-07-12)
 
@@ -31,15 +31,17 @@ emulator/device runtime, and hosted App Link/email smoke.
   identity refresh cannot clear the form and leave the user stuck public.
 - `waitForAuthState` cleanup is TDZ-safe for synchronous `subscribe` emission
   and passes `prefer-const` via a mutable cleanup handle.
-- Issue #9 password recovery loop (branch work): forgot-password form uses
+- Merged PR #18 (`9cf8ec7`, issue #9 closed): password recovery loop with
   `parseForgotPasswordInput` + enumeration-safe `mapForgotPasswordResult`;
   local `lunav://auth/recovery` accepts only recovery redirectType + single
   code; success writes SecureStore recovery proof and replaces to unguarded
   `/auth/reset-password`; reset requires authenticated session + matching
-  proof, then clears proof after `updateUser`.
-- Local mobile unit/typecheck/lint green for shell + signup/confirm + sign-in
-  + recovery/reset (`pnpm --filter @lunav/mobile test` → 129 passed;
-  typecheck + lint clean).
+  proof; proof clear is best-effort after successful `updateUser` and expires
+  in place if SecureStore delete fails; StrictMode remounts share one in-flight
+  callback exchange via `auth-callback-work` with settlement eviction.
+- Local mobile unit/typecheck green for shell + signup/confirm + sign-in +
+  recovery/reset (`pnpm --filter @lunav/mobile test` → 137 passed;
+  typecheck clean).
 - Harness matrix: `US-008` → `in_progress`, unit=`yes`, integration/e2e/platform=`no`.
 
 ## Planned Commands
