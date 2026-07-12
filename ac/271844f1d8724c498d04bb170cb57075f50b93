@@ -1,0 +1,21 @@
+apps/mobile/src/lib/supabase/auth-state-controller.ts
+  s_bbcfb097442614::t_37099c7568c519 105,110,112-115,198-203,206,227,238,240-242,245
+apps/mobile/src/lib/supabase/mobile-session.test.ts
+  s_bbcfb097442614::t_4b69486c934918 618-638
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "ac271844f1d8724c498d04bb170cb57075f50b93",
+  "prompts": {},
+  "sessions": {
+    "s_bbcfb097442614": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "2a21becf-30f3-4639-8149-ae369aca28d6",
+        "model": "unknown"
+      },
+      "human_author": "monet88 <minhthang421992@gmail.com>"
+    }
+  }
+}
