@@ -1,0 +1,25 @@
+apps/mobile/src/features/auth/session-provider.test.tsx
+  s_bbcfb097442614::t_981494e58c5a62 173,205-210
+apps/mobile/src/features/auth/session-provider.tsx
+  s_bbcfb097442614::t_fdd6d14c2b971e 67-69,80
+apps/mobile/src/lib/supabase/auth-state-controller.ts
+  s_bbcfb097442614::t_62e75c6fef4a24 98-100,102-105,110-112,122,161-164,188-200,222-242,244,247,253-257,261,263-271
+apps/mobile/src/lib/supabase/mobile-session.test.ts
+  s_bbcfb097442614::t_bd755e19106236 618-655,668-674,680
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "6933187b0ebd417889f058f32042980e667b5d32",
+  "prompts": {},
+  "sessions": {
+    "s_bbcfb097442614": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "2a21becf-30f3-4639-8149-ae369aca28d6",
+        "model": "unknown"
+      },
+      "human_author": "monet88 <minhthang421992@gmail.com>"
+    }
+  }
+}
