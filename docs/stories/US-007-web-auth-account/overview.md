@@ -2,7 +2,7 @@
 
 ## Status
 
-implemented-local
+implemented-local-e2e-hosted-signup-login-accepted
 
 ## Lane
 
@@ -15,8 +15,11 @@ high-risk
 
 ## Current Behavior
 
-The web app renders only the Foundation home page. It has no auth forms,
-confirmation callback, protected routes, recovery flow, or account settings.
+Local web auth/account is implemented and proven with unit tests plus Playwright
+browser E2E against Supabase local and Mailpit. Hosted signup, confirmation,
+sign-in, and protected `/account` session are accepted on
+`https://lunav-web.vercel.app`. Hosted recovery email and cookie/profile polish
+are deferred to `docs/stories/backlog.md` and do not block this story.
 
 ## Target Behavior
 

@@ -41,6 +41,18 @@ Mailpit: http://127.0.0.1:55324
 Postgres: postgresql://postgres:postgres@127.0.0.1:55322/postgres
 ```
 
+Local Auth redirect allowlist must include the bare site origin and the exact
+web callback paths used by PKCE email flows:
+
+```text
+http://127.0.0.1:3000
+http://127.0.0.1:3000/auth/confirm
+http://127.0.0.1:3000/auth/recovery
+```
+
+After changing those values in `supabase/config.toml`, restart the local stack
+so Auth reloads the allowlist before browser confirmation or recovery tests.
+
 Do not stop, rename, or reuse containers belonging to another local Supabase
 project to free ports. Keep this stack isolated by updating the Lunav port map
 only when the configured ports are unavailable.

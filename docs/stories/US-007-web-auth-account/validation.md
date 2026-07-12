@@ -2,9 +2,13 @@
 
 ## Required Proof
 
-Local unit, typecheck, lint, production build, and client-secret proof have
-been run on 2026-07-11. Browser E2E and hosted smoke remain incomplete because
-no approved E2E runner or hosted credentials/origin are available.
+Local unit, typecheck, lint, production build, client-secret, and browser E2E
+proof have been established. Hosted signup/login is accepted on
+`https://lunav-web.vercel.app` with Supabase project ref `dshhnqvfgundzsdjegbt`:
+confirmation, protected return, reload, and logout passed. Hosted recovery
+email and deeper cookie/profile polish are backlog-only
+(`docs/stories/backlog.md`, `BL-US007-01` .. `BL-US007-03`) and do not block
+US-007.
 
 | Layer | Planned proof |
 | --- | --- |
@@ -16,7 +20,8 @@ no approved E2E runner or hosted credentials/origin are available.
 
 ## Available Local Verification
 
-Run one of the following from the repository root:
+Run one of the following from the repository root with the Lunav Supabase stack
+running:
 
 ```bash
 bash scripts/verify-web-auth.sh
@@ -26,37 +31,35 @@ bash scripts/verify-web-auth.sh
 .\scripts\verify-web-auth.ps1
 ```
 
-It runs contracts and web unit tests, web typecheck/lint/build, and the
-client-secret scan. It does not establish local Supabase browser E2E or hosted
-email/callback proof.
+These wrappers run contracts and web unit tests, web typecheck/lint/build, the
+client-secret scan, and Playwright browser E2E against local Supabase/Mailpit.
+They fail closed when the local stack is unavailable.
 
-## Planned Commands
+Browser E2E only:
 
 ```bash
-pnpm --filter @lunav/web lint
-pnpm --filter @lunav/web typecheck
-pnpm --filter @lunav/web test
-pnpm --filter @lunav/web build
-pnpm security:client
+pnpm --filter @lunav/web test:e2e
 ```
 
-The implementation must add the selected browser E2E runner and exact command
-only after checking the Harness `e2e-test` capability and obtaining approval
-for any new dependency. Hosted smoke evidence is manual and must identify the
-tested origin without recording credentials or tokens.
+Hosted smoke is manual plus disposable-inbox attestation. Use
+docs/stories/US-007-web-auth-account/hosted-smoke.md and record only non-secret
+origin/settings outcomes. Latest partial evidence is recorded there.
 
 ## Security Hardening Applied (US-007 ownership)
 
-Local hardening covered by unit tests and verify-web-auth.ps1:
+Local hardening covered by unit tests and verify-web-auth:
 
 1. Recovery marker cookie is bound to the verified userId and checked on reset.
 2. Recovery marker is cleared on successful reset and on sign-out.
 3. WEB_ORIGIN fails closed in production (required, HTTPS only); non-production HTTP is limited to localhost/127.0.0.1.
 4. Confirmation/recovery redirects use the configured WEB_ORIGIN, not the request Host header.
 5. Confirmation accepts only redirectType === null; recovery requires redirectType === recovery.
+6. Auth form parsers pick only declared fields so Next.js $ACTION_* FormData keys cannot fail strict contracts.
+7. Local Auth redirect allowlist includes exact /auth/confirm and /auth/recovery callback URLs.
 
 ## Residual Risks / Deferred Proof
 
-- Browser E2E against Supabase local remains incomplete (no approved E2E runner dependency yet).
-- Hosted email/callback smoke remains incomplete (no hosted credentials/origin attestation yet).
+- Hosted recovery email/callback deferred to backlog `BL-US007-01` (free-tier Auth mailer rate limit after confirmation mail).
+- Hosted secure cookie deep attestation deferred to backlog `BL-US007-02`.
+- Hosted profile `display_name` persistence polish deferred to backlog `BL-US007-03`.
 - Supabase SSR auth session cookie defaults (httpOnly residual) remain under US-005 adapter ownership and were not changed in this story.
