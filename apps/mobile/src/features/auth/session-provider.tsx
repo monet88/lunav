@@ -15,7 +15,7 @@ import {
   type SignOutCleanup,
 } from '@/lib/supabase/auth-state-controller'
 import { getSharedMobileSupabaseClient } from '@/lib/supabase/shared-client'
-import { stubSignOutCleanup } from './sign-out-cleanup'
+import { mobileSignOutCleanup } from './sign-out-cleanup'
 
 export interface MobileAuthSessionValue {
   state: AuthState
@@ -51,7 +51,7 @@ function createDefaultController(): MobileAuthStateController {
 export function MobileAuthSessionProvider({
   children,
   controller: injectedController,
-  cleanup = stubSignOutCleanup,
+  cleanup = mobileSignOutCleanup,
 }: MobileAuthSessionProviderProps) {
   // useState lazy init guarantees one controller instance per provider mount.
   // useMemo is not safe here: React may discard memoized values, and recreating

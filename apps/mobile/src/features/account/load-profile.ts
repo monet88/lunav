@@ -1,45 +1,24 @@
+import { parseProfile, type AuthState } from '@lunav/contracts'
 import {
-  parseProfile,
-  type AuthState,
-  type Profile,
-} from '@lunav/contracts'
-import {
-  GENERIC_PROFILE_LOAD_MESSAGE,
-  UNAUTHORIZED_PROFILE_MESSAGE,
+  genericProfileLoadFailureResult,
+  unauthorizedLoadProfileResult,
+  type LoadProfileResult,
 } from './profile-action-state'
+import type { ProfileClient } from './profile-client'
 
-/**
- * Minimal owner-scoped profiles read seam. PromiseLike matches Supabase's
- * thenable Postgrest builders without coupling to generated table types.
- */
-export interface ProfileReadClient {
-  from: (table: 'profiles') => {
-    select: (columns?: string) => {
-      eq: (
-        column: 'id',
-        value: string
-      ) => {
-        single: () => PromiseLike<{ data: unknown; error: unknown | null }>
-      }
-    }
-  }
-}
-
-export type LoadProfileResult =
-  | { kind: 'loaded'; profile: Profile }
-  | { kind: 'unauthorized'; message: string }
-  | { kind: 'error'; message: string }
+export type { ProfileClient as ProfileReadClient } from './profile-client'
+export type { LoadProfileResult } from './profile-action-state'
 
 /**
  * Load the authenticated owner's profile row only. Failures stay generic so a
  * missing/foreign row never surfaces other users' data.
  */
 export async function loadOwnerProfile(
-  client: ProfileReadClient,
+  client: ProfileClient,
   authState: AuthState
 ): Promise<LoadProfileResult> {
   if (authState.status !== 'authenticated') {
-    return { kind: 'unauthorized', message: UNAUTHORIZED_PROFILE_MESSAGE }
+    return unauthorizedLoadProfileResult()
   }
 
   try {
@@ -50,11 +29,11 @@ export async function loadOwnerProfile(
       .single()
 
     if (error || data === null) {
-      return { kind: 'error', message: GENERIC_PROFILE_LOAD_MESSAGE }
+      return genericProfileLoadFailureResult()
     }
 
     return { kind: 'loaded', profile: parseProfile(data) }
   } catch {
-    return { kind: 'error', message: GENERIC_PROFILE_LOAD_MESSAGE }
+    return genericProfileLoadFailureResult()
   }
 }

@@ -1,7 +1,4 @@
-import {
-  loadOwnerProfile,
-  type ProfileReadClient,
-} from './load-profile'
+import { loadOwnerProfile, type ProfileReadClient } from './load-profile'
 
 const USER_ID = 'd102d9ea-7875-4cf4-9f01-094d8182e182'
 
@@ -35,7 +32,13 @@ function createReadClient(options?: {
       })
     : jest.fn().mockReturnValue({ select })
 
-  return { client: { from }, eq, from, select, single }
+  return {
+    client: { from } as unknown as ProfileReadClient,
+    eq,
+    from,
+    select,
+    single,
+  }
 }
 
 describe('loadOwnerProfile', () => {
@@ -46,6 +49,7 @@ describe('loadOwnerProfile', () => {
 
     expect(result).toEqual({
       kind: 'unauthorized',
+      code: 'profile.unauthorized',
       message: 'Vui long dang nhap lai de tiep tuc.',
     })
     expect(from).not.toHaveBeenCalled()
@@ -99,14 +103,17 @@ describe('loadOwnerProfile', () => {
 
     await expect(loadOwnerProfile(missing.client, auth)).resolves.toEqual({
       kind: 'error',
+      code: 'profile.load_failed',
       message: 'Khong the tai thong tin tai khoan. Vui long thu lai.',
     })
     await expect(loadOwnerProfile(invalid.client, auth)).resolves.toEqual({
       kind: 'error',
+      code: 'profile.load_failed',
       message: 'Khong the tai thong tin tai khoan. Vui long thu lai.',
     })
     await expect(loadOwnerProfile(transport.client, auth)).resolves.toEqual({
       kind: 'error',
+      code: 'profile.load_failed',
       message: 'Khong the tai thong tin tai khoan. Vui long thu lai.',
     })
   })

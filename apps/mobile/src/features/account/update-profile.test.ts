@@ -38,7 +38,7 @@ function createProfileClient(options?: {
   const from = jest.fn().mockReturnValue({ update })
 
   return {
-    client: { from },
+    client: { from } as unknown as ProfileSupabaseClient,
     eq,
     from,
     select,
@@ -59,6 +59,7 @@ describe('updateProfileDisplayName', () => {
 
     expect(state).toEqual({
       kind: 'error',
+      code: 'profile.unauthorized',
       message: 'Vui long dang nhap lai de tiep tuc.',
     })
     expect(from).not.toHaveBeenCalled()
@@ -82,6 +83,7 @@ describe('updateProfileDisplayName', () => {
 
     expect(state).toEqual({
       kind: 'error',
+      code: 'profile.unauthorized',
       message: 'Vui long dang nhap lai de tiep tuc.',
     })
     expect(from).not.toHaveBeenCalled()
@@ -108,6 +110,7 @@ describe('updateProfileDisplayName', () => {
     expect(eq).toHaveBeenCalledWith('id', USER_ID)
     expect(state).toEqual({
       kind: 'success',
+      code: 'profile.update_success',
       message: 'Thong tin da duoc cap nhat.',
       profile: {
         userId: USER_ID,
@@ -136,13 +139,17 @@ describe('updateProfileDisplayName', () => {
 
     expect(state).toEqual({
       kind: 'error',
+      code: 'profile.invalid_form',
       message: 'Vui long kiem tra lai thong tin da nhap.',
     })
     expect(from).not.toHaveBeenCalled()
   })
 
   test('maps provider and parse failures to a generic update error', async () => {
-    const missingRow = createProfileClient({ data: null, error: { code: 'PGRST116' } })
+    const missingRow = createProfileClient({
+      data: null,
+      error: { code: 'PGRST116' },
+    })
     const brokenRow = createProfileClient({
       data: {
         id: USER_ID,
@@ -165,18 +172,21 @@ describe('updateProfileDisplayName', () => {
       updateProfileDisplayName(missingRow.client, auth, { displayName: 'Minh' })
     ).resolves.toEqual({
       kind: 'error',
+      code: 'profile.update_failed',
       message: 'Khong the cap nhat thong tin. Vui long thu lai.',
     })
     await expect(
       updateProfileDisplayName(brokenRow.client, auth, { displayName: 'Minh' })
     ).resolves.toEqual({
       kind: 'error',
+      code: 'profile.update_failed',
       message: 'Khong the cap nhat thong tin. Vui long thu lai.',
     })
     await expect(
       updateProfileDisplayName(transport.client, auth, { displayName: 'Minh' })
     ).resolves.toEqual({
       kind: 'error',
+      code: 'profile.update_failed',
       message: 'Khong the cap nhat thong tin. Vui long thu lai.',
     })
   })

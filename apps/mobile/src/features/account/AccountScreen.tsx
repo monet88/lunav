@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   ActivityIndicator,
   Pressable,
@@ -8,26 +8,18 @@ import {
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import type { AuthState, Profile } from '@lunav/contracts'
-import { loadOwnerProfile, type ProfileReadClient } from './load-profile'
+import { accountCopy } from './account-copy'
+import { loadOwnerProfile } from './load-profile'
 import { ProfileForm } from './ProfileForm'
 import {
-  GENERIC_SIGN_OUT_FAILURE_MESSAGE,
-  UNAUTHORIZED_PROFILE_MESSAGE,
+  genericSignOutFailureMessage,
+  unauthorizedLoadProfileResult,
 } from './profile-action-state'
+import type { ProfileClient } from './profile-client'
 import { signOutToPublic } from './sign-out'
-import {
-  updateProfileDisplayName,
-  type ProfileSupabaseClient,
-} from './update-profile'
+import { updateProfileDisplayName } from './update-profile'
 
-/**
- * Combined read/write profiles client. Intersection is expressed as a single
- * `from` return type so select and update stay on one table builder shape.
- */
-export type AccountScreenClient = {
-  from: (table: 'profiles') => ReturnType<ProfileReadClient['from']> &
-    ReturnType<ProfileSupabaseClient['from']>
-}
+export type AccountScreenClient = ProfileClient
 
 interface AccountScreenProps {
   authState: AuthState
@@ -55,14 +47,17 @@ export function AccountScreen({
   const [screen, setScreen] = useState<ScreenState>({ kind: 'loading' })
   const [signingOut, setSigningOut] = useState(false)
   const [signOutError, setSignOutError] = useState<string | null>(null)
+  // Ref guards against double sign-out before the pending re-render lands.
+  const signOutInFlightRef = useRef(false)
 
   useEffect(() => {
     let isActive = true
 
     if (authState.status !== 'authenticated') {
+      const unauthorized = unauthorizedLoadProfileResult()
       setScreen({
         kind: 'unauthorized',
-        message: UNAUTHORIZED_PROFILE_MESSAGE,
+        message: unauthorized.message,
       })
       return () => {
         isActive = false
@@ -98,15 +93,16 @@ export function AccountScreen({
   let confirmationLabel = ''
   if (isAuthenticated) {
     confirmationLabel = authState.identity.isEmailConfirmed
-      ? 'Da xac nhan'
-      : 'Chua xac nhan'
+      ? accountCopy('account.confirmation.confirmed')
+      : accountCopy('account.confirmation.unconfirmed')
   }
 
   const handleSignOut = async () => {
-    if (signingOut) {
+    if (signOutInFlightRef.current) {
       return
     }
 
+    signOutInFlightRef.current = true
     setSigningOut(true)
     setSignOutError(null)
     try {
@@ -118,7 +114,8 @@ export function AccountScreen({
       })
     } catch {
       // Keep the loaded profile form mounted; only surface a sign-out failure.
-      setSignOutError(GENERIC_SIGN_OUT_FAILURE_MESSAGE)
+      setSignOutError(genericSignOutFailureMessage())
+      signOutInFlightRef.current = false
       setSigningOut(false)
     }
   }
@@ -127,16 +124,20 @@ export function AccountScreen({
     <View style={styles.container} testID="account-screen">
       <SafeAreaView style={styles.safeArea}>
         <Text accessibilityRole="header" style={styles.title}>
-          Tai khoan
+          {accountCopy('account.title')}
         </Text>
 
         {isAuthenticated ? (
           <View style={styles.details} testID="account-details">
-            <Text style={styles.detailLabel}>Email</Text>
+            <Text style={styles.detailLabel}>
+              {accountCopy('account.emailLabel')}
+            </Text>
             <Text style={styles.detailValue} testID="account-email">
               {email}
             </Text>
-            <Text style={styles.detailLabel}>Trang thai email</Text>
+            <Text style={styles.detailLabel}>
+              {accountCopy('account.confirmationLabel')}
+            </Text>
             <Text style={styles.detailValue} testID="account-confirmation">
               {confirmationLabel}
             </Text>
@@ -192,7 +193,9 @@ export function AccountScreen({
           {signingOut ? (
             <ActivityIndicator color="#b91c1c" />
           ) : (
-            <Text style={styles.signOutLabel}>Dang xuat</Text>
+            <Text style={styles.signOutLabel}>
+              {accountCopy('account.signOut')}
+            </Text>
           )}
         </Pressable>
       </SafeAreaView>

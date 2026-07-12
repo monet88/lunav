@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Link } from 'expo-router'
+import { accountCopy } from '@/features/account/account-copy'
 import { useAuthState } from '@/features/auth/session-provider'
 
 /**
@@ -18,7 +19,7 @@ export default function ProtectedIndexRoute() {
         <Text style={styles.title}>ZIWEI AI</Text>
         <Text style={styles.subtitle}>{email}</Text>
         <Link href="/(protected)/account" style={styles.link}>
-          <Text style={styles.linkText}>Tai khoan</Text>
+          <Text style={styles.linkText}>{accountCopy('account.title')}</Text>
         </Link>
       </SafeAreaView>
     </View>

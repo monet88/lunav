@@ -8,8 +8,9 @@ import {
   View,
 } from 'react-native'
 import type { Profile } from '@lunav/contracts'
+import { accountCopy } from './account-copy'
 import {
-  GENERIC_PROFILE_UPDATE_MESSAGE,
+  genericProfileUpdateFailureState,
   INITIAL_PROFILE_ACTION_STATE,
   type ProfileActionState,
 } from './profile-action-state'
@@ -48,10 +49,7 @@ export function ProfileForm({
         onUpdated?.(next.profile)
       }
     } catch {
-      setState({
-        kind: 'error',
-        message: GENERIC_PROFILE_UPDATE_MESSAGE,
-      })
+      setState(genericProfileUpdateFailureState())
     } finally {
       inFlightRef.current = false
       setPending(false)
@@ -59,12 +57,13 @@ export function ProfileForm({
   }
 
   const statusIsError = state.kind === 'error'
+  const displayNameLabel = accountCopy('account.displayNameLabel')
 
   return (
     <View style={styles.form} testID="profile-form">
-      <Text style={styles.label}>Ten hien thi</Text>
+      <Text style={styles.label}>{displayNameLabel}</Text>
       <TextInput
-        accessibilityLabel="Ten hien thi"
+        accessibilityLabel={displayNameLabel}
         autoCapitalize="words"
         autoComplete="nickname"
         editable={!pending}
@@ -98,7 +97,7 @@ export function ProfileForm({
         {pending ? (
           <ActivityIndicator color="#ffffff" />
         ) : (
-          <Text style={styles.buttonLabel}>Luu thay doi</Text>
+          <Text style={styles.buttonLabel}>{accountCopy('account.save')}</Text>
         )}
       </Pressable>
     </View>

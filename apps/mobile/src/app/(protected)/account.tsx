@@ -3,6 +3,7 @@ import {
   AccountScreen,
   type AccountScreenClient,
 } from '@/features/account/AccountScreen'
+import { asProfileClient } from '@/features/account/profile-client'
 import { useMobileAuthSession } from '@/features/auth/session-provider'
 import { getSharedMobileSupabaseClient } from '@/lib/supabase/shared-client'
 
@@ -12,9 +13,11 @@ import { getSharedMobileSupabaseClient } from '@/lib/supabase/shared-client'
  */
 export default function ProtectedAccountRoute() {
   const session = useMobileAuthSession()
-  // Shared client is the production Supabase adapter; the account seam only
-  // needs owner-scoped profiles read/write, not the full generated client type.
-  const client = getSharedMobileSupabaseClient() as unknown as AccountScreenClient
+  // Shared client is the production Supabase adapter; narrow to the owner-scoped
+  // profiles seam used by account load/update.
+  const client: AccountScreenClient = asProfileClient(
+    getSharedMobileSupabaseClient()
+  )
 
   return (
     <AccountScreen
