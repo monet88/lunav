@@ -1,0 +1,23 @@
+docs/stories/US-008-mobile-auth-account/execplan.md
+  s_dfb9385de3c03b::t_beb59cd883eb88 20
+docs/stories/US-008-mobile-auth-account/overview.md
+  s_dfb9385de3c03b::t_0ce070e1884b01 21-30
+docs/stories/US-008-mobile-auth-account/validation.md
+  s_dfb9385de3c03b::t_9b502fe729c42a 12,16,34,39-44
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "87c54a935dde124d7cc7dc054d5e5138fbf812db",
+  "prompts": {},
+  "sessions": {
+    "s_dfb9385de3c03b": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "f1cda67e-a9c8-4c60-9eb6-126f6f00af54",
+        "model": "unknown"
+      },
+      "human_author": "monet88 <minhthang421992@gmail.com>"
+    }
+  }
+}
