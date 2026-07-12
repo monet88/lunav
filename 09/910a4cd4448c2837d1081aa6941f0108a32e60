@@ -1,0 +1,19 @@
+AGENTS.md
+  s_bbcfb097442614::t_5818c80db3763a 42-57
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "09910a4cd4448c2837d1081aa6941f0108a32e60",
+  "prompts": {},
+  "sessions": {
+    "s_bbcfb097442614": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "2a21becf-30f3-4639-8149-ae369aca28d6",
+        "model": "unknown"
+      },
+      "human_author": "monet88 <minhthang421992@gmail.com>"
+    }
+  }
+}
