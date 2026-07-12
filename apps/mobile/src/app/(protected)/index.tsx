@@ -1,9 +1,11 @@
 import { StyleSheet, Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { Link } from 'expo-router'
 import { useAuthState } from '@/features/auth/session-provider'
 
 /**
- * Placeholder private home. Account settings and product screens arrive later.
+ * Private shell entry. Product screens land later; account settings is the
+ * first confirmed-auth destination beyond this home surface.
  */
 export default function ProtectedIndexRoute() {
   const state = useAuthState()
@@ -15,6 +17,9 @@ export default function ProtectedIndexRoute() {
       <SafeAreaView style={styles.safeArea}>
         <Text style={styles.title}>ZIWEI AI</Text>
         <Text style={styles.subtitle}>{email}</Text>
+        <Link href="/(protected)/account" style={styles.link}>
+          <Text style={styles.linkText}>Tai khoan</Text>
+        </Link>
       </SafeAreaView>
     </View>
   )
@@ -41,6 +46,15 @@ const styles = StyleSheet.create({
     color: '#475569',
     fontSize: 16,
     marginTop: 12,
+    textAlign: 'center',
+  },
+  link: {
+    marginTop: 20,
+  },
+  linkText: {
+    color: '#208AEF',
+    fontSize: 15,
+    fontWeight: '600',
     textAlign: 'center',
   },
 })

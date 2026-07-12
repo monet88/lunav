@@ -87,11 +87,12 @@ describe('protected navigation shell eligibility', () => {
 })
 
 describe('sign-in protected entry coupling', () => {
-  const privateHref = resolveMobileSignInHref('/account')
+  const accountHref = resolveMobileSignInHref('/account')
+  const privateHref = resolveMobileSignInHref(undefined)
 
-  test('resolved post-sign-in href is always the private shell entry', () => {
+  test('resolved post-sign-in href maps account to settings and falls back privately', () => {
+    expect(accountHref).toBe('/(protected)/account')
     expect(privateHref).toBe('/(protected)')
-    expect(resolveMobileSignInHref(undefined)).toBe('/(protected)')
     expect(resolveMobileSignInHref('https://evil.example')).toBe('/(protected)')
   })
 
@@ -131,5 +132,6 @@ describe('sign-in protected entry coupling', () => {
     expect(canCompleteProtectedEntry(authenticated, 'error')).toBe(false)
     expect(resolveAuthEntryDestination(authenticated)).toBe('/(protected)')
     expect(privateHref).toBe(resolveAuthEntryDestination(authenticated))
+    expect(accountHref.startsWith('/(protected)')).toBe(true)
   })
 })

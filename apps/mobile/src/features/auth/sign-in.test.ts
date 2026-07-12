@@ -87,7 +87,7 @@ describe('mobile sign-in', () => {
     expect(getUser).toHaveBeenCalledTimes(1)
     expect(result).toEqual({
       kind: 'signed-in',
-      href: '/(protected)',
+      href: '/(protected)/account',
     })
   })
 
