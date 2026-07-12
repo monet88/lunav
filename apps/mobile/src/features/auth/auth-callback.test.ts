@@ -138,4 +138,45 @@ describe('completeAuthCallback (mobile)', () => {
     expect(result).toEqual({ kind: 'failure' })
     expect(client.auth.exchangeCodeForSession).not.toHaveBeenCalled()
   })
+
+  test('completes a recovery exchange only when redirectType is recovery', async () => {
+    const client = createClient({
+      data: { redirectType: 'recovery', user: { id: 'user-recovery' } },
+      error: null,
+    })
+
+    const result = await completeAuthCallback({
+      client,
+      expectedRedirectType: 'recovery',
+      requestUrl: 'lunav://auth/recovery?code=valid-recovery',
+      successPath: '/auth/reset-password',
+    })
+
+    expect(result).toEqual({
+      kind: 'success',
+      path: '/auth/reset-password',
+      userId: 'user-recovery',
+    })
+    expect(client.auth.exchangeCodeForSession).toHaveBeenCalledWith(
+      'valid-recovery'
+    )
+    expect(client.auth.signOut).not.toHaveBeenCalled()
+  })
+
+  test('signs out a confirmation session presented to the recovery route', async () => {
+    const client = createClient({
+      data: { redirectType: null, user: { id: 'user-1' } },
+      error: null,
+    })
+
+    const result = await completeAuthCallback({
+      client,
+      expectedRedirectType: 'recovery',
+      requestUrl: 'lunav://auth/recovery?code=confirm-code',
+      successPath: '/auth/reset-password',
+    })
+
+    expect(result).toEqual({ kind: 'failure' })
+    expect(client.auth.signOut).toHaveBeenCalledTimes(1)
+  })
 })

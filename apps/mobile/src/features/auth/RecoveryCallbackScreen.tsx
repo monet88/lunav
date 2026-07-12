@@ -3,12 +3,16 @@ import { View } from 'react-native'
 import { completeAuthCallback } from './auth-callback'
 import { getOrCreateAuthCallbackWork } from './auth-callback-work'
 import { AuthLoadingScreen } from './AuthLoadingScreen'
+import {
+  setRecoverySession,
+  type RecoverySessionStore,
+} from './recovery-session'
 
-export type ConfirmCallbackNavigation = {
+export type RecoveryCallbackNavigation = {
   replace: (path: string) => void
 }
 
-export interface ConfirmCallbackAuthClient {
+export interface RecoveryCallbackAuthClient {
   auth: {
     exchangeCodeForSession: (code: string) => Promise<{
       data: unknown
@@ -18,37 +22,39 @@ export interface ConfirmCallbackAuthClient {
   }
 }
 
-export interface ConfirmCallbackScreenProps {
-  client: ConfirmCallbackAuthClient
+export interface RecoveryCallbackScreenProps {
+  client: RecoveryCallbackAuthClient
   /**
    * Full deep-link URL including scheme/query. Must never be logged.
    */
   requestUrl: string | null
-  navigation: ConfirmCallbackNavigation
+  navigation: RecoveryCallbackNavigation
   successPath?: string
   failurePath?: string
+  recoveryStore?: RecoverySessionStore
 }
 
 /**
- * Exchanges a single confirmation authorization code, then replaces navigation
- * so the callback credentials do not remain in history.
+ * Exchanges a single recovery authorization code, stores a mobile-owned recovery
+ * proof, then replaces navigation so callback credentials do not remain in history.
  *
- * Work is keyed + shared across StrictMode remounts so a single-use confirm code
+ * Work is keyed + shared across StrictMode remounts so a single-use recovery code
  * is exchanged once, while the latest active mount still receives the replace.
  */
-export function ConfirmCallbackScreen({
+export function RecoveryCallbackScreen({
   client,
   requestUrl,
   navigation,
-  successPath = '/',
+  successPath = '/auth/reset-password',
   // Outside Stack.Protected so cold-start failures remain reachable while the
   // public (auth) group is still gated by the loading session state.
-  failurePath = '/auth/confirm-failed',
-}: ConfirmCallbackScreenProps) {
+  failurePath = '/auth/recovery-failed',
+  recoveryStore,
+}: RecoveryCallbackScreenProps) {
   useEffect(() => {
     let isActive = true
     // Key by URL + paths so StrictMode remount reuses the same single-use exchange.
-    const workKey = `confirm\0${requestUrl ?? ''}\0${successPath}\0${failurePath}`
+    const workKey = `recovery\0${requestUrl ?? ''}\0${successPath}\0${failurePath}`
 
     const work = getOrCreateAuthCallbackWork(workKey, async () => {
       try {
@@ -58,14 +64,19 @@ export function ConfirmCallbackScreen({
 
         const result = await completeAuthCallback({
           client,
-          expectedRedirectType: 'confirmation',
+          expectedRedirectType: 'recovery',
           requestUrl,
           successPath,
         })
 
-        return result.kind === 'success' ? result.path : failurePath
+        if (result.kind === 'success') {
+          await setRecoverySession(result.userId, recoveryStore)
+          return result.path
+        }
+
+        return failurePath
       } catch {
-        // Unexpected throws must still strip the code from history.
+        // SecureStore / unexpected throws must still strip the code from history.
         return failurePath
       }
     })
@@ -80,11 +91,11 @@ export function ConfirmCallbackScreen({
     return () => {
       isActive = false
     }
-  }, [client, failurePath, navigation, requestUrl, successPath])
+  }, [client, failurePath, navigation, recoveryStore, requestUrl, successPath])
 
   return (
-    <View testID="confirm-callback-screen">
-      <AuthLoadingScreen message="Dang xac nhan email..." />
+    <View testID="recovery-callback-screen">
+      <AuthLoadingScreen message="Dang xac thuc lien ket dat lai mat khau..." />
     </View>
   )
 }

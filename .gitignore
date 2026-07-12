@@ -45,3 +45,4 @@ apps/web/blob-report/
 apps/web/.env.local
 .vercel
 .env*.local
+.codex/critical_log_changes.csv
