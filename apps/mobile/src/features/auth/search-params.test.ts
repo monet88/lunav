@@ -1,6 +1,8 @@
 import {
   parseConfirmEmailSearchParams,
   parseConfirmSearchParams,
+  parseForgotPasswordSearchParams,
+  parseRecoverySearchParams,
   parseSignInSearchParams,
 } from './search-params'
 
@@ -34,6 +36,16 @@ describe('auth route search params', () => {
     expect(parseConfirmSearchParams('code=abc')).toEqual({ codes: [] })
   })
 
+  test('parses recovery codes with the same fail-closed cardinality rules', () => {
+    expect(parseRecoverySearchParams({ code: 'abc' })).toEqual({
+      codes: ['abc'],
+    })
+    expect(parseRecoverySearchParams({ code: ['one', 'two'] })).toEqual({
+      codes: ['one', 'two'],
+    })
+    expect(parseRecoverySearchParams(null)).toEqual({ codes: [] })
+  })
+
   test('only treats a single status=error as confirm-email initial error', () => {
     expect(parseConfirmEmailSearchParams({ status: 'error' })).toEqual({
       initialError: true,
@@ -45,6 +57,15 @@ describe('auth route search params', () => {
       parseConfirmEmailSearchParams({ status: ['error', 'error'] })
     ).toEqual({ initialError: false })
     expect(parseConfirmEmailSearchParams({ status: ['error', ''] })).toEqual({
+      initialError: false,
+    })
+  })
+
+  test('only treats a single status=error as forgot-password initial error', () => {
+    expect(parseForgotPasswordSearchParams({ status: 'error' })).toEqual({
+      initialError: true,
+    })
+    expect(parseForgotPasswordSearchParams({ status: 'ok' })).toEqual({
       initialError: false,
     })
   })

@@ -6,6 +6,23 @@
 export function buildConfirmRequestUrl(
   codes: readonly string[]
 ): string | null {
+  return buildAuthCallbackRequestUrl('lunav://auth/confirm', codes)
+}
+
+/**
+ * Rebuild a lunav:// recovery URL for the shared callback parser.
+ * Same multi-code cardinality rules as confirmation.
+ */
+export function buildRecoveryRequestUrl(
+  codes: readonly string[]
+): string | null {
+  return buildAuthCallbackRequestUrl('lunav://auth/recovery', codes)
+}
+
+function buildAuthCallbackRequestUrl(
+  base: string,
+  codes: readonly string[]
+): string | null {
   if (codes.length === 0) {
     return null
   }
@@ -15,5 +32,5 @@ export function buildConfirmRequestUrl(
     params.append('code', code)
   }
 
-  return `lunav://auth/confirm?${params.toString()}`
+  return `${base}?${params.toString()}`
 }

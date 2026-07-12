@@ -46,6 +46,9 @@ export default function AuthIndexRoute() {
             router.replace(href)
           }}
         />
+        <Link href="/(auth)/forgot-password" style={styles.link}>
+          <Text style={styles.linkText}>Quen mat khau?</Text>
+        </Link>
         <Link href="/(auth)/sign-up" style={styles.link}>
           <Text style={styles.linkText}>Tao tai khoan moi</Text>
         </Link>

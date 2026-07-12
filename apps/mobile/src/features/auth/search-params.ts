@@ -20,10 +20,25 @@ function asStringList(value: unknown): string[] {
 }
 
 /**
- * Parse Expo Router search params for the confirm deep link.
+ * Parse Expo Router search params for confirm / recovery deep links.
  * Invalid shapes fail closed to an empty code list (callback returns failure).
  */
 export function parseConfirmSearchParams(input: unknown): {
+  codes: string[]
+} {
+  return parseAuthCodeSearchParams(input)
+}
+
+/**
+ * Recovery deep-link params use the same single-code cardinality rules.
+ */
+export function parseRecoverySearchParams(input: unknown): {
+  codes: string[]
+} {
+  return parseAuthCodeSearchParams(input)
+}
+
+function parseAuthCodeSearchParams(input: unknown): {
   codes: string[]
 } {
   if (!isRecord(input)) {
@@ -62,4 +77,19 @@ export function parseSignInSearchParams(input: unknown): {
 
   const values = asStringList(input.returnTo)
   return { returnTo: values.length === 1 ? values[0] : '' }
+}
+
+/**
+ * Parse forgot-password / recovery failure screen params. Only the explicit
+ * single `error` status is honored.
+ */
+export function parseForgotPasswordSearchParams(input: unknown): {
+  initialError: boolean
+} {
+  if (!isRecord(input)) {
+    return { initialError: false }
+  }
+
+  const statuses = asStringList(input.status)
+  return { initialError: statuses.length === 1 && statuses[0] === 'error' }
 }

@@ -32,6 +32,9 @@ const GENERIC_FAILURE_MESSAGE = 'Khong the hoan tat yeu cau. Vui long thu lai.'
 const INVALID_FORM_MESSAGE = 'Vui long kiem tra lai thong tin da nhap.'
 const CONFIRM_LINK_FAILURE_MESSAGE =
   'Lien ket xac nhan khong hop le hoac da het han.'
+const RECOVERY_LINK_FAILURE_MESSAGE =
+  'Lien ket dat lai mat khau khong hop le hoac da het han.'
+const PASSWORD_UPDATED_MESSAGE = 'Mat khau da duoc cap nhat.'
 
 function isRateLimitError(error: ProviderError | null): boolean {
   return (
@@ -138,4 +141,12 @@ export function genericFailureState(): AuthActionResult {
 
 export function confirmLinkFailureMessage(): string {
   return CONFIRM_LINK_FAILURE_MESSAGE
+}
+
+export function recoveryLinkFailureMessage(): string {
+  return RECOVERY_LINK_FAILURE_MESSAGE
+}
+
+export function passwordUpdatedMessage(): string {
+  return PASSWORD_UPDATED_MESSAGE
 }

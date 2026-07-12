@@ -26,6 +26,11 @@ function RootNavigator() {
       <Stack.Screen name="auth/confirm" />
       {/* Outside Stack.Protected so callback failures work during auth boot. */}
       <Stack.Screen name="auth/confirm-failed" />
+      {/* Always registered so lunav://auth/recovery cold-starts resolve. */}
+      <Stack.Screen name="auth/recovery" />
+      <Stack.Screen name="auth/recovery-failed" />
+      {/* Outside public shell: recovery leaves an authenticated session. */}
+      <Stack.Screen name="auth/reset-password" />
       <Stack.Screen name="index" />
     </Stack>
   )
