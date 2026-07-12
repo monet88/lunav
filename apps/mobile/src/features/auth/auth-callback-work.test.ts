@@ -36,17 +36,17 @@ describe('auth callback work cache', () => {
       .mockResolvedValueOnce('/auth/recovery-failed')
       .mockResolvedValueOnce('/auth/reset-password')
 
+    // Returned promise settles only after the finally eviction runs, so no
+    // extra microtask flush is required before inspecting the cache.
     await expect(
       getOrCreateAuthCallbackWork('recovery\0url', create)
     ).resolves.toBe('/auth/recovery-failed')
-
-    // Let finally microtask run and drop the settled entry.
-    await Promise.resolve()
     expect(hasAuthCallbackWorkCacheKeyForTests('recovery\0url')).toBe(false)
 
     await expect(
       getOrCreateAuthCallbackWork('recovery\0url', create)
     ).resolves.toBe('/auth/reset-password')
     expect(create).toHaveBeenCalledTimes(2)
+    expect(hasAuthCallbackWorkCacheKeyForTests('recovery\0url')).toBe(false)
   })
 })

@@ -17,15 +17,18 @@ export function getOrCreateAuthCallbackWork(
     return existing
   }
 
+  // Cache the finally-chained promise so awaiters resume only after eviction.
+  // That keeps StrictMode remounts on one in-flight entry without microtask races
+  // in callers that assert post-settlement cache state.
   const created = create()
-  workCache.set(key, created)
-  void created.finally(() => {
+  const tracked = created.finally(() => {
     // Only drop this exact in-flight entry; a newer attempt may already own the key.
-    if (workCache.get(key) === created) {
+    if (workCache.get(key) === tracked) {
       workCache.delete(key)
     }
   })
-  return created
+  workCache.set(key, tracked)
+  return tracked
 }
 
 /** Test-only: clear shared callback work between cases. */
