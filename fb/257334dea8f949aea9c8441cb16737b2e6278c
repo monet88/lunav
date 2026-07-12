@@ -1,0 +1,19 @@
+.gitignore
+  s_bbcfb097442614::t_c184c554dce5b9 48
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "fb257334dea8f949aea9c8441cb16737b2e6278c",
+  "prompts": {},
+  "sessions": {
+    "s_bbcfb097442614": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "2a21becf-30f3-4639-8149-ae369aca28d6",
+        "model": "unknown"
+      },
+      "human_author": "monet88 <minhthang421992@gmail.com>"
+    }
+  }
+}
