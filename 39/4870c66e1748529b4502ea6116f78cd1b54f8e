@@ -1,0 +1,29 @@
+AGENTS.md
+  s_a823ad236d40be::t_cd74466f10e099 9-26
+CLAUDE.md
+  s_a823ad236d40be::t_d11e2b87a2100a 1
+docs/agents/domain.md
+  s_a823ad236d40be::t_9faedf6b8dc03f 1-70
+docs/agents/hybrid-flow.md
+  s_a823ad236d40be::t_18c6193aefb10d 1-91
+docs/agents/issue-tracker.md
+  s_a823ad236d40be::t_795e3f57619144 1-45
+docs/agents/triage-labels.md
+  s_a823ad236d40be::t_eff7d34bd39842 1-15
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "394870c66e1748529b4502ea6116f78cd1b54f8e",
+  "prompts": {},
+  "sessions": {
+    "s_a823ad236d40be": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "8fefbb34-8e7e-4106-9461-717e34624e57",
+        "model": "unknown"
+      },
+      "human_author": "monet88 <minhthang421992@gmail.com>"
+    }
+  }
+}
