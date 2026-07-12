@@ -27,8 +27,24 @@ function genericFailureState(): FormActionState {
   return { kind: 'error', message: 'Khong the hoan tat yeu cau. Vui long thu lai.' }
 }
 
-function fields(formData: FormData): Record<string, FormDataEntryValue> {
-  return Object.fromEntries(formData)
+function pickFields(
+  formData: FormData,
+  keys: readonly string[]
+): Record<string, FormDataEntryValue> {
+  // Next.js server actions inject bookkeeping fields such as $ACTION_ID_*.
+  // Strict web-auth contracts must only see the declared form inputs.
+  // Omit missing keys instead of passing null so Zod optional/default fields
+  // keep receiving string | undefined rather than null.
+  const result: Record<string, FormDataEntryValue> = {}
+
+  for (const key of keys) {
+    const value = formData.get(key)
+    if (value !== null) {
+      result[key] = value
+    }
+  }
+
+  return result
 }
 
 export async function signUpAction(
@@ -36,7 +52,9 @@ export async function signUpAction(
   formData: FormData
 ): Promise<FormActionState> {
   try {
-    const input = parseSignUpInput(fields(formData))
+    const input = parseSignUpInput(
+      pickFields(formData, ['email', 'password', 'passwordConfirmation'])
+    )
     const client = await createServerSupabaseClient()
     const result = await client.auth.signUp({
       email: input.email,
@@ -55,7 +73,7 @@ export async function resendConfirmationAction(
   formData: FormData
 ): Promise<FormActionState> {
   try {
-    const input = parseForgotPasswordInput(fields(formData))
+    const input = parseForgotPasswordInput(pickFields(formData, ['email']))
     const client = await createServerSupabaseClient()
     const result = await client.auth.resend({
       type: 'signup',
@@ -74,7 +92,7 @@ export async function forgotPasswordAction(
   formData: FormData
 ): Promise<FormActionState> {
   try {
-    const input = parseForgotPasswordInput(fields(formData))
+    const input = parseForgotPasswordInput(pickFields(formData, ['email']))
     const client = await createServerSupabaseClient()
     const result = await client.auth.resetPasswordForEmail(input.email, {
       redirectTo: `${getWebOrigin()}/auth/recovery`,
@@ -94,10 +112,7 @@ export async function signInAction(
 
   try {
     // returnTo is a routing field, not part of the strict sign-in schema.
-    const input = parseSignInInput({
-      email: formData.get('email'),
-      password: formData.get('password'),
-    })
+    const input = parseSignInInput(pickFields(formData, ['email', 'password']))
     returnDestination = parseAuthReturnDestination(
       String(formData.get('returnTo') ?? '')
     )
@@ -119,7 +134,9 @@ export async function resetPasswordAction(
   formData: FormData
 ): Promise<FormActionState> {
   try {
-    const input = parseResetPasswordInput(fields(formData))
+    const input = parseResetPasswordInput(
+      pickFields(formData, ['password', 'passwordConfirmation'])
+    )
     const client = await createServerSupabaseClient()
     const authState = await resolveCurrentAuthState(client)
 

@@ -25,6 +25,8 @@ const IGNORED_DIRECTORIES = new Set([
   'build',
   'coverage',
   'dist',
+  // Playwright/browser E2E helpers run in Node, not the client bundle.
+  'e2e',
   'node_modules',
   'out',
 ])

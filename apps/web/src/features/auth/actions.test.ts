@@ -59,6 +59,29 @@ describe('signUpAction', () => {
       message: 'Neu dia chi email hop le, ban se nhan duoc huong dan xac nhan.',
     })
   })
+
+  test('ignores Next.js server-action bookkeeping fields in FormData', async () => {
+    vi.stubEnv('WEB_ORIGIN', 'http://127.0.0.1:3000')
+    const signUp = vi.fn().mockResolvedValue({
+      data: { user: null },
+      error: null,
+    })
+    createServerSupabaseClientMock.mockResolvedValue({ auth: { signUp } })
+    const formData = new FormData()
+    formData.set('$ACTION_ID_signUpAction', '')
+    formData.set('$ACTION_KEY', '1')
+    formData.set('email', 'member@example.com')
+    formData.set('password', 'password12')
+    formData.set('passwordConfirmation', 'password12')
+
+    const state = await signUpAction(INITIAL_FORM_STATE, formData)
+
+    expect(signUp).toHaveBeenCalledOnce()
+    expect(state).toEqual({
+      kind: 'confirmation-pending',
+      message: 'Neu dia chi email hop le, ban se nhan duoc huong dan xac nhan.',
+    })
+  })
 })
 
 describe('signInAction', () => {

@@ -35,3 +35,10 @@ scripts/bin/harness-cli.exe
 AGENTS.md.bak
 .superpowers/sdd/
 # Harness durable layer
+
+apps/web/playwright-report/
+apps/web/blob-report/
+
+apps/web/.env.local
+.vercel
+.env*.local

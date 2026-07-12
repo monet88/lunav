@@ -41,9 +41,17 @@ Completed:
 1. Contracts + forms + callback/recovery handlers + account settings + sign-out.
 2. Proxy preserves canonical /account return destination.
 3. Recovery user-binding, origin fail-closed, host-poison-safe redirects, confirmation exactness.
-4. Independent local proof via scripts/verify-web-auth.ps1.
+4. Local unit/typecheck/lint/build proof via scripts/verify-web-auth.
+5. Playwright browser E2E against Supabase local + Mailpit via pnpm --filter @lunav/web test:e2e.
+6. FormData field picking so Next.js server-action bookkeeping fields do not break strict contracts.
+Accepted hosted gate:
 
-Still deferred:
+1. Hosted signup + confirmation + sign-in + protected return/reload/logout on
+   `https://lunav-web.vercel.app` with Supabase project ref `dshhnqvfgundzsdjegbt`.
 
-1. Browser E2E runner selection/approval.
-2. Hosted confirmation/recovery smoke.
+Backlog-only (non-blocking):
+
+1. Hosted recovery email/callback re-smoke after free-tier Auth mailer rate limit
+   clears or custom SMTP is configured (`BL-US007-01`).
+2. Hosted cookie attribute deep attestation (`BL-US007-02`).
+3. Hosted profile display_name persistence polish (`BL-US007-03`).

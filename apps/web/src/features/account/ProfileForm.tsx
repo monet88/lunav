@@ -19,6 +19,8 @@ export function ProfileForm({ displayName }: ProfileFormProps) {
       <label htmlFor="displayName">Ten hien thi</label>
       <input
         autoComplete="nickname"
+        // Server-provided initial value; successful updates are proven by
+        // reloading the account page rather than forcing a controlled effect.
         defaultValue={displayName ?? ''}
         id="displayName"
         name="displayName"
