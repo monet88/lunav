@@ -18,14 +18,16 @@ high-risk
 The Expo Router app has a merged mobile auth session shell (PR #12 / `4902f5c`),
 signup → confirmation-pending → local `lunav://auth/confirm` exchange
 (PR #14 / `5d435d6`, issue #7), sign-in → protected entry
-(PR #16 / `340f2ae`, issue #8), and password recovery/reset (issue #9):
-shared-contract validation, enumeration-safe recovery-pending messaging,
-local `lunav://auth/recovery` PKCE exchange with recovery-only redirectType,
-SecureStore-bound recovery proof (not a web cookie), gated
-`/auth/reset-password` outside the public shell so an authenticated recovery
-session can still set a new password, history-stripping replace navigation,
-and focused unit coverage. Account `display_name` + sign-out (#10), Android
-runtime proof + closeout (#11), and hosted App Link smoke remain open.
+(PR #16 / `340f2ae`, issue #8), and password recovery/reset
+(PR #18 / `9cf8ec7`, issue #9): shared-contract validation, enumeration-safe
+recovery-pending messaging, local `lunav://auth/recovery` PKCE exchange with
+recovery-only redirectType, SecureStore-bound recovery proof (not a web cookie)
+with delete-fail expire fallback, gated `/auth/reset-password` outside the
+public shell so an authenticated recovery session can still set a new password,
+StrictMode-safe in-flight callback work with settlement eviction,
+history-stripping replace navigation, and focused unit coverage. Account
+`display_name` + sign-out (#10), Android runtime proof + closeout (#11), and
+hosted App Link smoke remain open.
 
 ## Target Behavior
 
