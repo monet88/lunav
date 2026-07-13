@@ -166,8 +166,9 @@ additional_redirect_urls = [
   "http://127.0.0.1:3000",
   "http://127.0.0.1:3000/auth/confirm",
   "http://127.0.0.1:3000/auth/recovery",
-  # Local mobile confirmation deep link (US-008). Hosted App Links later.
+  # Local mobile confirmation/recovery deep links (US-008). Hosted App Links later.
   "lunav://auth/confirm",
+  "lunav://auth/recovery",
 ]
 # How long tokens are valid for, in seconds. Defaults to 3600 (1 hour), maximum 604,800 (1 week).
 jwt_expiry = 3600
@@ -204,7 +205,8 @@ password_requirements = ""
 
 [auth.rate_limit]
 # Number of emails that can be sent per hour. Requires auth.email.smtp to be enabled.
-email_sent = 2
+# Local Android full-flow proof needs signup + resend + recovery in one session.
+email_sent = 30
 # Number of SMS messages that can be sent per hour. Requires auth.sms to be enabled.
 sms_sent = 30
 # Number of anonymous sign-ins that can be made per hour per IP address. Requires enable_anonymous_sign_ins = true.

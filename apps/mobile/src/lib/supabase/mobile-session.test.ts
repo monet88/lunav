@@ -305,7 +305,7 @@ describe('mobile auth-state controller', () => {
     })
   })
 
-  test('keeps the current state when user refresh fails during startup', async () => {
+  test('resolves boot to anonymous when identity refresh fails during startup', async () => {
     const auth = createAuthHarness()
     const appState = createAppStateHarness()
     auth.getUser.mockRejectedValueOnce(new Error('network unavailable'))
@@ -316,7 +316,34 @@ describe('mobile auth-state controller', () => {
 
     await controller.start()
 
-    expect(controller.getState()).toEqual({ status: 'loading' })
+    // Public shell is gated while status === 'loading'. A failed boot refresh
+    // must open the public auth routes so the user can still sign in/up.
+    expect(controller.getState()).toEqual({ status: 'anonymous' })
+  })
+
+  test('keeps authenticated state when a mid-session identity refresh fails', async () => {
+    const auth = createAuthHarness()
+    const appState = createAppStateHarness()
+    const controller = createMobileAuthStateController({
+      client: auth.client,
+      appState: appState.appState,
+    })
+
+    await controller.start()
+    expect(controller.getState().status).toBe('authenticated')
+
+    auth.getUser.mockRejectedValueOnce(new Error('network unavailable'))
+    auth.emitAuthEvent('TOKEN_REFRESHED')
+    await flushAsyncWork()
+
+    expect(controller.getState()).toEqual({
+      status: 'authenticated',
+      identity: {
+        userId: 'user-a',
+        email: 'a@example.com',
+        isEmailConfirmed: true,
+      },
+    })
   })
 
   test('starts refresh only in foreground and tears down both listeners', async () => {
