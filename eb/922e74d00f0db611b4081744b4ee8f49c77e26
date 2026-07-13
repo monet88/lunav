@@ -1,0 +1,19 @@
+apps/mobile/src/lib/supabase/mobile-session.test.ts
+  s_0341f0a201b7a8::t_d87e66c3460de0 100-101,203-205,422,429-430,432,436,438,441-451,453-455,458,465,467,474,477-486,488,548,555,560-563,565,567,569-571,580-621,661-663
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "eb922e74d00f0db611b4081744b4ee8f49c77e26",
+  "prompts": {},
+  "sessions": {
+    "s_0341f0a201b7a8": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6100f870-ea6b-4b52-9050-6d2e78a5bf89",
+        "model": "unknown"
+      },
+      "human_author": "monet88 <minhthang421992@gmail.com>"
+    }
+  }
+}
