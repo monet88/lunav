@@ -136,6 +136,12 @@ export function createMobileAuthStateController({
       }
 
       if (result.error !== null) {
+        // Boot must not stay on loading forever when identity refresh fails —
+        // public shell is gated off while status === 'loading'. Transient
+        // mid-session refresh failures keep the last known state.
+        if (state.status === 'loading') {
+          publish({ status: 'anonymous' })
+        }
         return
       }
 
@@ -146,7 +152,13 @@ export function createMobileAuthStateController({
 
       publish(normalizeSupabaseUser(result.data.user))
     } catch {
-      return
+      if (!isStarted || isSigningOut || generation !== authGeneration) {
+        return
+      }
+
+      if (state.status === 'loading') {
+        publish({ status: 'anonymous' })
+      }
     }
   }
 

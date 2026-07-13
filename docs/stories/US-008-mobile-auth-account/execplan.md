@@ -18,11 +18,14 @@ the approved shared identity and profile modules.
 4. ~~Add signup + confirmation-pending/resend.~~ ~~Sign-in + protected return
    destination (#8 / PR #16).~~ ~~Forgot-password / recovery / gated reset
    (#9 / PR #18).~~
-5. Add the account screen and owner-scoped `display_name` update (#10).
-6. Wire sign-out cache cleanup to real product caches and public navigation
-   (#10).
+5. ~~Add the account screen and owner-scoped `display_name` update (#10).~~
+   **Done on branch (`c808d83` + harden/sign-out follow-ups).**
+6. ~~Wire sign-out cache cleanup to real product caches and public navigation
+   (#10).~~ **Done on branch.**
 7. Run focused checks, Android emulator/device flow, and hosted email/deep-link
-   smoke proof (#11).
+   smoke proof (#11). **Static gates green (2026-07-13). Android full-loop
+   still partial (sign-up form only on `emulator-5554`); hosted App Links
+   parked as `BL-US008-01` / `BL-US008-02`.**
 
 ## Stop Conditions
 
