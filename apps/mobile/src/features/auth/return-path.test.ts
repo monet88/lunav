@@ -2,9 +2,9 @@ import { parseAuthReturnDestination } from '@lunav/contracts'
 import { resolveMobileSignInHref } from './return-path'
 
 describe('mobile sign-in return destination', () => {
-  test('maps the canonical account path to the private shell entry', () => {
+  test('maps the canonical account path to the protected account route', () => {
     expect(parseAuthReturnDestination('/account')).toBe('/account')
-    expect(resolveMobileSignInHref('/account')).toBe('/(protected)')
+    expect(resolveMobileSignInHref('/account')).toBe('/(protected)/account')
   })
 
   test('falls back safely for empty or root return destinations', () => {

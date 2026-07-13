@@ -210,7 +210,11 @@ export function createMobileAuthStateController({
           authGeneration += 1
 
           if (event === 'SIGNED_OUT') {
-            publish({ status: 'anonymous' })
+            // A locally initiated sign-out owns the final state transition. Some
+            // clients emit SIGNED_OUT before signOut() reports an error.
+            if (!isSigningOut && state.status !== 'anonymous') {
+              publish({ status: 'anonymous' })
+            }
             return
           }
 
@@ -280,7 +284,6 @@ export function createMobileAuthStateController({
 
     isSigningOut = true
     authGeneration += 1
-    publish({ status: 'anonymous' })
 
     try {
       if (userId !== null) {
@@ -299,8 +302,11 @@ export function createMobileAuthStateController({
     }
 
     if (signOutError !== null) {
-      await refreshStateFromUser()
       throw signOutError
+    }
+
+    if (state.status !== 'anonymous') {
+      publish({ status: 'anonymous' })
     }
   }
 
