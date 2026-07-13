@@ -1,0 +1,23 @@
+docs/stories/US-008-mobile-auth-account/overview.md
+  s_b7fe1a32cf0d7f::t_f22b972a66f5cb 31-33
+docs/stories/US-008-mobile-auth-account/validation.md
+  s_b7fe1a32cf0d7f::t_4e911e4f39d2d7 158-159,161-166
+docs/stories/backlog.md
+  s_b7fe1a32cf0d7f::t_d5bc5332c551cd 16
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "fab27eb0d325154c7a9a7f5d27e6d64625ab8590",
+  "prompts": {},
+  "sessions": {
+    "s_b7fe1a32cf0d7f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0cd680cc-cbe2-4af2-94c7-4ba6be8f028c",
+        "model": "unknown"
+      },
+      "human_author": "monet88 <minhthang421992@gmail.com>"
+    }
+  }
+}
