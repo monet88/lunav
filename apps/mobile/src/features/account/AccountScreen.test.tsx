@@ -19,11 +19,24 @@ const authenticated: AuthState = {
   },
 }
 
+function createDeferred<T>(): {
+  promise: Promise<T>
+  resolve: (value: T) => void
+} {
+  let resolve!: (value: T) => void
+  const promise = new Promise<T>((resolvePromise) => {
+    resolve = resolvePromise
+  })
+
+  return { promise, resolve }
+}
+
 function createClient(options?: {
   loadData?: unknown
   loadError?: unknown | null
   updateData?: unknown
   updateError?: unknown | null
+  updateResult?: Promise<{ data: unknown; error: unknown | null }>
 }): {
   client: AccountScreenClient
   from: jest.Mock
@@ -31,30 +44,30 @@ function createClient(options?: {
   updateEq: jest.Mock
 } {
   const loadSingle = jest.fn().mockResolvedValue({
-    data:
-      options?.loadData ??
-      {
-        id: USER_ID,
-        display_name: 'Nguyen An',
-        created_at: '2026-07-11T00:00:00.000Z',
-        updated_at: '2026-07-11T00:00:00.000Z',
-      },
+    data: options?.loadData ?? {
+      id: USER_ID,
+      display_name: 'Nguyen An',
+      created_at: '2026-07-11T00:00:00.000Z',
+      updated_at: '2026-07-11T00:00:00.000Z',
+    },
     error: options?.loadError ?? null,
   })
   const loadEq = jest.fn().mockReturnValue({ single: loadSingle })
   const select = jest.fn().mockReturnValue({ eq: loadEq })
 
-  const updateSingle = jest.fn().mockResolvedValue({
-    data:
-      options?.updateData ??
-      {
-        id: USER_ID,
-        display_name: 'Minh',
-        created_at: '2026-07-11T00:00:00.000Z',
-        updated_at: '2026-07-11T00:00:00.000Z',
-      },
-    error: options?.updateError ?? null,
-  })
+  const updateSingle = jest.fn().mockImplementation(() =>
+    options?.updateResult
+      ? options.updateResult
+      : Promise.resolve({
+          data: options?.updateData ?? {
+            id: USER_ID,
+            display_name: 'Minh',
+            created_at: '2026-07-11T00:00:00.000Z',
+            updated_at: '2026-07-11T00:00:00.000Z',
+          },
+          error: options?.updateError ?? null,
+        })
+  )
   const updateSelect = jest.fn().mockReturnValue({ single: updateSingle })
   const updateEq = jest.fn().mockReturnValue({ select: updateSelect })
   const update = jest.fn().mockReturnValue({ eq: updateEq })
@@ -116,13 +129,11 @@ describe('AccountScreen', () => {
       'Da xac nhan'
     )
 
-    await act(async () => {
-      fireEvent.changeText(screen.getByTestId('profile-display-name'), ' Minh ')
-    })
-
-    await act(async () => {
-      fireEvent.press(screen.getByTestId('profile-submit'))
-    })
+    await fireEvent.changeText(
+      screen.getByTestId('profile-display-name'),
+      ' Minh '
+    )
+    await fireEvent.press(screen.getByTestId('profile-submit'))
 
     await waitFor(() => {
       expect(screen.getByTestId('profile-status')).toHaveTextContent(
@@ -132,6 +143,124 @@ describe('AccountScreen', () => {
 
     expect(update).toHaveBeenCalledWith({ display_name: 'Minh' })
     expect(updateEq).toHaveBeenCalledWith('id', USER_ID)
+  })
+
+  test('blocks profile save while sign-out is pending', async () => {
+    const delayedSignOut = createDeferred<void>()
+    const { client, update } = createClient()
+    const onSignOut = jest.fn(() => delayedSignOut.promise)
+    const onNavigatePublic = jest.fn()
+
+    await render(
+      <AccountScreen
+        authState={authenticated}
+        client={client}
+        onNavigatePublic={onNavigatePublic}
+        onSignOut={onSignOut}
+      />
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('profile-display-name')).toBeTruthy()
+    })
+
+    await fireEvent.changeText(
+      screen.getByTestId('profile-display-name'),
+      ' Minh '
+    )
+    await fireEvent.press(screen.getByTestId('account-sign-out'))
+
+    expect(screen.getByTestId('profile-display-name').props.editable).toBe(
+      false
+    )
+    expect(screen.getByTestId('profile-submit')).toBeDisabled()
+
+    await fireEvent.press(screen.getByTestId('profile-submit'))
+
+    expect(update).not.toHaveBeenCalled()
+    expect(onNavigatePublic).not.toHaveBeenCalled()
+
+    await act(() => {
+      delayedSignOut.resolve()
+    })
+
+    await waitFor(() => {
+      expect(onSignOut).toHaveBeenCalledTimes(1)
+      expect(onNavigatePublic).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  test('blocks sign-out while a profile save is pending', async () => {
+    const delayedUpdate = createDeferred<{
+      data: unknown
+      error: unknown | null
+    }>()
+    const { client, update } = createClient({
+      updateResult: delayedUpdate.promise,
+    })
+    const onSignOut = jest.fn(async () => undefined)
+    const onNavigatePublic = jest.fn()
+
+    await render(
+      <AccountScreen
+        authState={authenticated}
+        client={client}
+        onNavigatePublic={onNavigatePublic}
+        onSignOut={onSignOut}
+      />
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('profile-display-name')).toBeTruthy()
+    })
+
+    await fireEvent.changeText(
+      screen.getByTestId('profile-display-name'),
+      ' Minh '
+    )
+    await fireEvent.press(screen.getByTestId('profile-submit'))
+
+    await waitFor(() => {
+      expect(screen.getByTestId('account-sign-out')).toBeDisabled()
+      expect(
+        screen.getByTestId('account-sign-out').props.accessibilityState
+      ).toEqual({
+        busy: true,
+        disabled: true,
+      })
+    })
+
+    await fireEvent.press(screen.getByTestId('account-sign-out'))
+
+    expect(update).toHaveBeenCalledTimes(1)
+    expect(onSignOut).not.toHaveBeenCalled()
+    expect(onNavigatePublic).not.toHaveBeenCalled()
+
+    await act(() => {
+      delayedUpdate.resolve({
+        data: {
+          id: USER_ID,
+          display_name: 'Minh',
+          created_at: '2026-07-11T00:00:00.000Z',
+          updated_at: '2026-07-11T00:00:00.000Z',
+        },
+        error: null,
+      })
+    })
+
+    await waitFor(() => {
+      expect(screen.getByTestId('profile-status')).toHaveTextContent(
+        'Thong tin da duoc cap nhat.'
+      )
+      expect(screen.getByTestId('account-sign-out')).not.toBeDisabled()
+    })
+
+    await fireEvent.press(screen.getByTestId('account-sign-out'))
+
+    await waitFor(() => {
+      expect(onSignOut).toHaveBeenCalledTimes(1)
+      expect(onNavigatePublic).toHaveBeenCalledTimes(1)
+    })
   })
 
   test('sign-out clears session before navigating public', async () => {
@@ -157,9 +286,7 @@ describe('AccountScreen', () => {
       expect(screen.getByTestId('account-sign-out')).toBeTruthy()
     })
 
-    await act(async () => {
-      fireEvent.press(screen.getByTestId('account-sign-out'))
-    })
+    await fireEvent.press(screen.getByTestId('account-sign-out'))
 
     await waitFor(() => {
       expect(onSignOut).toHaveBeenCalledTimes(1)
@@ -188,9 +315,7 @@ describe('AccountScreen', () => {
       expect(screen.getByTestId('account-sign-out')).toBeTruthy()
     })
 
-    await act(async () => {
-      fireEvent.press(screen.getByTestId('account-sign-out'))
-    })
+    await fireEvent.press(screen.getByTestId('account-sign-out'))
 
     await waitFor(() => {
       expect(screen.getByTestId('account-sign-out-status')).toHaveTextContent(

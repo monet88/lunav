@@ -17,12 +17,16 @@ import {
 
 interface ProfileFormProps {
   displayName: string | null
+  disabled?: boolean
+  onPendingChange?: (pending: boolean) => void
   onSubmit: (fields: { displayName: string }) => Promise<ProfileActionState>
   onUpdated?: (profile: Profile) => void
 }
 
 export function ProfileForm({
   displayName,
+  disabled = false,
+  onPendingChange,
   onSubmit,
   onUpdated,
 }: ProfileFormProps) {
@@ -35,11 +39,12 @@ export function ProfileForm({
   const inFlightRef = useRef(false)
 
   const handleSubmit = async () => {
-    if (inFlightRef.current) {
+    if (disabled || inFlightRef.current) {
       return
     }
 
     inFlightRef.current = true
+    onPendingChange?.(true)
     setPending(true)
     try {
       const next = await onSubmit({ displayName: value })
@@ -52,12 +57,14 @@ export function ProfileForm({
       setState(genericProfileUpdateFailureState())
     } finally {
       inFlightRef.current = false
+      onPendingChange?.(false)
       setPending(false)
     }
   }
 
   const statusIsError = state.kind === 'error'
   const displayNameLabel = accountCopy('account.displayNameLabel')
+  const formBlocked = disabled || pending
 
   return (
     <View style={styles.form} testID="profile-form">
@@ -66,7 +73,7 @@ export function ProfileForm({
         accessibilityLabel={displayNameLabel}
         autoCapitalize="words"
         autoComplete="nickname"
-        editable={!pending}
+        editable={!formBlocked}
         onChangeText={setValue}
         style={styles.input}
         testID="profile-display-name"
@@ -86,12 +93,12 @@ export function ProfileForm({
 
       <Pressable
         accessibilityRole="button"
-        accessibilityState={{ disabled: pending, busy: pending }}
-        disabled={pending}
+        accessibilityState={{ disabled: formBlocked, busy: pending }}
+        disabled={formBlocked}
         onPress={() => {
           void handleSubmit()
         }}
-        style={[styles.button, pending ? styles.buttonDisabled : null]}
+        style={[styles.button, formBlocked ? styles.buttonDisabled : null]}
         testID="profile-submit"
       >
         {pending ? (

@@ -97,9 +97,8 @@ function createAuthHarness(): AuthHarness {
 function createAppStateHarness(
   initialState: MobileAppState['currentState'] = 'active'
 ): AppStateHarness {
-  let appStateCallback: (
-    state: MobileAppState['currentState']
-  ) => void = () => undefined
+  let appStateCallback: (state: MobileAppState['currentState']) => void = () =>
+    undefined
   const removeAppStateListener = jest.fn()
 
   return {
@@ -201,7 +200,9 @@ describe('createMobileSupabaseClient', () => {
     )
 
     const options = createClient.mock.calls[0]?.[2] as {
-      auth: { storage: { setItem: (key: string, value: string) => Promise<void> } }
+      auth: {
+        storage: { setItem: (key: string, value: string) => Promise<void> }
+      }
     }
 
     await options.auth.storage.setItem('supabase-session', 'x'.repeat(4096))
@@ -418,54 +419,73 @@ describe('mobile auth-state controller', () => {
     expect(observedStates).toEqual([{ status: 'anonymous' }])
   })
 
-  test('blocks private state before sign-out cleanup begins', async () => {
+  test('retains private state until ordered sign-out cleanup succeeds', async () => {
     const auth = createAuthHarness()
     const appState = createAppStateHarness()
     const controller = createMobileAuthStateController({
       client: auth.client,
       appState: appState.appState,
     })
-    let releaseCleanup: (() => void) | undefined
-    const cleanupStarted = new Promise<void>((resolve) => {
-      releaseCleanup = resolve
-    })
+    const delayedCleanup = createDeferred<void>()
+    const observedStates: AuthState[] = []
     const cleanup: SignOutCleanup = {
-      cancelUserRequests: jest.fn(async () => cleanupStarted),
+      cancelUserRequests: jest.fn(async () => delayedCleanup.promise),
       clearUserCacheAndRealtime: jest.fn(async () => undefined),
     }
 
+    controller.subscribe((state) => observedStates.push(state))
     await controller.start()
+    observedStates.length = 0
     const signOut = controller.signOut(cleanup)
 
-    expect(controller.getState()).toEqual({ status: 'anonymous' })
-    releaseCleanup?.()
+    expect(controller.getState()).toEqual({
+      status: 'authenticated',
+      identity: {
+        email: 'a@example.com',
+        isEmailConfirmed: true,
+        userId: 'user-a',
+      },
+    })
+    expect(observedStates).toEqual([])
+
+    delayedCleanup.resolve()
     await signOut
+
+    expect(controller.getState()).toEqual({ status: 'anonymous' })
+    expect(observedStates).toEqual([{ status: 'anonymous' }])
   })
 
-  test('does not restore private state from an auth event during sign-out cleanup', async () => {
+  test('ignores auth events while local sign-out cleanup is pending', async () => {
     const auth = createAuthHarness()
     const appState = createAppStateHarness()
     const controller = createMobileAuthStateController({
       client: auth.client,
       appState: appState.appState,
     })
-    let releaseCleanup: (() => void) | undefined
-    const cleanupStarted = new Promise<void>((resolve) => {
-      releaseCleanup = resolve
-    })
+    const delayedCleanup = createDeferred<void>()
     const cleanup: SignOutCleanup = {
-      cancelUserRequests: jest.fn(async () => cleanupStarted),
+      cancelUserRequests: jest.fn(async () => delayedCleanup.promise),
       clearUserCacheAndRealtime: jest.fn(async () => undefined),
     }
 
     await controller.start()
     const signOut = controller.signOut(cleanup)
     auth.emitAuthEvent('USER_UPDATED')
+    auth.emitAuthEvent('SIGNED_OUT')
     await flushAsyncWork()
 
-    expect(controller.getState()).toEqual({ status: 'anonymous' })
-    releaseCleanup?.()
+    expect(controller.getState()).toEqual({
+      status: 'authenticated',
+      identity: {
+        email: 'a@example.com',
+        isEmailConfirmed: true,
+        userId: 'user-a',
+      },
+    })
+
+    delayedCleanup.resolve()
     await signOut
+    expect(controller.getState()).toEqual({ status: 'anonymous' })
   })
 
   test('ignores a stale user lookup that resolves after a sign-out event', async () => {
@@ -525,22 +545,30 @@ describe('mobile auth-state controller', () => {
     })
   })
 
-  test('restores authoritative auth state when Supabase sign-out fails', async () => {
+  test('retains authenticated state when Supabase sign-out fails', async () => {
     const auth = createAuthHarness()
     const appState = createAppStateHarness()
     const controller = createMobileAuthStateController({
       client: auth.client,
       appState: appState.appState,
     })
+    const observedStates: AuthState[] = []
     const cleanup: SignOutCleanup = {
       cancelUserRequests: jest.fn(async () => undefined),
       clearUserCacheAndRealtime: jest.fn(async () => undefined),
     }
-    auth.signOut.mockResolvedValueOnce({ error: new Error('network unavailable') })
+    auth.signOut.mockImplementationOnce(async () => {
+      auth.emitAuthEvent('SIGNED_OUT')
+      return { error: new Error('network unavailable') }
+    })
 
+    controller.subscribe((state) => observedStates.push(state))
     await controller.start()
+    observedStates.length = 0
 
-    await expect(controller.signOut(cleanup)).rejects.toThrow('network unavailable')
+    await expect(controller.signOut(cleanup)).rejects.toThrow(
+      'network unavailable'
+    )
     expect(controller.getState()).toEqual({
       status: 'authenticated',
       identity: {
@@ -549,6 +577,48 @@ describe('mobile auth-state controller', () => {
         userId: 'user-a',
       },
     })
+    expect(observedStates).toEqual([])
+  })
+
+  test('publishes anonymous once after a synchronous successful sign-out event', async () => {
+    const auth = createAuthHarness()
+    const appState = createAppStateHarness()
+    const controller = createMobileAuthStateController({
+      client: auth.client,
+      appState: appState.appState,
+    })
+    const observedStates: AuthState[] = []
+    const delayedSignOut = createDeferred<{ error: null }>()
+    const cleanup: SignOutCleanup = {
+      cancelUserRequests: jest.fn(async () => undefined),
+      clearUserCacheAndRealtime: jest.fn(async () => undefined),
+    }
+    auth.signOut.mockImplementationOnce(async () => {
+      auth.emitAuthEvent('SIGNED_OUT')
+      return delayedSignOut.promise
+    })
+
+    controller.subscribe((state) => observedStates.push(state))
+    await controller.start()
+    observedStates.length = 0
+    const signOut = controller.signOut(cleanup)
+    await flushAsyncWork()
+
+    expect(controller.getState()).toEqual({
+      status: 'authenticated',
+      identity: {
+        email: 'a@example.com',
+        isEmailConfirmed: true,
+        userId: 'user-a',
+      },
+    })
+    expect(observedStates).toEqual([])
+
+    delayedSignOut.resolve({ error: null })
+    await signOut
+
+    expect(controller.getState()).toEqual({ status: 'anonymous' })
+    expect(observedStates).toEqual([{ status: 'anonymous' }])
   })
 
   test('ignores a stale user lookup that resolves after the controller stops', async () => {
@@ -588,7 +658,9 @@ describe('mobile auth-state controller', () => {
       client: auth.client,
       appState: appState.appState,
     })
-    auth.startAutoRefresh.mockRejectedValueOnce(new Error('refresh unavailable'))
+    auth.startAutoRefresh.mockRejectedValueOnce(
+      new Error('refresh unavailable')
+    )
 
     await expect(controller.start()).rejects.toThrow('refresh unavailable')
     await expect(controller.start()).resolves.toBeUndefined()

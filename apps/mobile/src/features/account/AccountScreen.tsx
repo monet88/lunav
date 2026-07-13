@@ -45,9 +45,11 @@ export function AccountScreen({
   onNavigatePublic,
 }: AccountScreenProps) {
   const [screen, setScreen] = useState<ScreenState>({ kind: 'loading' })
+  const [profileSaving, setProfileSaving] = useState(false)
   const [signingOut, setSigningOut] = useState(false)
   const [signOutError, setSignOutError] = useState<string | null>(null)
-  // Ref guards against double sign-out before the pending re-render lands.
+  // Refs close same-tick gaps before pending state disables either action.
+  const profileSaveInFlightRef = useRef(false)
   const signOutInFlightRef = useRef(false)
 
   useEffect(() => {
@@ -98,7 +100,7 @@ export function AccountScreen({
   }
 
   const handleSignOut = async () => {
-    if (signOutInFlightRef.current) {
+    if (signOutInFlightRef.current || profileSaveInFlightRef.current) {
       return
     }
 
@@ -119,6 +121,8 @@ export function AccountScreen({
       setSigningOut(false)
     }
   }
+
+  const signOutBlocked = signingOut || profileSaving
 
   return (
     <View style={styles.container} testID="account-screen">
@@ -150,7 +154,12 @@ export function AccountScreen({
 
         {screen.kind === 'ready' ? (
           <ProfileForm
+            disabled={signingOut}
             displayName={screen.profile.displayName}
+            onPendingChange={(pending) => {
+              profileSaveInFlightRef.current = pending
+              setProfileSaving(pending)
+            }}
             onSubmit={(fields) =>
               updateProfileDisplayName(client, authState, fields)
             }
@@ -182,12 +191,18 @@ export function AccountScreen({
 
         <Pressable
           accessibilityRole="button"
-          accessibilityState={{ disabled: signingOut, busy: signingOut }}
-          disabled={signingOut}
+          accessibilityState={{
+            disabled: signOutBlocked,
+            busy: signOutBlocked,
+          }}
+          disabled={signOutBlocked}
           onPress={() => {
             void handleSignOut()
           }}
-          style={[styles.signOutButton, signingOut ? styles.buttonDisabled : null]}
+          style={[
+            styles.signOutButton,
+            signOutBlocked ? styles.buttonDisabled : null,
+          ]}
           testID="account-sign-out"
         >
           {signingOut ? (
