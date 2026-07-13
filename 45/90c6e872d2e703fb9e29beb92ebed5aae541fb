@@ -1,0 +1,27 @@
+apps/mobile/package.json
+  s_b7fe1a32cf0d7f::t_5a524b22f0b7fd 20
+apps/mobile/src/lib/supabase/auth-state-controller.ts
+  s_b7fe1a32cf0d7f::t_b1395352853b9a 139-144,155-161
+apps/mobile/src/lib/supabase/mobile-session.test.ts
+  s_b7fe1a32cf0d7f::t_efc4dcf7acb874 308,319-346
+docs/stories/backlog.md
+  s_b7fe1a32cf0d7f::t_49a6b45ff4124c 14-15
+supabase/config.toml
+  s_b7fe1a32cf0d7f::t_c3d575d6f45fac 169,171,208-209
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.12",
+  "base_commit_sha": "4590c6e872d2e703fb9e29beb92ebed5aae541fb",
+  "prompts": {},
+  "sessions": {
+    "s_b7fe1a32cf0d7f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0cd680cc-cbe2-4af2-94c7-4ba6be8f028c",
+        "model": "unknown"
+      },
+      "human_author": "monet88 <minhthang421992@gmail.com>"
+    }
+  }
+}
