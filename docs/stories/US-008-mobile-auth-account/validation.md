@@ -155,5 +155,12 @@ adb reverse tcp:8081 tcp:8081
 - ~~Sign-in + protected return destination~~ (issue #8)
 - ~~Password recovery / reset with recovery proof~~ (issue #9)
 - ~~Account `display_name` update + real sign-out navigation~~ (issue #10, branch commits)
-- Android emulator/device **full** end-to-end proof (issue #11 remaining)
+- Android emulator/device **full** end-to-end proof → deferred backlog `BL-US008-03`
+  (issue #11 parked; product priority is web app surfaces first)
 - Hosted App Link / real email smoke → backlog `BL-US008-01` / `BL-US008-02`
+
+## Priority note (2026-07-13)
+
+Product direction: keep web app functional delivery ahead of Android runtime
+certification. Mobile auth code and static gates remain green; Android full-loop
+proof and hosted App Links do not block web product work.

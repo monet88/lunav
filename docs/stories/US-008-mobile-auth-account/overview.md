@@ -28,8 +28,9 @@ callback work, history-stripping replace navigation, and unit coverage including
 boot-refresh anonymous fallback when identity lookup fails. Android emulator
 runtime was partially exercised on `emulator-5554` (Expo Go + Metro; sign-up
 form reached) but the full signup → logout loop is **not** claimed complete.
-Hosted App Link / real email smoke remains residual (`BL-US008-01` /
-`BL-US008-02`). iOS runtime remains unproven.
+Android full-loop proof is deferred (`BL-US008-03` / issue #11 parked) so web
+product surfaces can ship first. Hosted App Link / real email smoke remains
+residual (`BL-US008-01` / `BL-US008-02`). iOS runtime remains unproven.
 
 ## Target Behavior
 
